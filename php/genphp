@@ -1,0 +1,1 @@
+./configure --disable-cli --enable-cgi --enable-mbstring --enable-exif --enable-mbregex --enable-sockets --with-iodbc=/usr --with-curl=/usr --with-config-file-path=/etc --sysconfdir=/private/etc --without-pear

@@ -1,0 +1,1095 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+/*
+ * I B A U K   -   S C O R E M A S T E R
+ *
+ * I handle the bulk scorecard recalculation
+ *
+ * I am written for readability rather than efficiency, please keep me that way.
+ *
+ *
+ * Copyright (c) 2022 Bob Stammers
+ *
+ *
+ * This file is part of IBAUK-SCOREMASTER.
+ *
+ * IBAUK-SCOREMASTER is free software: you can redistribute it and/or modify
+ * it under the terms of the MIT License
+ *
+ * IBAUK-SCOREMASTER is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MIT License for more details.
+ *
+ *
+ */
+
+
+// TODO CalcAvgSpeed
+// TODO Average speed penalties
+
+require_once('common.php');
+
+
+$RP = [];               // Holds contents of RallyParams table
+$catCompoundRules = [];
+$bonusValues = [];
+$specialValues = [];
+$comboValues = [];
+$scorex = [];
+$reasons = [];
+$axisLabels = [];
+$catlabels = [];
+$finisherStatus = $KONSTANTS['EntrantOK'];
+eval("\$evs = ".$TAGS['EntrantStatusV'][0]);
+
+class SCOREXLINE {
+
+    public $id;
+    public $desc;
+    public $pointsDesc = '';
+    public $points;
+    public $totalPoints;
+
+    public function asHTML() {
+        $res = '<tr><td class="sxcode">'.$this->id.'</td>';
+        $res .= '<td class="sxdesc">'.$this->desc;
+        $res .= '<span class="sxdescx">'.$this->pointsDesc.'</span></td>';
+        $res .= '<td class="sxitempoints">'.$this->points.'</td>';
+        //$res .= '<td class="sxtotalpoints">'.$this->totalPoints.'</td>';
+        $res .= '</tr>';
+        return $res;
+    }
+
+}
+
+
+
+function applyClaim($claimid,$intransaction) {
+
+	global $DB, $KONSTANTS;
+
+    error_log('applying claim # '.$claimid);
+	$sql = "SELECT * FROM claims WHERE rowid=".$claimid;
+	$R = $DB->query($sql);
+	if (!$rc = $R->fetchArray())
+		return;
+
+	if (!$intransaction) {
+		if (!$DB->exec("BEGIN IMMEDIATE TRANSACTION")) {
+			dberror();
+			exit;
+		}
+	}
+
+    initScorecardVariables();
+
+	$sql = "SELECT IfNull(FinishTime,'2020-01-01') As FinishTime,IfNull(OdoRallyFinish,0) As OdoRallyFinish,BonusesVisited";
+	$sql .= ",RejectedClaims";
+	$sql .= ",IfNull(StartTime,'') As StartTime";
+	$sql .= ",IfNull(OdoRallyStart,0) As OdoRallyStart,IfNull(OdoScaleFactor,1) As OdoScaleFactor";
+	$sql .= ",IfNull(CorrectedMiles,0) As CorrectedMiles,OdoKms";
+	$sql .= " FROM entrants WHERE EntrantID=".$rc['EntrantID'];
+	$R = $DB->query($sql);
+	$rd = $R->fetchArray();
+
+	$fo = $rd['OdoRallyFinish'];
+	$cm = $rd['CorrectedMiles'];
+	
+	$rcd = explode(',',$rd['RejectedClaims']);
+    $handled = false;
+    for($i = 0; $i < count($rcd); $i++) {
+        $x = explode('=',$rcd[$i]);
+        if ($x[0] === $rc['BonusID']) {
+            $handled = true;
+            if ($rc['Decision'] < 1) { // Was rejected but isn't now
+                unset($rcd[$i]);
+            }
+        }
+    }
+    if (!$handled && $rc['Decision'] > 0) {
+        array_push($rcd,$rc['BonusID'].'='.$rc['Decision']);
+    }
+
+	$bv = explode(',',$rd['BonusesVisited']);
+    $bonusid = '';
+    $points = 0;
+    $minutes = 0;
+    $appendclaim = true;
+    
+    foreach($bv as $ix => $bonusclaim) {
+        parseBonusClaim($bonusclaim,$bonusid,$points,$minutes);
+        error_log('bv check rc[bonusid]=="'.$rc['BonusID'].'" bonusid="'.$bonusid.'"');
+        if ($rc['BonusID'] == $bonusid) {
+            $bonusclaim = $bonusid.'='.$rc['Points'].';'.$rc['RestMinutes'];
+            $bv[$ix] = $bonusclaim;
+            $appendclaim = false;
+        }
+    }
+    if ($appendclaim) {
+        $newclaim = $rc['BonusID'].'='.$rc['Points'].';'.$rc['RestMinutes'];
+        array_push($bv,$newclaim);
+    }
+
+	// If StartTime has not already been set for this entrant then use the time of the first claim
+	if ($rd['StartTime']=='')
+		$rd['StartTime'] = $rc['ClaimTime'];
+
+    if ($rc['ClaimTime'] > $rd['FinishTime'])
+        $rd['FinishTime'] = $rc['ClaimTime'];
+
+    if ($rd['OdoRallyStart'] == 0)
+        $rd['OdoRallyStart'] = $rc['OdoReading'];
+
+    if ($rc['OdoReading'] > $rd['OdoRallyFinish']) {
+        $rd['OdoRallyFinish'] = $rc['OdoReading'];
+        $rd['CorrectedMiles'] = calcCorrectedMiles($rd['OdoKms'],$rd['OdoRallyStart'],$rd['OdoRallyFinish'],$rd['OdoScaleFactor']);
+    }
+
+
+	$sql = "UPDATE entrants SET BonusesVisited='".implode(',',$bv)."', Confirmed=".$KONSTANTS['ScorecardIsDirty'];
+	$sql .= ",RejectedClaims='".implode(',',$rcd)."'";
+	$sql .= ",StartTime='".$rd['StartTime']."'";
+	$sql .= ",OdoRallyStart=".$rd['OdoRallyStart'];
+	$sql .= ",FinishTime='".$rd['FinishTime']."',OdoRallyFinish=".$rd['OdoRallyFinish'];
+	$sql .= ",CorrectedMiles=".$rd['CorrectedMiles'];
+	$sql .= " WHERE EntrantID=".$rc['EntrantID'];
+	$DB->exec($sql);
+	if ($DB->lastErrorCode()<>0) {
+		//echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
+		$DB->exec('ROLLBACK');
+		exit;
+	}
+
+
+    $sql = "UPDATE claims SET Applied=1 WHERE ";
+    $sql .= "rowid=".$claimid;
+    $DB->exec($sql);
+    if ($DB->lastErrorCode()<>0) {
+        //echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
+        $DB->exec('ROLLBACK');
+        exit;
+    }
+
+    if (true) {
+        recalcScorecard($rc['EntrantID'],true);
+    }
+
+
+	if (!$intransaction)
+		$DB->exec("COMMIT TRANSACTION");
+}
+
+function calcAvgSpeed($rd) {
+
+    global $KONSTANTS;
+
+	$basicKms = $KONSTANTS['BasicDistanceUnit'];
+	$isoStart = $rd['StartTime'].'Z';
+	$isoFinish = $rd['FinishTime'].'Z';
+    try {
+        error_log('Parsing starttime of ['.$isoStart.']');
+	    $dtStart = new DateTime($isoStart);
+    } catch(Exception $ex) {
+        error_log('Starttime ['.$isoStart.'] cannot be parsed - '.$ex->getMessage());
+        //echo('Starttime ['.$isoStart.'] cannot be parsed - '.$ex->getMessage());
+        return;
+    }
+    try {
+        error_log('Parsing finishtime of ['.$isoFinish.']');
+	    $dtFinish = new DateTime($isoFinish);
+    } catch(Exception $ex) {
+        error_log('Finishtime ['.$isoFinish.'] cannot be parsed - '.$ex->getMessage());
+        //echo('Finishtime ['.$isoFinish.'] cannot be parsed - '.$ex->getMessage());
+        return;
+    } 
+	$rideDuration = $dtFinish->diff($dtStart);
+    $minsDuration = ($rideDuration->days * 24 * 60) + ($rideDuration->h * 60) + $rideDuration->i;
+    $restMins = $rd['RestMinutes'];
+	
+    $minsDuration = $minsDuration - $restMins;
+
+	if ($minsDuration < 1)
+		return '';
+
+	$odoDistance = $rd['CorrectedMiles'];
+
+	
+	$hoursDuration = $minsDuration / 60.0;
+	$speed = $odoDistance / $hoursDuration;
+	
+    return round($speed,2);
+
+}
+
+// This checks the various constraints on 'Finisher' status and applies the appropriate
+// status (Finisher / DNF) according to the rules of the rally.
+function calcEntrantStatus($rd) {
+
+    global $scorex, $bonusValues, $specialValues, $comboValues, $catCompoundRules, $TAGS,$KONSTANTS, $RP;
+
+    $sx = new SCOREXLINE();
+    $sx->id = $TAGS['EntrantDNF'][0];
+
+    if ($rd['CorrectedMiles'] < $RP['MinMiles']) {
+        $sx->desc = $KONSTANTS['DNF_TOOFEWMILES'];
+        $scorex[] = $sx;
+        return $KONSTANTS['EntrantDNF'];
+    }
+    if ($rd['CorrectedMiles'] > $RP['PenaltyMilesDNF']  && $RP['PenaltyMilesDNF'] > 0) {
+        $sx->desc = $KONSTANTS['DNF_TOOMANYMILES'];
+        $scorex[] = $sx;
+        return $KONSTANTS['EntrantDNF'];
+    }
+    
+    // Check for finish time DNF        
+    $ft = calcFinishTimeDNF($rd);
+    if ($rd['FinishTime'] > $ft) {
+        $sx->desc = $KONSTANTS['DNF_FINISHEDTOOLATE'].' > '.str_replace('T',' ',$ft);
+        $scorex[] = $sx;
+        return $KONSTANTS['EntrantDNF'];
+    }
+
+    foreach ($bonusValues as $b) {
+        if ($b->compulsory == $KONSTANTS['COMPULSORYBONUS']  && !$b->scored) {
+            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].' [ '.$b->bid.' ]';
+            $scorex[] = $sx;
+            return $KONSTANTS['EntrantDNF'];
+        } else if ($b->compulsory == $KONSTANTS['MUSTNOTMATCH']  && $b->scored) {
+            $sx->desc = $KONSTANTS['DNF_HITMUSTNOT'].' [ '.$b->bid.' ]';
+            $scorex[] = $sx;
+            return $KONSTANTS['EntrantDNF'];
+        }
+    }
+
+    foreach ($specialValues as $b) {
+        if ($b->compulsory && !$b->scored) {
+            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].' [ '.$b->bid.' ]';
+            $scorex[] = $sx;
+            return $KONSTANTS['EntrantDNF'];
+        }
+    }
+
+    foreach ($comboValues as $b) {
+        if ($b->compulsory && !$b->scored) {
+            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].' [ '.$b->cid.' ]';
+            $scorex[] = $sx;
+            return $KONSTANTS['EntrantDNF'];
+        }
+    }
+
+    foreach ($catCompoundRules as $ccr) {
+        if ($ccr->rtype == $KONSTANTS['COMPULSORYBONUS'] && !$ccr->triggered) {
+            $sx->desc = $KONSTANTS['DNF_COMPOUNDRULE'];
+            $scorex[] = $sx;
+            return $KONSTANTS['EntrantDNF'];
+        }
+        if ($ccr->rtype == $KONSTANTS['MUSTNOTMATCH'] && $ccr->triggered) {
+            $sx->desc = $KONSTANTS['DNF_HITMUSTNOT'];
+            $scorex[] = $sx;
+            return $KONSTANTS['EntrantDNF'];
+        }
+    }
+    if ($rd['TotalPoints'] < $RP['MinPoints']) {
+        $sx->desc = $KONSTANTS['DNF_TOOFEWPOINTS'];
+        $scorex[] = $sx;
+        return $KONSTANTS['EntrantDNF'];
+    }
+
+    return $KONSTANTS['EntrantFinisher'];
+
+}
+
+// The DNF time for an entrant is the earlier of his start time + max hours or the rally end time
+function calcFinishTimeDNF($rd) {
+
+    global $RP, $KONSTANTS;
+
+//    print_r($RP);
+//    echo('<hr>');
+    //print_r($rd);
+//    echo('<hr>');
+    $startTime = ($rd['StartTime'] < $RP['StartTime'] ? $RP['StartTime'] : $rd['StartTime']);
+    $dt = new DateTime($startTime,new DateTimeZone($KONSTANTS['LocalTZ']));
+    $dt->add(new DateInterval("PT".$RP['MaxHours']."H"));
+    $finishTime = substr($dt->format("c"),0,16);
+    if ($finishTime > $RP['FinishTime'])
+        $finishTime = $RP['FinishTime'];
+    return $finishTime;
+
+}
+
+function catFieldList() {
+
+    global $KONSTANTS;
+
+    $res = '';
+    for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
+        $res .= ',Cat'.$i;
+    }
+    return $res;
+
+}
+
+function chooseNZ($i,$j) {
+
+    if ($i == 0)
+        return $j;
+    else
+        return $i;
+
+}
+
+function countNZ($cats) {
+
+    $res = 0;
+    foreach($cats as $c)
+        if ($c > 0)
+            $res++;
+    return $res;
+}
+
+function crewName($rd) {
+
+    $p = str_replace(' ','&nbsp',trim($rd['PillionName']));
+    $r = str_replace(' ','&nbsp;',trim($rd['RiderName']));
+    if ($p != '')
+        $r .= ' &amp; '.$p;
+    return '#'.$rd['EntrantID'].'&nbsp;-&nbsp;'.$r;
+    
+}
+
+function teamNames($team) {
+
+    global $DB;
+
+    $sql = "SELECT EntrantID,RiderName,PillionName FROM entrants WHERE TeamID=$team";
+    $R = $DB->query($sql);
+    $res = '';
+    while ($rd = $R->fetchArray()) {
+        if ($res != '')
+            $res .= ' + ';
+        $res .= crewName($rd).'<br>';
+    }
+    return $res;
+}
+function debugBonuses() {
+
+    global $bonusValues;
+
+    foreach($bonusValues as $b) {
+        echo(' Bonus: ');
+        print_r($b);
+        echo('<br>');
+    }
+
+}
+
+function debugCatcounts($catcounts) {
+
+    global $KONSTANTS;
+
+    echo('<hr>');
+    for ($i = 0; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
+        echo("$i : ");
+        var_dump($catcounts[$i]);
+        echo('<br>');
+    }
+    echo('<hr>');
+}
+
+function debugCCR() {
+
+    global $catCompoundRules;
+
+    foreach($catCompoundRules as $c) {
+        echo(' CCR: ');
+        print_r($c);
+        echo('<br>');
+    }
+
+}
+
+function debugCombos() {
+
+    global $comboValues;
+
+    echo('<br>');
+    foreach($comboValues as $c) {
+        echo(' Combo: ');
+        print_r($c);
+        echo('<br>');
+    }
+
+}
+
+// This recalculates all dirty scorecards (or all scorecards if forced)
+function recalcAll($force) {
+
+    global $KONSTANTS, $DB, $TAGS;
+
+
+    startHtml($TAGS['cl_ClaimsTitle'][0]);
+
+	echo('<h3>'.$TAGS['cl_RecalcHdr'][0].'</h3>');
+
+
+
+    $sql = "SELECT EntrantID,Confirmed FROM entrants";
+    $R = $DB->query($sql);
+    $scorecards = [];
+    while ($rd = $R->fetchArray()) {
+        if ($rd['Confirmed'] == $KONSTANTS['ScorecardIsDirty'] || $force) 
+            $scorecards[] = $rd['EntrantID'];
+    }
+    foreach ($scorecards as $sc) {
+        echo('<br>'.$TAGS['cl_Recalculating'][0].' '.$entrant.' ...');
+        recalcScorecard($sc,false);
+    }
+        
+}
+
+function initRallyVariables() {
+
+    global $RP, $catlabels, $axisLabels, $reasons, $comboValues, $specialValues, $bonusValues,$catCompoundRules, $sgroups, $KONSTANTS, $DB, $TAGS;
+
+    if (isset($RP['RallyTitle']))
+        return;
+
+    //echo('Initializing $RP ...');
+
+    $R = $DB->query("SELECT * FROM rallyparams");
+    if ($RP = $R->fetchArray()) {
+        $rr = explode("\n",$RP['RejectReasons']);
+        foreach($rr as $rc) {
+            $rcp = explode("=",$rc);
+            if (count($rcp) != 2)
+                continue;
+            $reasons[$rcp[0]] = $rcp[1];
+        }
+        for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
+            $axisLabels[$i] = $RP['Cat'.$i.'Label'];
+    }
+
+//    echo(' Reasons ');
+//    print_r($reasons);
+//    echo('<br>');
+
+    $R = $DB->query("SELECT * FROM categories");
+    while ($rd = $R->fetchArray()) {
+        if (!isset($catlabels[$rd['Axis']]))
+            $catlabels[$rd['Axis']] = [];
+        $catlabels[ $rd['Axis']] [$rd['Cat']]  = $rd['BriefDesc'];
+    }
+
+//    echo(' Cats ');
+//    print_r($catlabels);
+//    echo('<br>');
+
+    $R = $DB->query("SELECT * FROM combinations ORDER BY ComboID");
+    while($rd = $R->fetchArray()) {
+        $cmb = new StdClass();
+        $cmb->cid   = $rd['ComboID'];
+        $cmb->desc  = $rd['BriefDesc'];
+        $cmb->bids  = explode(',',$rd['Bonuses']);
+        $cmb->pm    = $rd['ScoreMethod'];
+        $cmb->min   = $rd['MinimumTicks'];
+        $cmb->max   = count($cmb->bids);
+
+        //echo('<br> [ '.$cmb->cid.' '.$rd['Bonuses'].' / '.$rd['ScorePoints'].' ] ');
+
+        // Establish pts as an array of results depending on number of claims
+        $cmb->pts   = array_pad([],$cmb->max,0);
+        if ($cmb->min == 0 || $cmb->min == $cmb->max) {
+            $cmb->pts[$cmb->max - 1] = intval($rd['ScorePoints']);
+            $cmb->min = $cmb->max;
+        } else {
+            $pa = explode(',',$rd['ScorePoints']);
+            $i = 0;
+            for ($j = $cmb->min; $j <= $cmb->max; $j++) {
+                if ( isset ( $pa[$i]))
+                    $cmb->pts[$j] = $pa[$i++];
+                else
+                    $cmb->pts[$j] = $pa[$i - 1];
+            }
+        }
+        $cmb->compulsory  = $rd['Compulsory'];
+        for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
+            $cmb->cat[$i] = $rd['Cat'.$i];
+        }
+        $cmb->scored  = false;
+        $comboValues[] = $cmb;
+
+    }
+    //debugCombos();
+
+    $R = $DB->query('SELECT rowid AS id,Axis,Cat,NMethod,ModBonus,NMin,PointsMults,NPower,Ruletype FROM catcompound ORDER BY Axis,NMin DESC');
+	while ($rd = $R->fetchArray()) {
+        $ccr = new StdClass();
+        $ccr->rid   = $rd['id'];
+        $ccr->axis  = $rd['Axis'];
+        $ccr->cat   = $rd['Cat'];
+        $ccr->method= $rd['NMethod'];
+        $ccr->target= $rd['ModBonus'];
+        $ccr->min   = $rd['NMin'];
+        $ccr->pm    = $rd['PointsMults'];
+        $ccr->pwr   = $rd['NPower'];
+        $ccr->rtype = $rd['Ruletype'];
+        $ccr->triggered = false; // Triggered(1)
+        $catCompoundRules[] = $ccr;
+    }
+//    debugCCR();
+
+    $cats = catFieldList();
+
+
+
+	$R = $DB->query('SELECT BonusID,BriefDesc,Compulsory,Points,RestMinutes'.$cats.' FROM bonuses ORDER BY BonusID');
+    while ($rd = $R->fetchArray()) {
+        $bon = new StdClass();
+        $bon->bid   = $rd['BonusID'];
+        $bon->desc  = $rd['BriefDesc'];
+        $bon->compulsory  = $rd['Compulsory'];
+        $bon->pts   = $rd['Points'];
+        for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
+            $bon->cat[$i] = $rd['Cat'.$i];
+        }
+        $bon->mins  = $rd['RestMinutes'];
+        $bon->scored  = false;    // is it scored?
+        $bonusValues[] = $bon;
+    }
+//    debugBonuses();
+
+}
+
+function initScorecardVariables() {
+
+    global $scorex, $comboValues, $bonusValues, $specialValues, $catCompoundRules,$DB,$KONSTANTS;
+
+    $scorex = [];
+
+    for ($i = 0; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
+        $catcounts[$i] = [];
+    }
+
+    foreach($catCompoundRules as $c)
+        $c->triggered = false;
+
+    foreach($bonusValues as $b)
+        $b->scored = false;
+
+    foreach($specialValues as $s)
+        $s->scored = false;
+
+    foreach($comboValues as $c)
+        $c->scored = false;
+
+    return $catcounts;
+    
+}
+
+function parseBonusClaim($claim,&$bonusid,&$points,&$minutes) {
+
+    $m = [];
+    preg_match('/([a-zA-z0-9]+)=?(\d+)?;?(\d+)?/',$claim,$m);
+    if (isset($m[1])) {
+        $bonusid = $m[1];
+        if (isset($m[2]))
+            $points = $m[2];
+        else
+            $points = '';
+        if (isset($m[3]))
+            $minutes = $m[3];
+        else
+            $minutes = '';
+    } else {
+        $bonusid = $claim;
+        $points = 0;
+        $minutes = 0;
+    }
+
+}
+
+function updateCatcounts($bonus,$catcounts) {
+
+    global $KONSTANTS;
+
+    // Keep track of cat counts
+    for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
+        $cat = $bonus->cat[$i];
+        if ($cat < 1) 
+            continue;
+            
+        if (!isset($catcounts[$i][$cat]))
+            $catcounts[$i][$cat] = 1;
+        else
+            $catcounts[$i][$cat]++;
+        // and overall figures
+        if (!isset($catcounts[0][$cat]))
+            $catcounts[0][$cat] = 1;
+        else
+            $catcounts[0][$cat]++;
+    }
+    return $catcounts;
+}
+
+
+// This recalculates a single scorecard and updates the entrant record with the results.
+//
+// Algorithm v3.0
+//
+// The values calculated are:-
+//
+// TotalPoints      The final score after all points and multipliers applied
+// RestMinutes      The total value of rest accrued
+// CombosTicked     Which combination bonuses have been scored
+// EntrantStatus    Finisher or DNF status
+// ScoreX           The score explanation
+// numBonusesTicked Reserved for future use
+//
+// Values on which this routine depends from the entrant record:-
+//
+// CorrectedMiles   The distance travelled
+// StartTime        The start time
+// FinishTime       The finish or latest claim time
+// BonusesVisited   List of ordinary bonuses visited, whether scored or not
+// RejectedClaims   List of claims that have been rejected in scoring
+
+function recalcScorecard($entrant,$intransaction) {
+
+    global $evs, $RP, $catlabels, $axisLabels, $scorex, $reasons, $bonusValues, $specialValues, $comboValues, $catCompoundRules, $DB, $KONSTANTS, $TAGS;
+
+
+    initRallyVariables();
+
+
+    // First, initialize some variables
+    $catcounts = initScorecardVariables();
+
+    // Now fetch the base data
+    $sql = "SELECT * FROM entrants WHERE EntrantID=$entrant";
+    $R = $DB->query($sql);
+    if (!$rd = $R->fetchArray()) {
+        echo('FAILED<br>');
+        return;
+    }
+
+    // Rejected claims
+    $tmp = explode(',',$rd['RejectedClaims']);
+    $rejectedClaims = [];
+    foreach ($tmp as $r) {
+        // Format is (code)=(reason)
+        $e = strpos($r,'=');
+        $rejectedClaims[substr($r,0,$e)] = intval(substr($r,$e + 1));
+    }
+
+    //echo(' RejectedClaims:');
+    //print_r($rejectedClaims);
+    //echo('<br>');
+
+    $bonusPoints = 0;
+    $multipliers = 0;
+    $numBonusesTicked = 0;
+    $bonusesScored = [];    // Keeps track of ordinary, special and combo bonuses successfully claimed
+
+
+    // Ordinary bonuses
+
+    $BA = explode(',',$rd['BonusesVisited']); 
+        
+    foreach($BA as $bonus) {
+
+        if ($bonus == '')
+            continue;
+
+        $bon = ''; $points = ''; $minutes = '';
+        parseBonusClaim($bonus,$bon,$points,$minutes);
+//        echo('<br>'.$bonus.': '.$bon.', '.$points.', '.$minutes);
+
+        $bonv = '';
+        foreach($bonusValues as $bv) {
+            if ($bv->bid == $bon) {
+                $bv->scored = true;
+                $bonv = $bv;
+                break;
+            }
+        }
+        if ($bonv == '') // non-existent bonus!
+            continue;
+
+        if ($points == '')
+            $points = $bonv->pts;
+        if ($minutes == '')
+            $minutes = $bonv->mins;
+
+        if ($bon == '' || array_key_exists($bon,$rejectedClaims)) { // is it a rejected claim?
+            //echo($TAGS['cl_Rejecting'][0].' '.$bon.' ');
+            $sx = new SCOREXLINE();
+            $sx->id = $bonv->bid;
+            $sx->desc = $bonv->desc.'<br>'.$KONSTANTS['CLAIM_REJECTED'].' - '.$reasons[$rejectedClaims[$bon]];
+            $sx->pointsDesc = '';
+            $sx->points = 'X';
+            $sx->totalPoints = '';
+            //echo('<table>'.$sx->asHTML().'</table>');
+            $scorex[] = $sx;
+            continue;
+        }
+        
+
+        $basicBonusPoints = $points;
+        $bonusesScored[] = $bon;
+        $numBonusesTicked++;
+        $rd['RestMinutes'] += $minutes;
+        $pointsDesc = "";
+        
+        // Keep track of cat counts
+        $catcounts = updateCatcounts($bonv,$catcounts);
+
+        // Look for and apply cat mods to basic points
+        foreach($catCompoundRules as $ccr) {
+            if ($ccr->rtype != $KONSTANTS['CAT_OrdinaryScoringRule'])
+                continue;
+
+            if ($ccr->target != $KONSTANTS['CAT_ModifyBonusScore'])
+                continue;   // Only interested in rules affecting basic bonus
+
+            if ($ccr->pm != $KONSTANTS['CAT_ResultPoints']) // Multipliers not allowed at this level
+                continue;
+
+            if ($ccr->cat > 0)
+                if ($bonv->cat[$ccr->axis] != $ccr->cat)
+                    continue;
+                    
+            $catcount = 0;
+            if ($ccr->cat == 0)
+                foreach($catcounts[$ccr->axis] as $cc)
+                    $catcount += $cc;
+            elseif (isset($catcounts[$ccr->axis][$ccr->cat]))
+                $catcount = $catcounts[$ccr->axis][$ccr->cat];
+        
+            if ($catcount < $ccr->min)
+                continue;
+        
+            if ($ccr->pwr == 0) {
+                $pointsDesc = "$basicBonusPoints x ".($catcount - 1);
+                $basicBonusPoints = $basicBonusPoints * ($catcount - 1);
+            } else {
+                $pointsDesc = "$basicBonusPoints x $ccr->pwr^".($catcount - 1);
+                $basicBonusPoints = $basicBonusPoints * (pow($ccr->pwr,($catcount - 1)));
+            }
+            if ($pointsDesc != "")
+                $pointsDesc = " ( $pointsDesc )";
+
+            //echo(" BonusMod $catcount = $basicBonusPoints<br>");
+
+            break;  // Only apply the first matching rule
+            
+        }
+
+        // basicBonusPoints is now the live figure
+        $bonusPoints += $basicBonusPoints;    
+
+        $sx = new SCOREXLINE();
+        $sx->id = $bonv->bid;
+        $sx->desc = $bonv->desc;
+        $sx->pointsDesc = $pointsDesc;
+        $sx->points = $basicBonusPoints;
+        $sx->totalPoints = $bonusPoints;
+
+        $scorex[] = $sx;
+
+    } // Ordinary bonus loop
+
+
+    // Combos
+    $combosScored = [];
+    foreach($comboValues as $c) {
+
+        // Is this combo already marked as rejected, a necessarily manual act?
+        if (array_key_exists($c->cid,$rejectedClaims)) {
+            $sx = new SCOREXLINE();
+            $sx->id = $c->cid;
+            $sx->desc = $c->desc.'<br>'.$KONSTANTS['CLAIM_REJECTED'].' - '.$reasons[$rejectedClaims[$c->cid]];
+            $sx->pointsDesc = '';
+            $sx->points = 'X';
+            $sx->totalPoints = '';
+            $scorex[] = $sx;
+            continue;
+        }
+    
+        $numbids = 0;
+        foreach($c->bids as $b) 
+            if (in_array($b,$bonusesScored))
+                $numbids++;
+        if ($numbids < $c->min)
+            continue;
+
+        $c->scored = true;
+        $pointsDesc = "";
+        if ($c->pm == $KONSTANTS['ComboScoreMethodMults']) {
+            $mults = $c->pts[$numbids - 1];
+            $basicBonusPoints = 0;
+        } else {
+            $basicBonusPoints = $c->pts[$numbids - 1];
+            $mults = 0;
+        }
+        //echo(" BP=".$basicBonusPoints."; nb=".$numbids." === ");
+        $bonusesScored[] = $c->cid;
+        $combosScored[] = $c->cid;
+
+        // Keep track of cat counts
+        $catcounts = updateCatcounts($c,$catcounts);
+
+
+        $bonusPoints += $basicBonusPoints;
+        $multipliers += $mults;
+
+        $sx = new SCOREXLINE();
+        $sx->id = $c->cid;
+        $sx->desc = $c->desc;
+        $sx->pointsDesc = " ( $numbids / $c->max ) ";
+        if ($c->pm == $KONSTANTS['ComboScoreMethodMults']) {
+            $sx->points = "x $mults";
+        } else {
+            $sx->points = $basicBonusPoints;
+        }
+        $sx->totalPoints = $bonusPoints;
+        $scorex[] = $sx;
+
+        //echo("C:  $c->cid - $c->desc$pointsDesc = $basicBonusPoints = $bonusPoints<br>");
+
+    }
+
+    $rd['CombosTicked'] = implode(',',$combosScored);
+
+    //debugCombos();
+
+    //debugCatcounts($catcounts);
+
+    //                      CALCULATE AXIS SCORES
+
+    $nzAxisCounts = [];
+    for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) 
+        $nzAxisCounts[$i] = countNZ($catcounts[$i]);
+
+
+    // First rules for number of non-zero cats
+
+    $lastAxis = -1;
+    $lastmin = '';
+    foreach($catCompoundRules as $ccr) {
+
+        if ($ccr->method != $KONSTANTS['CAT_NumNZCatsPerAxisMethod'] || $ccr->target == $KONSTANTS['CAT_ModifyBonusScore']) 
+            continue;
+
+        if ($ccr->axis <= $lastAxis) // Process each axis only once
+            continue;
+
+        $nzCount = 0;
+        if ($ccr->axis > 0)
+            $nzCount = $nzAxisCounts[$ccr->axis];
+        else
+            for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) 
+                $nzCount += $nzAxisCounts[$i];
+
+        if ($nzCount < $ccr->min) {
+            $lastmin = $ccr->min;
+            continue;
+        }
+
+        // Let's apply this rule then
+
+        $lastAxis = $ccr->axis;
+        $ccr->triggered = true;
+
+        $points = chooseNZ($ccr->pwr,$nzCount);
+        $pbx = '';
+        if ($ccr->rtype == $KONSTANTS['CAT_DNF_Unless_Triggered']) { // DNF type condition
+            $points = '&checkmark;';
+        } elseif ($ccr->rtype == $KONSTANTS['CAT_DNF_If_Triggered']) {
+            $points = $TAGS['EntrantDNF'][0];
+        } elseif ($ccr->rtype == $KONSTANTS['CAT_PlaceholderRule'] ) {
+            continue;
+        } else if ($ccr->pm == $KONSTANTS['CAT_ResultPoints']) {
+            $bonusPoints += $points;
+        } else { // multipliers
+            $multipliers += $points;
+            //$points = "x $points";
+            $pbx = 'x ';
+        }
+
+        $sx = new SCOREXLINE();
+        $sx->id = '';
+        $sx->desc = $axisLabels[$ccr->axis].': n';
+        if ($ccr->cat != 0)
+            $sx->desc .= '['.$catlabels[$ccr->axis][$ccr->cat].'] ';
+        else
+            $sx->desc .= ' ';
+        if (intval($points) <= 0 && $lastmin != '')
+            $sx->desc .= '&lt; '.$lastmin;
+        else
+            $sx->desc .= '&gt;= '.$ccr->min;
+        //$sx->desc .= $ccr->min;
+        $sx->pointsDesc = "";
+        $sx->points = $pbx.$points;
+        $sx->totalPoints = $bonusPoints;
+        $scorex[] = $sx;
+
+
+    } // NZ axis
+
+    // Secondly, rules for number of bonuses per cat
+
+    $lastaxis = -1;
+    $lastcat = -1;
+    $lastmin = '';
+
+    foreach($catCompoundRules as $ccr) {
+        if ($ccr->method != $KONSTANTS['CAT_NumBonusesPerCatMethod'] || $ccr->target == $KONSTANTS['CAT_ModifyBonusScore'])
+            continue;
+        if ($ccr->axis <= $lastaxis && $ccr->cat <= $lastcat)
+            continue;
+
+        $catcount = 0;
+        if ($ccr->cat == 0)
+            foreach($catcounts[$ccr->axis] as $cc)
+                $catcount += $cc;
+        elseif (isset($catcounts[$ccr->axis][$ccr->cat]))
+            $catcount = $catcounts[$ccr->axis][$ccr->cat];
+
+        if ($catcount < $ccr->min) {
+            $lastmin = $ccr->min;
+            continue;
+        }
+        $ccr->triggered = true;
+        if ($lastaxis < 0)
+            $lastaxis = $ccr->axis;
+        if ($ccr->axis > $lastaxis)
+            $lastcat = -1;
+        else
+            $lastcat = $ccr->cat;
+        $lastaxis = $ccr->axis;
+
+        $pbx = '';
+        if ($ccr->rtype == $KONSTANTS['CAT_DNF_Unless_Triggered']) { // DNF type condition
+            $basicPoints = '&checkmark;';
+        } elseif ($ccr->rtype == $KONSTANTS['CAT_DNF_If_Triggered']) {
+            $basicPoints = $TAGS['EntrantDNF'][0];
+        } elseif ($ccr->rtype == $KONSTANTS['CAT_PlaceholderRule'] ) {
+            continue;
+        } elseif ($ccr->pm == $KONSTANTS['CAT_ResultPoints']) {
+            $basicPoints = chooseNZ($ccr->pwr,$catcount);
+            $bonusPoints += $basicPoints;
+            
+            //echo("RC $basicPoints / $bonusPoints <br>");
+        } else { // Multipliers then
+            $mults = chooseNZ($ccr->pwr,$catcount);
+            $multipliers += $mults;
+            $basicPoints = $mults;
+            $pbx = 'x ';
+        }
+
+
+        $sx = new SCOREXLINE();
+        $sx->id = '';
+        $sx->desc = $axisLabels[$ccr->axis].': n';
+        if ($ccr->cat != 0)
+            $sx->desc .= '['.$catlabels[$ccr->axis][$ccr->cat].'] ';
+        else
+            $sx->desc .= ' ';
+        if ($basicPoints <= 0 && $lastmin != '')
+            $sx->desc .= '&lt; '.$lastmin;
+        else
+            $sx->desc .= '&gt;= '.$ccr->min;
+        //$sx->desc .= $ccr->min;
+        $sx->pointsDesc = "";
+        $sx->points = $pbx.$basicPoints;
+        $sx->totalPoints = $bonusPoints;
+        $scorex[] = $sx;
+
+
+    } // Bonus per cat axis
+
+
+    if ($multipliers > 1) {
+        $sx = new SCOREXLINE();
+        $sx->desc = $bonusPoints.' x '.$multipliers;
+        $sx->points = $bonusPoints * $multipliers;
+        $sx->totalPoints = $sx->points;
+        $scorex[] = $sx;
+        $bonusPoints = $sx->points;
+    }
+
+
+    $rd['TotalPoints'] = $bonusPoints;
+
+    $sx = new SCOREXLINE();
+    $sx->desc = $KONSTANTS['RPT_Total'];
+    $sx->points = $bonusPoints;
+    $scorex[] = $sx;
+    $rd['EntrantStatus'] = calcEntrantStatus($rd);
+    //echo(' TP='.$bonusPoints.' '.$rd['EntrantStatus']);
+    //echo(' ok<br>');
+
+    $rd['AvgSpeed'] = calcAvgSpeed($rd);
+
+    $rd['ScoreX'] = '<table class="sxtable">';
+    $rd['ScoreX'] .= '<caption>';
+    if ($rd['TeamID'] > 0) {
+        $rd['ScoreX'] .= teamNames($rd['TeamID']);
+    } else {
+        $rd['ScoreX'] .= crewName($rd);
+    }
+    $rd['ScoreX'] .= ' [&nbsp;<span id="sxsfs">'.$evs[$rd['EntrantStatus']].'</span>&nbsp;]';
+
+    if ($rd['CorrectedMiles'] > 0) {
+        $bdutxt = ($KONSTANTS['BasicDistanceUnit']==$KONSTANTS['DistanceIsMiles'] ? $TAGS['OdoKmsM'][0] : $TAGS['OdoKmsK'][0]);
+        $rd['ScoreX'] .= '<br><span class="explain">'.$rd['CorrectedMiles'].' '.$bdutxt;
+        /**
+        if ($rd['AvgSpeed'] != '')
+            $rd['ScoreX'] .= ' @ '.$rd['AvgSpeed'].($KONSTANTS['BasicDistanceUnit']==$KONSTANTS['DistanceIsMiles'] ? ' mph' : ' km/h');
+        **/
+        $rd['ScoreX'] .= '</span>';
+    }
+    $rd['ScoreX'] .= '</caption><thead>';
+    $rd['ScoreX'] .= '<tr><th class="sxcode"></th><th class="sxdesc"></th>';
+    //$rd['ScoreX'] .= '<th class="sxdescx"></th>';
+    $rd['ScoreX'] .= '<th class="sxitempoints"></th>';
+    //$rd['ScoreX'] .= '<th class="sxtotalpoints">=</th>';
+    $rd['ScoreX'] .= '</tr></thead><tbody>';
+
+    foreach($scorex as $s)
+        $rd['ScoreX'].=$s->asHTML();
+    $rd['ScoreX'] .= '</tbody></table>';
+
+//    echo($rd['ScoreX']);
+
+    if (!$intransaction)
+        if (!$DB->exec("BEGIN IMMEDIATE TRANSACTION"))
+            return;
+    $sql = "UPDATE entrants SET TotalPoints=".$rd['TotalPoints'];
+    $sql .= ',EntrantStatus='.$rd['EntrantStatus'];
+    $sql .= ",CombosTicked='".$rd['CombosTicked']."'";
+    $sql .= ",ScoreX='".$DB->escapeString($rd['ScoreX'])."'";
+    $sql .= ",Confirmed=".$KONSTANTS['ScorecardIsClean'];
+    $sql .= ",BonusesVisited='".$rd['BonusesVisited']."'";
+    $sql .= ",RejectedClaims='".$rd['RejectedClaims']."'";
+    $sql .= ",CorrectedMiles=".$rd['CorrectedMiles'];
+    $sql .= ",RestMinutes=".$rd['RestMinutes'];
+    $sql .= ",AvgSpeed='".$rd['AvgSpeed']."'";
+    if ($RP['TeamRanking'] == $KONSTANTS['RankTeamsCloning'] && $rd['TeamID'] > 0) {
+        $sql .= " WHERE TeamID=".$rd['TeamID'];
+    } else
+        $sql .= " WHERE EntrantID=".$rd['EntrantID'];
+    $DB->exec($sql);
+
+    if (!$intransaction)
+        $DB->exec("COMMIT");
+}
+
+if (isset($_REQUEST['recalc']))
+    recalcAll($_REQUEST['recalc']=='all');
+
+?>

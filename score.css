@@ -1,0 +1,542 @@
+/*
+ *
+ * I B A U K   -   S C O R E M A S T E R
+ *
+ * I am written for readability rather than efficiency, please keep me that way.
+ *
+ *
+ * Copyright (c) 2022 Bob Stammers
+ *
+ *
+ * This file is part of IBAUK-SCOREMASTER.
+ *
+ */
+
+@page {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+:root	{
+		--regular-background		: #ccffcc;
+		--regular-text				: black;
+		--button-background			: #006600;
+		--button-text				: white;
+		--button-back-disabled		: #339966;
+		--button-text-disabled		: darkgray;
+		--bright-background			: #ffff00;
+		--bright-text				: red;
+		--form-background			: #ccffcc;
+		--input-text				: #000;
+		--input-background			: inherited;
+		--hover-background			: lightgray;
+		--hover-text				: black;
+		--tabs-background			: #dedbde;
+		--tabs-text					: #42454a;
+		--via-background			: white;
+		--via-text					: black;
+		--solid-border				: #c9c3ba;
+		--header-background			: lightgray;
+		--scorex-background			: #66D2FF;
+		--rejected-background 		: red;
+		--rejected-text 			: white;
+		--checked-background 		: #31ad16;
+		--checked-text 				: white;
+		
+}
+
+body					{ margin-left: .5em; margin-right: .5em; }
+
+body, input, select		{ 
+    font-family: Verdana, Arial, Helvetica, sans-serif; font-size: calc(14pt + 1vmin);  background-color: var(--regular-background) }
+
+input,select			{ color: var(--input-text); background-color: var(--input-background); font-weight: bold; }
+input[type="number"], .number	{ width:4em; }
+select.fldsel			{ font-size: .8em !important; }
+
+.center					{ text-align: center; }
+.hoverlite :hover		{ background-color: var(--hover-background); }
+
+
+input, select			{ border: 1px solid var(--solid-border); }
+
+input:-moz-read-only	{ border:none; }
+input:read-only 		{ border:none; }
+
+select:read-only		{ border:none; }
+select:-moz-read-only	{ border:none; }
+
+
+input.wide				{ width: 12em; }
+
+/* These buttons are action buttons. Menu 'buttons' merely look like buttons */
+input[type='submit'], input[type='button'], button	{
+	background-color: var(--bright-background); 
+    border: none;
+    border-radius: 10px;
+    color: var(--bright-text); 
+    padding: 7px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.7em;
+	font-weight: bold;
+    margin: 4px 2px;
+    cursor: pointer;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+input[type='submit']:disabled, input[type='button']:disabled, button:disabled	{
+	background-color: var(--button-back-disabled); 
+    border: none;
+    border-radius: 10px;
+    color: var(--button-text-disabled);
+    padding: 7px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.6em;
+	font-weight: bold;
+    margin: 4px 2px;
+    cursor: pointer;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+
+label, h4, caption, th, legend, #entrantrows *, a, a:visited	{ color: var(--regular-text); }
+label					{ white-space: nowrap; }
+li						{ color: var(--regular-text); }
+caption					{ margin-bottom: 1em;  }
+span.vlabel				{ display: block; padding-top: 1em;}
+span.vlabel label		{ text-align: right; min-width: 8em; display: inline-block; }
+span.vlabel label.wide	{ text-align: right; min-width: 12em; display: inline-block; }
+span.vlabel label.short	{ text-align: right; min-width: 5em; display: inline-block; }
+span.xlabel:before		{ content: '\A\A'; white-space: pre; }
+input[name="BikeReg"]	{ width: 7em; }
+select[name="EntrantStatus"]	{ margin-bottom: 1em; }
+fieldset				{ margin-bottom: 1em; }
+input[name="FinishPosition"]	{ width: 3em; }
+input[name="BonusID[]"],
+input[name="bonusValues[]"],
+input[name="bonusid"],
+input[name="showb"],
+.BonusID,
+input[name="BonusID"]	{ width: 5em; text-transform: uppercase; }
+
+input[name="comboid"],
+input[name="ComboID[]"]	{ width: 12em; }
+
+/* Scorecard ordinary bonuses */
+input[name="BonusID[]"][type="checkbox"] { width:1em; margin-right:1em; }
+input[name="bonusValues[]"][type="checkbox"] { width:1em; margin-right:1em; }
+/* Combos */
+input[name="ComboID[]"][type="checkbox"] { width:1em; margin-right:1em; }
+
+#scorecardtop	{ background-color: var(--tabs-background); }
+
+input[name="RiderIBA"],
+input[name="PillionIBA"] { width:5em !important; }
+
+input[name="EntrantID"]	{ width: 3em; }
+input[name="OdoCheckMiles"]	{ width:3em; }
+input[type="email"]	{ width:25em; }
+input.bignumber			{ width: 5em;}
+input.smallnumber		{ width: 3em; }
+
+.link:hover				{ cursor: pointer; background-color: var(--hover-background);}
+
+#dberror		{ background-color: var(--bright-background); color: var(--bright-text); top: 0; position: sticky; padding:.5em; }
+
+/* Tabbed interface */
+ul#tabs { list-style-type: none; margin: 30px 0 0 0; padding: 0 0 0.3em 0; }
+ul#tabs li { display: inline; }
+ul#tabs li a { color: var(--tabs-text); background-color: var(--tabs-background); border: 1px solid var(--solid-border); border-bottom: none; padding: 0.3em; text-decoration: none;  
+
+	border-top-left-radius: 10px; border-top-right-radius: 10px;
+
+    background:      -o-linear-gradient(to top, #ECECEC 50%, #D1D1D1 100%);
+    background:     -ms-linear-gradient(to top, #ECECEC 50%, #D1D1D1 100%);
+    background:    -moz-linear-gradient(to top, #ECECEC 50%, #D1D1D1 100%);
+    background: -webkit-linear-gradient(to top, #ECECEC 50%, #D1D1D1 100%);
+    background: linear-gradient(to top, #ECECEC 50%, #D1D1D1 100%);
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 #FFF;
+    text-shadow: 0 1px #FFF;
+    margin: 0 5px;
+    padding: 0 2px;
+
+
+
+}
+
+#RallyParamsSet		{ max-width: 45em; margin-left: auto; margin-right: auto; }
+#singleclaim		{ margin-left: auto; margin-right: auto; padding-top: 1em; max-width: 40em; }
+
+ul#tabs li a:hover { font-weight: bold; color: var(--tabs-text); }
+ul#tabs li a.selected { font-weight: bold; padding: 0.7em 0.3em 0.38em 0.3em; }
+.tabContent { border: 10px solid var(--solid-border);  background-color: var(--form-background); padding: 0.5em;  display:inherit; overflow: auto; }
+.tabContenthide { display: none; }
+.tabcell	{ display: table-cell; }
+
+.frmContent { border: 10px solid var(--solid-border);  background-color: var(--form-background); padding: 0.5em;  display:inherit; }
+
+.compulsory		{ font-weight: bold; }
+.techie			{ font-size: .6em; } /* For largely uninteresting items */
+.slogan			{ font-size: .8em; font-style: italic; text-align: center; }
+.ClaimsCount	{ padding-left: 1em; text-align: right; }
+
+#ScoreNowButton	{ background-color: var(--via-background); color: var(--via-text); margin-left: 3em;}
+#FullDetailsButton	{ background-color: var(--via-background); color: var(--via-text); margin-left: 3em;}
+
+#header			{ background-color: var(--header-background); border-bottom: solid; }
+#hdrRallyTitle 	{ padding-left: 1em; }
+#hdrOtherInfo 	{ padding-right: 1em; float: right; }
+#frontpage		{ margin-top: 3em; margin-left: 3em; font-size: 1.3em; }
+
+#pickentrant	{
+					/* Keep the header visible when scrolling down */
+					position: -webkit-sticky; position: sticky; top:0; background-color: var(--regular-background); padding-top:2em;
+				}
+				
+.listhead		{
+					/* Keep the header visible when scrolling down */
+					position: -webkit-sticky; position: sticky; top:0; background-color: var(--regular-background);
+				}
+
+.stickytop		{
+					/* Keep the header visible when scrolling down */
+					position: -webkit-sticky; position: sticky; top:0; background-color: var(--regular-background);
+				}
+
+.left			{ text-align: left; }
+.right			{ text-align: right; }
+
+#valuetable		{ margin-left: 3em; margin-top: 1em; border: solid;				}
+#valuetable td	{ padding-right: .9em;}
+#valuetable th	{ font-weight: normal; }
+#ScoreHeader 	{ margin-top: 1em; padding-bottom: .5em; border-bottom: solid;  max-width: 100%; 
+					/* Keep the header visible when scrolling down */
+					position: -webkit-sticky; position: sticky; top:0; background-color: var(--regular-background);
+				}
+#ScoreHeader span { margin-left: 1em; margin-right: 0em; white-space: nowrap; }
+
+#ScoreHeader.manualscoring span:before
+				{ content: '\A'; white-space: pre; }
+#ScoreHeader.manualscoring input
+				{ margin-top: .2em; }
+#ScoreHeader.manualscoring label
+				{ min-width: 8em; text-align: right; display: inline-block; }
+
+#tab_bonuses	{ font-family: monospace; }
+
+span.keep		{ white-space: nowrap; display: inline-block; }
+
+#footer			{ background-color: var(--header-background); border-top: solid; position: fixed; bottom: 0; margin-bottom: .1em; width: 98%;}
+#ftrAdminMenu	{ padding-left: 1em; padding-right: 1em; float: right; }
+
+h4				{ margin-top: .9em; margin-bottom: 5px; }
+.menulist		{ list-style-type: none; }
+
+#sgroups		{ margin-top: 2em; }
+#sgroups td		{ padding-bottom: 2em; padding-right: 2em; }
+
+#navbar			{ display: block;  padding-left: 1em; font-size: .7em; }
+#navbar form	{ display: inline-block; }
+#navbar input	{ font-size: .7em; background-color: var(--header-background); }
+#navbar_tagselect	{ font-size: .7em; background-color: var(--header-background); }
+
+#adminMM		{ margin-left: auto; margin-right: auto; width: 12em;}
+#adminMM *		{ display: inline-block; width: 100%; text-align: center; margin-left: auto; margin-right: auto; padding-left: 0; padding-right: 0; }
+#adminMM a		{ text-decoration: none; }
+#adminMM a:hover{ background: var(--hover-background) !important; color: var(--hover-text) !important; }
+#adminMM a:visited { color: var(--button-text); }
+#adminMM a:link	{
+	background-color: var(--button-background); 
+    border: none;
+    border-radius: 10px;
+    color: var(--button-text);
+    padding: 7px 7px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.6em;
+	font-weight: bold;
+    margin: 4px 2px;
+    cursor: pointer;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+#FuelWarning,
+#SpeedWarning { padding: .75em; background: var(--bright-background); color: var(--bright-text); }
+
+
+
+table#entrants	th.EntrantID	{ text-align: left; }
+table#entrants	td.EntrantID	{ text-align: center; }
+table#entrants	.RiderName,.PillionName,.Bike	{ text-align: left; }
+table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align: center; }
+
+#picklistdiv	{ height:21em; max-width: 30em; overflow-y:auto; }
+#picklistdiv 	td.EntrantID	{ width: 4em; text-align: center; }
+#picklistdiv	td.RiderName	{ padding-right: 1em; }
+#picklistdiv	td.EntrantStatus{ text-align: center; }
+#picklistdiv	td.TotalPoints	{ width: 6em; text-align: right; }
+#picklistdiv	tr:hover		{ background: lightgray; cursor:pointer;}
+
+/* Spreadsheet import header rows */
+.xlshdr			{ background-color: var(--button-back-disabled); color: var(--button-text-disabled); }
+
+.maindiv		{ margin: 2em auto 2em auto; padding-left: 2em; }
+#header a		{ text-decoration: none; }
+#header a:link	{ color: var(--input-text); }
+#header a:visited	{ color: var(--input-text); }
+
+#footer a		{ text-decoration: none; }
+#footer a:link	{ color: var(--input-text); }
+#footer a:visited	{ color: var(--input-text); }
+
+/* Maybe use different background colour for output only items */
+#Scoresheet #tab_combos		{ background-color: var(--regular-background); margin-top: .8em; } 
+#Scoresheet #tab_combos legend { background-color: var(--regular-background); color: #282828; padding: 0 1em 0 1em; border-radius: 25px; }
+
+#cat_results	{ background-color: #659dbd; }
+#cat_results td.catdesc,
+	td.catdescr { width: 6em; text-align: right; padding-right: .5em; }
+#cat_results caption { border-bottom: solid; margin-bottom: .1em; font-style: italic; background-color: inherit; color: #282828; }
+#cat1			{ background-color: inherit; float:left; display: block; padding-left: .5em; padding-right: .5em; font-size:.8em; }
+#cat2			{ margin-left: .2em; background-color: inherit; float:left; display: block; padding-left: .1em; padding-right: .5em;  font-size:.8em; }
+#cat3			{ margin-left: .2em; background-color: inherit; float:left; display: block; padding-left: .1em; padding-right: .5em;  font-size:.8em; }
+
+
+/* Scorecard */
+
+.bonusgroup 	{ margin-top: 1em; border: solid; }
+
+/* Score explanation */
+/* .scorex			{  } */
+.scorex table	{ background-color: var(--scorex-background); margin: 0 auto 0 auto; padding: 0 .5em 0 .5em; }
+.scorex	caption	{ background-color: var(--scorex-background); border: solid; padding: .5em; margin: auto auto 0 auto;}
+.scorex	tr:last-of-type td 	{ border-top: solid; }
+.scorex .bp		{ padding-left:1em; padding-right:.3em; text-align: right; }
+.scorex .bm		{ padding-left:1em; padding-right:.3em; text-align: right; }
+.scorex .tp		{ padding-left:1em; padding-right:.3em; text-align: right; }
+.hidescorex		{ display:none; }
+.showscorex		{ display:inherit; }
+
+/* Drag n drop bonus reordering area */
+#ddarea			{ background-color: var(--scorex-background); margin: 0 auto 0 auto; padding: 0 .5em 0 .5em; border: solid; font-size: 0.6em; max-width: 20em; }
+#ddarea .ddlist	{ cursor: grab; }
+
+
+.hide			{ display:none; } /* General purpose content hider */
+.show			{ display:inherit; }
+.showspan		{ display:inline-block; }
+.clickme		{ cursor: pointer; }
+
+.breadcrumb		{ 
+		padding-left: .5em; 
+		padding-right: .5em; 
+		margin-right: 1em; 
+		font-size: .8em;
+		background-color: var(--header-background); 
+}
+.breadcrumb a	{ text-decoration: none; }
+
+/* Help about */
+
+#helpabout		{ margin-left: auto; margin-right: auto; max-width: 40em; border: solid; padding:.2em; margin-top:1em; background-color: white; font-size:.8em;}
+#helpabout h1	{ text-align:center; }
+#helpabout dd	{ font-weight: bold; }
+
+.dox			{ margin-left: 1em; color: black; } /* documentation links in HelpAbout */
+.dox a			{ color: black;}
+.dox a:visited	{ color: black;}
+
+textarea		{ font-size: 0.6em; background-color: white; color: black;}
+.textarea		{ font-size: 0.8em; background-color: white; color: black;}
+::placeholder	{ font-weight: lighter; }
+
+.rowcol			{ padding-right: .5em; }
+
+#catcalcs .rowcol { text-align: center; }
+
+table.qdfinishers {
+	display: table;
+	margin: 1em;
+	padding: 1em;
+	background-color: white;
+	color: black;
+	border: none;
+	border-collapse: collapse;
+}
+
+
+table.qdfinishers td {
+	border: 1px solid black;
+	padding: 0.5em 1em 0 1em;
+}
+
+table.qdfinishers th {
+	border: 1px solid black;
+	padding: 0 1em 0 1em;
+}
+
+.explain {
+	font-size: smaller;
+}
+
+
+
+/* Right-click claim reject menu */
+#rcmenu { 
+	border:solid 1px #CCC; 
+	position: absolute; 
+	z-index: 10; 
+	background-color: var(--header-background); 
+	width: 12em; 
+}
+#rcmenu ul { list-style-type: none; margin: 0; padding: 0; font-size: .75em; }
+#rcmenu li { border-bottom:solid 1px #CCC; }
+#rcmenu li:last-child { border:none; }
+#rcmenu li a {
+    display:block;
+    text-decoration:none;
+    color:blue;
+	 padding-left: .5em; padding-right: .5em; 
+}
+#rcmenu li a:hover {
+    background:blue;
+	cursor: pointer; 
+    color:#FFF;
+}
+
+.red		{ padding: 1em; background-color: var(--rejected-background); color: var(--rejected-text); }
+.yellow		{ padding: 1em; background-color: var(--bright-background); color: var(--bright-text); }
+.green		{ padding: 1em; background-color: var(--regular-background); color: var(--regular-text); }
+
+
+
+/* Used to specifically style three bonus states */
+.showbonus		{ white-space: nowrap; display: inline-block; padding-left: 2px; padding-right: 2px; margin-right: 1em; }
+.showbonuslabel { display: inline-block; width: 2em; }
+.showcombolabel { display: inline-block; width: 6em; }
+.rejected,.rejected > *		{background-color: var(--rejected-background); color: var(--rejected-text); text-decoration: line-through; border-radius: 10px; /*padding: 0 0 0 .3em;*/}
+.checked,.checked > * 		{background-color: var(--checked-background); color: var(--checked-text);  border-radius: 10px; /*padding: 0 0 0 .3em;*/ }
+.unchecked,.unchecked > * 	{background-color: inherited; color: inherited; }
+
+.ScorePoints	{ text-align: left; width: 5em; }
+.ComboBonusList	{ width:30em; }
+
+#setupwiz	{ 
+	background-color: white;
+	color: black;
+	max-width: 40em; 
+	margin: 1em auto 0 auto;
+	padding: .5em;
+	border: solid; 
+}
+#setupwiz * {
+	color: black;
+}
+	
+input[name="RallyTitle"]	{ width: 20em; }
+input[name="RallySlogan"]	{ width: 20em; }
+.wizitem	{
+	border-bottom: dotted;
+	padding-bottom: .5em;
+	display:block;
+}
+.wizitem label {
+		font-weight: bold;
+}
+.wizhide	{
+	display:none;
+}
+
+.wizbutton	{
+	font-size: 1.1em !important;
+}
+
+#ScoreHeader	{ font-size: 0.8em; }
+#TotalPoints	{ font-size: 1.4em; }
+#BlankFormRejectReasons { 
+	font-size: 0.7em;
+	list-style-type: none;
+}
+#BlankFormRejectReasons li { 
+	display: inline-block;
+	padding-right: 1em;
+}
+
+.teamslist		{ font-size: .6em; }
+.teamslist pre	{ margin: 0;}
+.teamslist strong	{ font-size: 1.1em; font-weight: bold; }
+.teamslist .BonusMatches	{ font-family: monospace; }
+.teamslist .lastrow	td	{ padding-bottom: .5em; }
+
+#listctrl *		{ font-size: small; }
+
+/* Help system */
+.currenttopic	{ 
+	font-size: .5em; 
+	max-width: 80em;
+	padding: .5em 1em .5em 1em;
+	margin: 1em auto 1em auto;
+	background-color: white;
+	color: black;
+}
+
+.currenttopic p { text-align: justify; margin-top: 0; }
+.currenttopic h2 { margin-bottom: 0; }
+.currenttopic h3 { margin-bottom: 0; }
+.currenttopic h4 { margin-bottom: 0; }
+.currenttopic h5 { margin-bottom: 0; }
+.currenttopic h6 { margin-bottom: 0; }
+
+.currenttopic a	{ color: blue; text-decoration: none; }
+.currenttopic a:visited	{ color: blue; text-decoration: none; }
+
+/* EBC claims log */
+.ebclaimsitems	{ height: 21em; overflow-y: auto; }
+.ebc td {
+	padding-right: 1em;
+}
+
+img.icon { width: 36px; margin-right: .5em; }
+
+input[type='button'].judge	{ background-color: var(--button-background); color: var(--button-text);}
+input[type='button'].judge:focus	{ background-color: var(--bright-background) ; color: var(--bright-text);}
+
+button.list	{ background-color: var(--button-background); color: var(--button-text);}
+button.list:focus,
+button.list:hover { background-color: var(--bright-background) ; color: var(--bright-text);}
+
+table.sxtable { background-color: var(--scorex-background); margin: 0 auto 0 auto; padding: 0 .5em 0 .5em; }
+table.sxtable caption { background-color: var(--scorex-background); border: solid; padding: .5em; margin: auto auto 0 auto;}
+table.sxtable tr { height: 1.5em; }
+table.sxtable tr:last-of-type td 	{ border-top: solid; }
+table.sxtable td { padding-right: .5em; vertical-align: top; }
+.sxdescx  { font-style: italic; font-size: smaller; }
+td.sxitempoints,
+td.sxtotalpoints { text-align: right; }
+
+.tablehead	{ padding-top: .5em; font-weight: bold; }
+
+#teamrows th,
+#teamrows td	{ padding-right: 1em; }
+#teamrows .EntrantID	{ width: 3em; text-align: center; }
+
+@media print {
+	*			{ background-color: white; color: black !important; }
+.noprint		{ display: none !important; }
+#navbar			{ display: none !important; }
+.scorex			{ font-size: 0.7em; page-break-after: always; }
+#ScoreSheet		{ background-image: none !important; font-size: 1.2em; font-family: monospace;}
+input[type="checkbox"] {
+    -webkit-appearance:none;
+    width:1.2em;
+    height:1.2em;
+    background:white;
+    border-radius:5px;
+    border:2px solid #555;
+	vertical-align: text-bottom;
+	}
+}
