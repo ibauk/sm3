@@ -1,28 +1,17 @@
-# ScoreMaster v3.0 final version
+# ScoreMaster v3.1
 
-I am delighted to announce this final release of ScoreMaster v3.0 which represents months of work, huge amounts of testing by multiple
-'guinea pigs', and some quiet reflection in a darkened room.
+I am delighted to announce the release of ScoreMaster v3.1 incorporating the following significant changes:-
 
-If you have played with any of the **v3.0 RC** versions you will be interested in the following significant changes:-
+- Database has been upgraded to version 10 incorporating full use of bonus images, "waffle" and coordinates.
+- EBC judging now offers side-by-side claim v rally book image comparison.
+- Bonus maintenance now caters for rally book images, waffle and coordinates.
 
-- Database has been upgraded to version 9 incorporating the necessary hooks for rally book photos to be included in the next release.
-- Some settings and menus have been rearranged to prioritise 'interesting' items.
-- A combo bonus import facility is now included.
-- Maintenance of combo's underlying bonuses can now use a simple list format.
-- The help system has been updated.
-- EBC judging is reformatted to better fit smaller screen sizes.
-- Category logic now caters for nine axes throughout.
-- Bonus descriptions, entrant names, team names, bike descriptions all now permit the use of quotation marks.
-- runsm.exe no longer 'dials home' by default.
-- smpatch.exe now explains itself and asks for confirmation before execution.
+## Rally book images
+Each bonus (not combo) can have a single image associated with it. This is used for side-by-side comparison with electronic bonus claim images and is also used by the [RBook rally book generator](https://github.com/ibauk/rbook). The images, in .JPG or .PNG format, must be stored in the **images/bonuses** folder with their filename being stored in the *Image* field on the bonus record.
 
-As part of this release the public github repositories have been reorganised as follows:-
+## Waffle and coordinates
+These fields, maintained for bonus records, are used by RBook for rally book production. 
 
- Component             | GitHub                            | Language
- --------------------- | --------------------------------- | ---------------------
- Main application code | https://github.com/ibauk/sm3      | PHP, CSS, JS, MD, SQL
- Launcher              | https://github.com/ibauk/runsm    | Go 
- EBC processor         | https://github.com/ibauk/ebcfetch | Go
- Installation patcher  | https://github.com/ibauk/smpatch  | Go
- Installation creator  | https://github.com/ibauk/makesm   | Go
- 
+Coordinates used to identify geographical locations may be in any format, they are not used in any way by ScoreMaster.
+
+Waffle holds arbitrary text used for non-scoring purposes by RBook. This differs from the *Notes* field which holds information important for scoring purposes. For example "*The sign must be point at you*" is a requirement to score the points. "*This is the oldest pub in England*" is just information (waffle).

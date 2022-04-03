@@ -1,0 +1,36 @@
+#
+# Patch specification for use with SMPatch
+#
+
+
+## The id of this patch, displayed at run time
+id: Upgrade database from 9 to 10, app from 3.0 to 3.1
+
+## Only apply this patch to installations with at least this DBVersion
+mindb: 9
+
+## Only apply this patch to installations with at most this DBVersion
+maxdb: 9
+
+
+## Only apply this patch to installations with at least this AppVersion
+minapp: 3.0
+
+## Only apply this patch to installations with at most this DBVersion
+maxapp: 
+
+sql:
+  - ALTER TABLE bonuses ADD COLUMN Coords TEXT;
+  - ALTER TABLE bonuses ADD COLUMN Waffle TEXT;
+  - UPDATE rallyparams SET DBVersion=10;
+
+files:
+  - sm/bonuses.php
+  - sm/score.css
+  - sm/customvars.php
+  - sm/about.php
+  
+folders:
+
+
+

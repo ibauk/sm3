@@ -54,16 +54,25 @@ function showBonus($bonusid) {
 
 
 
-	$R = $DB->query("SELECT * FROM bonuses WHERE BonusID='".$bonusid."'");
+	$R = $DB->query("SELECT * FROM bonuses WHERE BonusID='".strtoupper($bonusid)."'");
 	if (!$rd = $R->fetchArray()) {
-		echo('OMG!!!');
+		echo('OMG!!! '.$bonusid);
 		return;
 	}
 
+	echo('<div class="bonusdetail">');
 	echo('<form method="post" action="bonuses.php">');
 
 	echo('<input type="hidden" name="savesinglebonus" value="1">');
 	echo('<input type="hidden" name="c" value="bonuses">');
+
+
+	echo('<span class="vlabel"><label for="sdbutton"></label>');
+	echo('<span title="'.$TAGS['DeleteEntryLit'][1].'">');
+	echo('<label for="deletecmd">'.$TAGS['DeleteEntryLit'][0].'</label> ');
+	echo('<input id="deletecmd" type="checkbox" name="deletebonus"> '); 
+	echo('<input type="submit" id="sdbutton" name="savedata" value="'.$TAGS['SaveBonus'][0].'"> ');
+	echo('</span>');
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusIDLit'][1].'">');
 	echo('<label for="BonusID">'.$TAGS['BonusIDLit'][0].'</label> ');
@@ -104,7 +113,7 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusNotes'][1].'">');
 	echo('<label for="Notes">'.$TAGS['BonusNotes'][0].'</label> ');
-	echo('<input type="text" name="Notes" id="Notes" value="'.$rd['Notes'].'">');
+	echo('<textarea name="Notes" id="Notes" cols="80" rows="1">'.str_replace('"','&quot;',$rd['Notes']).'</textarea>');
 	echo('</span>');
 	
 	echo('<span class="vlabel" title="'.$TAGS['BonusFlags'][1].'">');
@@ -112,7 +121,17 @@ function showBonus($bonusid) {
 	for ($i= 0; $i < strlen($KONSTANTS['BonusScoringFlags']); $i++) {
 		$flg = substr($KONSTANTS['BonusScoringFlags'],$i,1);
 		echo('<span title="'.$TAGS['BonusScoringFlag'.$flg][1].'">');
-		echo('<label class="short" for="BonusScoringFlag'.$flg.'">'.$flg.'</label> ');
+		echo('<label class="short" for="BonusScoringFlag'.$flg.'">');
+		echo('<img class="icon" src="images/');
+		switch($flg) {
+			case 'A':	echo('alertalert.png'); break;
+			case 'B':	echo('alertbike.png'); break;
+			case 'D':	echo('alertdaylight.png'); break;
+			case 'F':	echo('alertface.png'); break;
+			case 'R':	echo('alertrestricted.png'); break;
+			case 'T':	echo('alertreceipt.png'); break;
+		}
+		echo('" alt="'.$flg.'"/></label> ');
 		echo('<input type="checkbox" name="BonusScoringFlag'.$flg.'"');
 		if (!(strpos($rd['Flags'],$flg)===false))
 			echo(' checked ');
@@ -120,6 +139,26 @@ function showBonus($bonusid) {
 		echo('</span>');
 
 	}
+
+	echo('<span class="vlabel" title="'.$TAGS['BonusPhoto'][1].'">');
+	echo('<label for="Image">'.$TAGS['BonusPhoto'][0].'</label> ');
+	echo('<input type="text" name="Image" id="Image" value="'.str_replace('"','&quot;',$rd['Image']).'"> ');
+?>
+<script>
+	function thumbimg(img) {
+		if (img.getAttribute('data-t')==1) {
+			img.setAttribute('data-t',0);
+			img.classList.remove('thumbnail');
+		} else {
+			img.setAttribute('data-t',1);
+			img.classList.add('thumbnail');
+		}
+	}
+</script>
+<?php
+	echo('<img style="vertical-align: middle;" src="images/bonuses/'.$rd['Image'].'" alt="*" class="thumbnail" onclick="thumbimg(this);" data-t="1" loading="lazy"/>');
+	echo('</span>');
+	
 	
 	echo('<span class="vlabel" title="'.$TAGS['CompulsoryBonus'][1].'">');
 	echo('<label for="Compulsory">'.$TAGS['CompulsoryBonus'][0].'</label> ');
@@ -152,16 +191,22 @@ function showBonus($bonusid) {
 	echo('</select>');
 	echo('</span>');
 
-	echo('<span class="vlabel"><label for="sdbutton"></label>');
-	echo('<span title="'.$TAGS['DeleteEntryLit'][1].'">');
-	echo('<label for="deletecmd">'.$TAGS['DeleteEntryLit'][0].'</label> ');
-	echo('<input id="deletecmd" type="checkbox" name="deletebonus"> '); 
-	echo('<input type="submit" id="sdbutton" name="savedata" value="'.$TAGS['SaveBonus'][0].'"> ');
+	echo('<span class="vlabel" title="'.$TAGS['BonusCoords'][1].'">');
+	echo('<label for="Coords">'.$TAGS['BonusCoords'][0].'</label> ');
+	echo('<input type="text" class="wider" name="Coords" id="Coords" value="'.str_replace('"','&quot;',$rd['Coords']).'">');
 	echo('</span>');
+	
+	echo('<span class="vlabel" title="'.$TAGS['BonusWaffle'][1].'">');
+	echo('<label for="Waffle">'.$TAGS['BonusWaffle'][0].'</label> ');
+	echo('<textarea name="Waffle" id="Waffle" cols="80" rows="1">'.str_replace('"','&quot;',$rd['Waffle']).'</textarea>');
+	echo('</span>');
+	
+
 
 
 	echo('</form>');
 
+	echo('</div>');
 }
 function showBonuses()
 /*
@@ -205,11 +250,12 @@ function enableKill(obj)
 }
 function enableNewSave(obj)
 {
-	let tr = obj.parentNode.parentNode;
+	let tr = obj.parentNode.parentNode.parentNode;
+	console.log('enableNewSave '+tr.tagName);
 	tr.setAttribute('saveneeded',1);
-	let B = tr.cells[0].firstChild.value;
+	let B = tr.cells[0].firstChild.firstChild.value;
 	console.log('B=='+B+';');
-	let bd = tr.cells[1].firstChild.value;
+	let bd = tr.cells[1].firstChild.firstChild.value;
 	console.log('bd=='+bd+';');
 	tr.cells[tr.cells.length - 1].childNodes[1].firstChild.disabled = (B == '' || bd == '');  // Save button
 	return false;
@@ -217,7 +263,9 @@ function enableNewSave(obj)
 function saveBonus(obj,isNew)
 {
 	let tr = obj.parentNode.parentNode.parentNode;
+	//alert('saveBonus: '+obj.tagName+'   '+tr.tagName);
 	tr.setAttribute('saveneeded',0);
+	tr.setAttribute('data-indb','1');
 	let xhttp;
  
 	xhttp = new XMLHttpRequest();
@@ -225,7 +273,7 @@ function saveBonus(obj,isNew)
 		if (this.readyState == 4 && this.status == 200) {
 			if (this.responseText.trim()=='')
 				if (tr.getAttribute('showspecial')==1) {
-					showBonusSpecials(tr.firstChild.firstChild);
+					showBonusSpecials(tr.firstChild.firstChild.firstChild);
 					return;
 				}
 
@@ -235,17 +283,17 @@ function saveBonus(obj,isNew)
 	
 
 	let ix = 0;
-	let rec = 'bid='+tr.cells[ix++].firstChild.value;
-	rec += '&bd='+tr.cells[ix++].firstChild.value;
-	rec += '&p='+tr.cells[ix++].firstChild.value;
+	let rec = 'bid='+tr.cells[ix++].firstChild.firstChild.value;
+	rec += '&bd='+tr.cells[ix++].firstChild.firstChild.value;
+	rec += '&p='+tr.cells[ix++].firstChild.firstChild.value;
 	let nc = document.getElementById('numcats').value;
 	for (let i = 1; i <= nc; i++) {
-		let c = tr.cells[ix++].firstChild;
+		let c = tr.cells[ix++].firstChild.firstChild;
 		let axis = c.getAttribute('data-axis');
 		rec += '&cat'+axis+'='+c.value;
 	}
 	
-	let comp = tr.cells[ix++].firstChild.checked ? 1 : 0;
+	let comp = tr.cells[ix++].firstChild.firstChild.checked ? 1 : 0;
 	rec += '&comp='+comp;
 	
 	if (isNew)
@@ -270,12 +318,12 @@ function saveNewBonus(e)
 	console.log("SNB: adding click");
 	obj.addEventListener("click",saveOldBonus);
 	let row = obj.parentNode.parentNode.parentNode;
-	console.log("snb: "+row.childNodes[0].firstChild.value);
-	row.childNodes[0].firstChild.readOnly = "readonly";
+	console.log("snb: "+row.childNodes[0].firstChild.firstChild.value);
+	row.childNodes[0].firstChild.firstChild.readOnly = "readonly";
 	for (let i = 1; i <= 4; i++) {
-		row.childNodes[i].firstChild.removeEventListener("blur",enableNewSave)
+		row.childNodes[i].firstChild.firstChild.removeEventListener("blur",enableNewSave)
 	}
-	console.log(row.childNodes[1].firstChild.value);
+	console.log(row.childNodes[1].firstChild.firstChild.value);
 	document.addEventListener('input',function(e){
     if(e.target && e.target.hasAttribute('data-newrow')){
           showsave(e.target);
@@ -287,23 +335,20 @@ function saveNewBonus(e)
 function showBonusSpecials(obj) {
 // This needs to save existing changes then call for detailed display
 
-	let tr = obj.parentNode.parentNode;
-	if (tr.cells[0].firstChild.value=='') {
-		tr.cells[0].firstChild.focus();
+	let tr = obj.parentNode.parentNode.parentNode;
+	//alert('showBonusSpecials '+tr.tagName);
+	let bonusid = tr.cells[0].firstChild.firstChild.value.toUpperCase();
+	if (tr.getAttribute('saveneeded')=='1')
+		saveBonus(obj,tr.getAttribute('data-indb') != '1');
+	if (bonusid=='') {
+		bonusid.focus();
 		return; // No bonus code yet so no.
 	}
-	console.log("Loading tr");
-	//alert(tr);
-	let isnew = !tr.cells[0].firstChild.readOnly;
-	if (tr.getAttribute('saveneeded')==1) {
-		console.log('saveneeded isnew='+ isnew);
-		tr.setAttribute('showspecial',1);
-		saveBonus(obj.firstChild,isnew);
-		return;
-	}
-	window.location.href = 'bonuses.php?c=bonus&bonus='+tr.cells[0].firstChild.value;
+	console.log("Loading bonus "+bonusid);
+	window.location.href = 'bonuses.php?c=bonus&bonus='+bonusid;
 
 }
+
 function saveOldBonus(e)
 {
 	let obj = e.target;
@@ -327,13 +372,17 @@ function swapdelsave(tr,showsave)
 		ix--;
 	let ds = tr.cells[ix].childNodes[0];
 	let ss = tr.cells[ix].childNodes[1];
+	ix--; // Now point to 'specials'
+	let sds = tr.cells[ix].childNodes[0];
 	if (showsave) {
 		ds.style.display = 'none';
 		ss.style.display = 'inline';
+		sds.style.display = 'none';
 		tr.setAttribute('saveneeded',1);
 	} else {
 		ss.style.display = 'none';
 		ds.style.display = 'inline';
+		sds.style.display = 'inline';
 		tr.setAttribute('saveneeded',0);
 	}
 	
@@ -344,7 +393,7 @@ function triggerNewRow()
 {
 	var oldnewrow = document.getElementsByClassName('newrow')[0];
 	tab = document.getElementById('bonuses').getElementsByTagName('tbody')[0];
-	var row = tab.insertRow(tab.rows.length);
+	var row = tab.insertRow(0);
 	row.innerHTML = oldnewrow.innerHTML;
 	row.firstChild.firstChild.focus();
 	return false;
@@ -416,14 +465,16 @@ function triggerNewRow()
 	{
 		$rex = getValueFromDB("SELECT count(*) As rex FROM entrants WHERE ',' || BonusesVisited || ',' LIKE '%,".$rd['BonusID'].",%'","rex",0);
 		
-		$isspecial = $rd['AskPoints'] == 1 || $rd['AskMinutes'] == 1 || $rd['Compulsory'] != 0 || $rd['Notes'] != '' || $rd['Flags'] != '' || $rd['RestMinutes'] != 0;
-		echo('<tr class="hoverlite"><td><input class="BonusID" type="text" readonly  value="'.$rd['BonusID'].'"></td>');
-		echo('<td><input class="BriefDesc" type="text" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'" oninput="return showsave(this);"></td>');
-		echo('<td><input type="number" value="'.$rd['Points'].'" oninput="return showsave(this);"></td>');
+		$isspecial = $rd['AskPoints'] == 1 || $rd['AskMinutes'] == 1 || $rd['Compulsory'] != 0 || 
+					$rd['Notes'] != '' || $rd['Flags'] != '' || $rd['RestMinutes'] != 0 ||
+					$rd['Image'] != '' || $rd['Waffle'] != '' || $rd['Coords'] != '';
+		echo('<tr class="hoverlite" data-indb="1"><td><span><input class="BonusID" type="text" readonly  value="'.$rd['BonusID'].'"></span></td>');
+		echo('<td><span><input class="BriefDesc" type="text" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'" oninput="return showsave(this);"></span></td>');
+		echo('<td><span><input type="number" value="'.$rd['Points'].'" oninput="return showsave(this);"></span></td>');
 		for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
 			if (isset($cats[$i]))
 			{
-				echo('<td><select data-axis="'.$i.'" oninput="return showsave(this);">');
+				echo('<td><span><select data-axis="'.$i.'" oninput="return showsave(this);">');
 				foreach ($cats[$i] as $ce => $bd)
 				{
 					echo('<option value="'.$ce.'" ');
@@ -431,7 +482,7 @@ function triggerNewRow()
 						echo('selected ');
 					echo('>'.htmlspecialchars($bd).'</option>');
 				}
-				echo('</select></td>');
+				echo('</select></span></td>');
 			}
 		
 		if ($rd['Compulsory']==1)
@@ -440,12 +491,14 @@ function triggerNewRow()
 			$chk = "";
 		
 		echo('<td class="center" title="'.$TAGS['SpecialButton'][1].'">');
+		echo('<span>');
 		echo('<button class="list" onclick="showBonusSpecials(this);">'.$TAGS['SpecialButton'][0]);
 		if ($isspecial)
 			echo('*');
 		else
 			echo('&nbsp;');
 		echo('</button>');
+		echo('</span>');
 		echo('</td>');
 
 		echo('<td class="center buttons">');
@@ -474,14 +527,14 @@ function triggerNewRow()
 		}
 		echo("</tr>\r\n");
 	}
-	echo('<tr class="newrow hide"><td><input title="'.$TAGS['BonusIDLit'][1].'" class="BonusID" type="text" onblur="enableNewSave(this);"></td>');
-	echo('<td><input data-newrow="x" type="text" onblur="enableNewSave(this);"></td>');
-	echo('<td><input data-newrow="x" type="number" value="1" onblur="enableNewSave(this);"></td>');
+	echo('<tr class="newrow hide" data-indb="0"><td><span><input title="'.$TAGS['BonusIDLit'][1].'" class="BonusID" type="text" onblur="enableNewSave(this);"></span></td>');
+	echo('<td><span><input data-newrow="x" type="text" onblur="enableNewSave(this);"></span></td>');
+	echo('<td><span><input data-newrow="x" type="number" value="1" onblur="enableNewSave(this);"></span></td>');
 	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
 		if (isset($cats[$i]))
 		{
 			$S = ' selected ';
-			echo('<td><select data-newrow="x" data-axis="'.$i.'" onblur="enableNewSave(this);">');
+			echo('<td><span><select data-newrow="x" data-axis="'.$i.'" onblur="enableNewSave(this);">');
 			foreach ($cats[$i] as $ce => $bd)
 			{
 				echo('<option value="'.$ce.'" ');
@@ -489,13 +542,15 @@ function triggerNewRow()
 				$S = '';
 				echo('>'.htmlspecialchars($bd).'</option>');
 			}
-			echo('</select></td>');
+			echo('</select></span></td>');
 		}
 		
 		echo('<td class="center" title="'.$TAGS['SpecialButton'][1].'">');
+		echo('<span style="display:none;">');
 		echo('<button class="list" onclick="showBonusSpecials(this);">'.$TAGS['SpecialButton'][0]);
 		echo('&nbsp;');
 		echo('</button>');
+		echo('</span>');
 		echo('</td>');
 	
 	echo('<td class="center buttons">');
@@ -528,6 +583,9 @@ function saveSingleBonus() {
 		if (isset($_REQUEST['Cat'.$i]))
 			$sql .= ",Cat$i=".intval($_REQUEST['Cat'.$i]);
 	$sql .= ",Notes='".$DB->escapeString($_REQUEST['Notes'])."'";
+	$sql .= ",Waffle='".$DB->escapeString($_REQUEST['Waffle'])."'";
+	$sql .= ",Coords='".$DB->escapeString($_REQUEST['Coords'])."'";
+	$sql .= ",Image='".$DB->escapeString($_REQUEST['Image'])."'";
 
 	$flags = '';
 	for ($i= 0; $i < strlen($KONSTANTS['BonusScoringFlags']); $i++) {
@@ -615,8 +673,13 @@ startHtml($TAGS['ttSetup'][0]);
 
 //print_r($_REQUEST);
 
-if (isset($_REQUEST['savesinglebonus']))
+if (isset($_REQUEST['savesinglebonus'])) {
 	saveSingleBonus();
+	$get = "bonuses.php?c=bonuses";
+	header("Location: ".$get);
+	exit;
+
+}
 
 if (isset($_REQUEST['c']))
 {

@@ -108,7 +108,13 @@ function emitDecisionFrame() {
     echo('<span id="ebc_notes"></span> <span id="ebc_flags"></span><br>');
     echo('<input type="hidden" id="ebc_photo" name="photo" value="">');
     emitDecisionsTable();
-    echo('<div id="imgdiv" style="text-align: center;" title="'.$TAGS['ebc_ClickResize'][0].'"><img onclick="cycleImageSize(this);" data-size="0" style="width:512px; "></div>');
+
+    echo('<div id="imgdiv" style="text-align: center; float: left; cursor: se-resize; border: solid;" title="'.$TAGS['ebc_JudgeThis'][1].'">');
+    echo('<img onclick="cycleImageSize(this);" data-size="0" style="width:512px; ">');
+    echo('</div>');
+    echo('<div id="bimgdiv" style="text-align: center; float:right;" title="'.$TAGS['ebc_RallyPhoto'][1].'">');
+    echo('<img style="width:512px;">');
+    echo('</div>');
 
     echo('</form>');
 
@@ -181,6 +187,11 @@ function emitEBCjs() {
             img.src = "ebcimg/img-7-NARM-51.jpg";
         } else {
             img.src = is;
+        }
+        let bis = tr.getAttribute('data-bphoto');
+        if (bis != '') {
+            let bimg = document.getElementById('bimgdiv').firstChild;
+            bimg.src = 'images/bonuses/'+bis;
         }
         let ebcpoints = document.getElementById('ebc_points');
         ebcpoints.value = tr.getAttribute('data-points');
@@ -274,7 +285,16 @@ function emitEBCjs() {
             sz = 0;
         }
         console.log('Setting image size to '+ sz);
-        img.style.width = szs[sz];
+        let szsx = szs[sz];
+
+        /** Need to hide the rally book photo when maximising the claim image */
+        let bimg = document.getElementById('bimgdiv');
+        if (szsx =='100%')
+            bimg.style.display = 'none';
+        else
+            bimg.style.display = 'inline';
+
+        img.style.width = szsx;
         img.setAttribute('data-size',sz);
     }
     function cancelClaimDecision() {
@@ -369,9 +389,9 @@ function listEBClaims() {
 
     $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,xbonus.BonusID,xbonus.BriefDesc";
     $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,ebcphotos.Image,Notes,Flags,TeamID";
-    $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes";
+    $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes,xbonus.Image as BImage";
     $sql .= " FROM ebclaims LEFT JOIN entrants ON ebclaims.EntrantID=entrants.EntrantID";
-    $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,Flags,Points,AskPoints,RestMinutes,AskMinutes FROM bonuses";
+    $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,Flags,Points,AskPoints,RestMinutes,AskMinutes,Image FROM bonuses";
     $sql .= " ) AS xbonus";
     $sql .= " ON ebclaims.BonusID=xbonus.BonusID  LEFT JOIN ebcphotos ON ebclaims.PhotoID=ebcphotos.rowid WHERE Processed=0 ORDER BY FinalTime;";
 
@@ -404,6 +424,7 @@ function listEBClaims() {
     while ($rs = $R->fetchArray()) {
         echo('<tr data-claimid="'.$rs['rowid'].'" ');
         echo('data-entrant="'.$rs['EntrantID'].'" data-photo="'.$rs['Image'].'" ');
+        echo('data-bphoto="'.$rs['BImage'].'" ');
         echo('data-team="'.$rs['TeamID'].'" ');
         echo('data-bonus="'.$rs['BonusID'].'" data-odo="'.$rs['OdoReading'].'" ');
         echo('data-points="'.$rs['Points'].'" data-askpoints="'.$rs['AskPoints'].'"');
@@ -413,8 +434,8 @@ function listEBClaims() {
         preg_match('/<span[^>]*>([^<]+)/',logtime($rs['ClaimTime']),$lt);
         //logtime($rs['ClaimTime']);
         echo('data-claimtime-show="'.$lt[1].'" ');
-        echo('data-bonusdesc="'.$rs['BriefDesc'].'" data-rider="'.$rs['RiderName'].'" ');
-        echo('data-notes="'.$rs['Notes'].'" data-flags="'.$rs['Flags'].'" ');
+        echo('data-bonusdesc="'.str_replace('"','&quot;',$rs['BriefDesc']).'" data-rider="'.str_replace('"','&quot;',$rs['RiderName']).'" ');
+        echo('data-notes="'.str_replace('"','&quot;',$rs['Notes']).'" data-flags="'.$rs['Flags'].'" ');
         echo('class="link ebc" ');
         echo('onkeydown="testkey(this)" ');
         echo('onclick="showClaimEBC(this)"');

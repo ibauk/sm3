@@ -68,6 +68,11 @@ select:-moz-read-only	{ border:none; }
 
 
 input.wide				{ width: 12em; }
+input.wider				{ width: 20em; }
+
+.bonusdetail input		{ background: white; color: black; }
+
+.thumbnail				{ width: 100px; height: 100px; cursor:se-resize; }
 
 /* These buttons are action buttons. Menu 'buttons' merely look like buttons */
 input[type='submit'], input[type='button'], button	{
@@ -495,7 +500,7 @@ input[name="RallySlogan"]	{ width: 20em; }
 .currenttopic a:visited	{ color: blue; text-decoration: none; }
 
 /* EBC claims log */
-.ebclaimsitems	{ height: 21em; overflow-y: auto; }
+.ebclaimsitems	{ height: 20em; overflow-y: auto; } /* 20 not 21 so that bottom edge obviously has more */
 .ebc td {
 	padding-right: 1em;
 }

@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS "rallyparams" (
 	"Cat9Label"	TEXT,
 	"RejectReasons"	TEXT,							/* Defaults entered in INSERT below */
 	"DBState" INTEGER NOT NULL DEFAULT 0,
-	"DBVersion" INTEGER NOT NULL DEFAULT 9, 		/* DBVERSION */
+	"DBVersion" INTEGER NOT NULL DEFAULT 10, 		/* DBVERSION */
 	"AutoRank" INTEGER NOT NULL DEFAULT 1,
 	"Theme" TEXT NOT NULL DEFAULT 'default',
 	"MilesKms" INTEGER NOT NULL DEFAULT 0,
@@ -393,6 +393,8 @@ CREATE TABLE IF NOT EXISTS "bonuses" (
 	"AskMinutes" INTEGER NOT NULL DEFAULT 0,
 	"GroupName" TEXT,
 	"Image" TEXT,
+	"Coords" TEXT,
+	"Waffle" TEXT
 	PRIMARY KEY("BonusID")
 );
 
