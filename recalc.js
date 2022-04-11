@@ -128,6 +128,8 @@ function initScorecardVariables() {
         catcounts[i] = [];
     }
 
+    zapCats();
+
     for(let c of document.getElementsByName('catCompoundRules'))
         c.setAttribute('data-triggered',RULE_NOT_TRIGGERED);
 
@@ -702,9 +704,11 @@ function tickBonus(obj) {
 
 function updateCatcounts(bonus,catcounts) {
 
+    console.log('updateCatCounts called');
     // Keep track of cat counts
     for (let i = 1; i <= CALC_AXIS_COUNT; i++) {
         let cat = parseInt(bonus.getAttribute('data-cat'+i));
+        console.log('checking cat '+cat);
         if (cat < 1) 
             continue;
             
@@ -852,6 +856,7 @@ function showCats(catcounts) {
 
 }
 
+
 function showRallytime(stamp) {
     /* We're really only interested in the time of day and which of a few days it's on */
     
@@ -904,4 +909,17 @@ function writeScorex() {
     sx.innerHTML = html;
     let sxv = document.getElementById('scorexText');
     sxv.value = html;
+}
+
+function zapCats() {
+
+    for (let i = 1; i <= CALC_AXIS_COUNT; i++) {
+        let tab = document.getElementById('cat'+i);
+        if (!tab) continue;
+        let cells = tab.getElementsByClassName('scoredetail');
+        for (let j = 0; j < cells.length; j++) {
+            cells[j].innerText = '';
+        }
+    }
+
 }

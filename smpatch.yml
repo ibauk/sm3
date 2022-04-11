@@ -40,6 +40,7 @@ files:
   - sm/claimslog.php
   - LICENSE
   - sm/entrants.php
+  - sm/combos.php
   
 folders:
 
