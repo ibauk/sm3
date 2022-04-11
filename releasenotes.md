@@ -3,8 +3,16 @@
 I am delighted to announce the release of ScoreMaster v3.1 incorporating the following significant changes:-
 
 - Database has been upgraded to version 10 incorporating full use of bonus images, "waffle" and coordinates.
-- EBC judging now offers side-by-side claim v rally book image comparison.
+- EBC fetcher now more tolerant of email content layout resulting in fewer rejects needing manual handling.
+- EBC judging now offers side-by-side claim vs rally book image comparison.
 - Bonus maintenance now caters for rally book images, waffle and coordinates.
+
+Minor changes include:-
+
+- Pillion names are now shown in lists and claims
+- Negative odo readings are prevented
+- Odo setting and country are defaulted to rally settings during entrant import
+- Bonus claim method defaults to EBC for entrant imports because, let's face it, that is the future
 
 ## Rally book images
 Each bonus (not combo) can have a single image associated with it. This is used for side-by-side comparison with electronic bonus claim images and is also used by the [RBook rally book generator](https://github.com/ibauk/rbook). The images, in .JPG or .PNG format, must be stored in the **images/bonuses** folder with their filename being stored in the *Image* field on the bonus record.

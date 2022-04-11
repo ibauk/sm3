@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2021 Bob Stammers
+ * Copyright (c) 2022 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -494,6 +494,17 @@ function countNZ(cnts)
 			res++;
 	return res;
 }
+
+function digitonly() {
+
+	let x = event.keyCode 
+	let y = String.fromCharCode(x);          // Convert the value into a character
+	console.log("y="+y);
+	if ( isNaN(y)) {
+		event.preventDefault();
+	}
+}
+	
 
 function getScoreLock(btn)
 {

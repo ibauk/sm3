@@ -515,7 +515,7 @@ function recalcScorecard() {
 
         let catcount = 0;
         if (ccr_cat === 0)
-            for(cc of catcounts[ccr_axis])
+            for(let cc of catcounts[ccr_axis])
                 catcount += cc;
         else if (typeof(catcounts[ccr_axis][ccr_cat]) !== 'undefined')
             catcount = catcounts[ccr_axis][ccr_cat];

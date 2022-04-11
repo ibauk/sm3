@@ -716,7 +716,7 @@ $TAGS = array(
 	'ThemeLit'			=> array('Theme','The name of the theme to apply'),
 	
 	'tickdelete'		=> array('Tick to delete','Tick to enable deletion'),
-	'TiedPointsRanking'	=> array('Split ties by mileage','In the event of a tie entrants will be ranked by mileage'),	// Miles/Kms
+	'TiedPointsRanking'	=> array('Split ties by distance travelled','In the event of a tie entrants with shorter journeys will be ranked higher'),	// Miles/Kms
 	'TimePExplain'		=> array("Rally time runs from the rally start time to the rally finish time. Individual entrants may have less time available. Penalties other than DNF apply to specific periods within the overall or individual entrant's rally time. Periods are specified as date/time ranges or as minutes before DNF ranges.<br>Time penalties are triggered by entrant check-in time.",'Explanation of rally time penalties'),
 	'TimepMaintHead'	=> array('Time Penalties','List of time penalty entries'),
 

@@ -387,7 +387,7 @@ function saveEBClaim($inTransaction) {
 function listEBClaims() {
     global $DB,$TAGS,$KONSTANTS;
 
-    $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,xbonus.BonusID,xbonus.BriefDesc";
+    $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,xbonus.BonusID,xbonus.BriefDesc";
     $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,ebcphotos.Image,Notes,Flags,TeamID";
     $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes,xbonus.Image as BImage";
     $sql .= " FROM ebclaims LEFT JOIN entrants ON ebclaims.EntrantID=entrants.EntrantID";
@@ -440,7 +440,10 @@ function listEBClaims() {
         echo('onkeydown="testkey(this)" ');
         echo('onclick="showClaimEBC(this)"');
         echo('>');
-        echo('<td title="'.$rs['EntrantID'].'">'.$rs['RiderName'].'</td>');
+        echo('<td title="'.$rs['EntrantID'].'">'.$rs['RiderName']);
+        if ($rs['PillionName'] != '')
+            echo(' &amp; '.$rs['PillionName']);
+        echo('</td>');
         echo('<td title="'.$rs['BriefDesc'].'">'.$rs['BonusID'].'</td>');
         echo('<td>'.$rs['OdoReading'].'</td>');
         echo('<td>'.logtime($rs['ClaimTime']).'</td>');

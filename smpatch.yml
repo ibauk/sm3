@@ -22,13 +22,24 @@ maxapp:
 sql:
   - ALTER TABLE bonuses ADD COLUMN Coords TEXT;
   - ALTER TABLE bonuses ADD COLUMN Waffle TEXT;
+  - UPDATE importspecs SET fieldspecs = Replace(fieldspecs,'= 0;','= 1;') WHERE specid=' unknown';
+  - UPDATE importspecs SET fieldspecs = Replace(fieldspecs,'BCMethod'']       = 0','BCMethod'']       = 1') WHERE specid In ('Rally','Rallyx');
+  - UPDATE rallyparams SET ebcsettings = Replace(Printf('%s%c%callowbody:%ctrue%c%c',ebcsettings,char(13),char(10),' ',char(13),char(10)),'^\s*[A-Za-z]','\s*[A-Za-z]');
   - UPDATE rallyparams SET DBVersion=10;
 
 files:
   - sm/bonuses.php
   - sm/score.css
+  - sm/score.js
   - sm/customvars.php
+  - sm/recalc.js
   - sm/about.php
+  - caddy/ebcfetch.exe
+  - sm/importxls.php
+  - sm/claims.php
+  - sm/claimslog.php
+  - LICENSE
+  - sm/entrants.php
   
 folders:
 

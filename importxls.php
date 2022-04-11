@@ -49,6 +49,14 @@ $ENTRANT_FIELDS = [$IGNORE_COLUMN=>'ignore','RiderLast'=>'RiderLast','PillionLas
 $BONUS_FIELDS = [$IGNORE_COLUMN=>'ignore'];
 $COMBO_FIELDS = [$IGNORE_COLUMN=>'ignore'];
 
+$sql = "SELECT MilesKms, HostCountry FROM rallyparams";
+$R = $DB->query($sql);
+$rd = $R->fetchArray();
+
+$IMPORTSPEC['default']['OdoKms'] = $rd['MilesKms'];
+$IMPORTSPEC['default']['Country'] = $rd['HostCountry'];
+
+
 // Load list of templates
 $SPECFILES = [];
 $sql = "SELECT * FROM importspecs WHERE importType=".$IMPORTSPEC['type']." ORDER BY specid";
@@ -138,7 +146,7 @@ function getMergeCols($sheet,$row,$colspec,$sep = ' ')
 		// Need to add 1 to column values
 		$res .= $sheet->getCellByColumnAndRow($cols[$i]+1,$row)->getValue();
 	}
-	return $res;
+	return trim($res);
 }
 
 function getNameFields($sheet,$row,$namelabels)

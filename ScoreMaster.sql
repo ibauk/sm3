@@ -146,12 +146,14 @@ selectflags: ["\\Flagged", "\\Seen"]
 
 
 # Acceptable subject line RE. This accepts decorated entrant number, commas as separators, various time formats, optional odo/time
-subject: ''^\s*[A-Za-z]*(\d+)[A-Za-z]*\s*\,?\s*([a-zA-Z0-9\-]+)\s*\,?\s*(\d+)?\.*\d*\s*\,?\s*(\d\d?[.:]*\d\d)?\s*(.*)''
+subject: ''\s*[A-Za-z]*(\d+)[A-Za-z]*\s*\,?\s*([a-zA-Z0-9\-]+)\s*\,?\s*(\d+)?\.*\d*\s*\,?\s*(\d\d?[.:]*\d\d)?\s*(.*)''
 
 # Subject line RE to measure strict adherence to standard
 strict: ''^\s*(\d+)\s+([a-zA-Z0-9\-]+)\s+(\d+)\s+(\d\d\d\d)''
 
 checkstrict: true
+
+allowbody: true
 
 # Filesystem path to ScoreMaster folder
 path2sm: sm
@@ -394,7 +396,7 @@ CREATE TABLE IF NOT EXISTS "bonuses" (
 	"GroupName" TEXT,
 	"Image" TEXT,
 	"Coords" TEXT,
-	"Waffle" TEXT
+	"Waffle" TEXT,
 	PRIMARY KEY("BonusID")
 );
 
@@ -528,7 +530,7 @@ INSERT INTO `certificates` (EntrantID,css,html,options,image,Class,Title) VALUES
 ',NULL,NULL,0,'Rally finisher');
 
 INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES(' unknown','unknown format',0,'// Following lists use zero-based column numbers
-$IMPORTSPEC[''default''][''BCMethod'']       = 0;
+$IMPORTSPEC[''default''][''BCMethod'']       = 1;
 ');
 
 INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('zzBBL','old Brit Butt Light',0,'// Following lists use zero-based column numbers
@@ -727,7 +729,7 @@ $IMPORTSPEC[''data''][''NovicePillion'']= 16;
 // If the content of the indexed column matches the RE, reject (don''t load) the entry
 $IMPORTSPEC[''reject''][35]	= ''/Withdrawn/'';
 
-$IMPORTSPEC[''default''][''BCMethod'']       = 0;
+$IMPORTSPEC[''default''][''BCMethod'']       = 1;
 $IMPORTSPEC[''setif''][''BCMethod''][1]	= [31,''/Electronic/''];
 $IMPORTSPEC[''setif''][''BCMethod''][2]	= [31,''/Paper|Delayed/''];
 
@@ -776,7 +778,7 @@ $IMPORTSPEC[''data''][''NovicePillion'']= 8;
 // If the content of the indexed column matches the RE, reject (don''t load) the entry
 // $IMPORTSPEC[''reject''][35]	= ''/Withdrawn/'';
 
-$IMPORTSPEC[''default''][''BCMethod'']       = 0;
+$IMPORTSPEC[''default''][''BCMethod'']       = 1;
 $IMPORTSPEC[''setif''][''BCMethod''][1]	= [25,''/Electronic/''];
 $IMPORTSPEC[''setif''][''BCMethod''][2]	= [25,''/Paper|Delayed/''];
 

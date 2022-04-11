@@ -626,7 +626,7 @@ echo("</script>\n");
 	echo('</span>');
 	
 	echo('<span class="vlabel" title="'.$TAGS['OdoReadingLit'][1].'"><label for="OdoReading">'.$TAGS['OdoReadingLit'][0].'</label> ');
-	echo('<input type="number" class="bignumber" name="OdoReading" oninput="checkEnableSave();" id="OdoReading"');
+	echo('<input type="number" class="bignumber" min="0" name="OdoReading" onkeypress="digitonly();" oninput="checkEnableSave();" id="OdoReading"');
 	if ($claimid==0)
 		echo(' onchange="odoChanged(this.value,false);"');
 	echo(' tabindex="3"');
@@ -840,6 +840,8 @@ function fetchEntrantDetail($e)
 	$R = $DB->query("SELECT * FROM entrants WHERE EntrantID=".$e);
 	if ($rd = $R->fetchArray()) {
 		echo($rd['RiderName']);
+		if ($rd['PillionName'] != '')
+			echo(' &amp; '.$rd['PillionName']);
 
 		if ($rd['TeamID'] > 0)
 			echo(' <img src="images/alertteam.png" alt="2" title="Team rules" class="icon">');

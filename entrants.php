@@ -1065,25 +1065,25 @@ function showEntrantChecks($rd)
 	if ($hideOdoCheck)
 		echo('<div style="display:none;">');
 	echo('<span  class="xlabel" title="'.$TAGS['OdoCheckStart'][1].' "><label for="OdoCheckStart">'.$TAGS['OdoCheckStart'][0].' </label> ');
-	echo('<input  onchange="odoAdjust(false);" type="number" class="bignumber" step="any" name="OdoCheckStart" id="OdoCheckStart" value="'.$rd['OdoCheckStart'].'"> </span>');
+	echo('<input  onchange="odoAdjust(false);" type="number" class="bignumber" step="any" min="0" name="OdoCheckStart" id="OdoCheckStart" value="'.$rd['OdoCheckStart'].'"> </span>');
 	
 	echo('<span  title="'.$TAGS['OdoCheckFinish'][1].' "><label for="OdoCheckFinish">'.$TAGS['OdoCheckFinish'][0].' </label> ');
-	echo('<input  onchange="odoAdjust(false);" type="number" class="bignumber" step="any" name="OdoCheckFinish" id="OdoCheckFinish" value="'.$rd['OdoCheckFinish'].'"> </span>');
+	echo('<input  onchange="odoAdjust(false);" type="number" class="bignumber" step="any" min="0" name="OdoCheckFinish" id="OdoCheckFinish" value="'.$rd['OdoCheckFinish'].'"> </span>');
 	
 	echo('<span  title="'.$TAGS['OdoCheckTrip'][1].' "><label for="OdoCheckTrip">'.$TAGS['OdoCheckTrip'][0].' </label> ');
-	echo('<input  onchange="odoAdjust(true);" type="number" step="any" name="OdoCheckTrip" id="OdoCheckTrip" value="'.$rd['OdoCheckTrip'].'"> </span>');
+	echo('<input  onchange="odoAdjust(true);" type="number" step="any" min="0" name="OdoCheckTrip" id="OdoCheckTrip" value="'.$rd['OdoCheckTrip'].'"> </span>');
 	
 	echo('<span   title="'.$TAGS['OdoScaleFactor'][1].'"><label for="OdoScaleFactor">'.$TAGS['OdoScaleFactor'][0].' </label> ');
-	echo('<input type="number" step="any" class="bignumber" name="OdoScaleFactor" id="OdoScaleFactor" value="'.$rd['OdoScaleFactor'].'"> </span>');
+	echo('<input type="number" step="any" class="bignumber" min="0" name="OdoScaleFactor" id="OdoScaleFactor" value="'.$rd['OdoScaleFactor'].'"> </span>');
 	
 	if ($hideOdoCheck)
 		echo('</div>');
 	
 	echo('<span  class="xlabel" title="'.$TAGS['OdoRallyStart'][1].' "><label for="OdoRallyStart">'.$TAGS['OdoRallyStart'][0].' </label> ');
-	echo('<input  onchange="odoAdjust();" type="number" step="any" name="OdoRallyStart" id="OdoRallyStart" value="'.$rd['OdoRallyStart'].'"> </span>');
+	echo('<input  onchange="odoAdjust();" type="number" step="any" min="0" name="OdoRallyStart" id="OdoRallyStart" value="'.$rd['OdoRallyStart'].'"> </span>');
 	
 	echo('<span  title="'.$TAGS['OdoRallyFinish'][1].' "><label for="OdoRallyFinish">'.$TAGS['OdoRallyFinish'][0].' </label> ');
-	echo('<input  onchange="odoAdjust();" type="number" step="any" name="OdoRallyFinish" id="OdoRallyFinish" value="'.$rd['OdoRallyFinish'].'"> </span>');
+	echo('<input  onchange="odoAdjust();" type="number" step="any" min="0" name="OdoRallyFinish" id="OdoRallyFinish" value="'.$rd['OdoRallyFinish'].'"> </span>');
 	
 	echo('<span >');
 	echo('<label for="CorrectedMiles" >'.$TAGS['CorrectedMiles'][0].' </label>');
@@ -1440,22 +1440,22 @@ echo('</span> ');
 	
 
 	echo('<span  class="xlabel" title="'.$TAGS['OdoCheckStart'][1].' "><label for="OdoCheckStart">'.$TAGS['OdoCheckStart'][0].' </label> ');
-	echo('<input  onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" name="OdoCheckStart" id="OdoCheckStart" value="'.$rd['OdoCheckStart'].'"> </span>');
+	echo('<input onkeypress="digitonly();"  onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" min="0" name="OdoCheckStart" id="OdoCheckStart" value="'.$rd['OdoCheckStart'].'"> </span>');
 	
 	echo('<span  title="'.$TAGS['OdoCheckFinish'][1].' "><label for="OdoCheckFinish">'.$TAGS['OdoCheckFinish'][0].' </label> ');
-	echo('<input  onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" name="OdoCheckFinish" id="OdoCheckFinish" value="'.$rd['OdoCheckFinish'].'"> </span>');
+	echo('<input onkeypress="digitonly();"  onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" min="0" name="OdoCheckFinish" id="OdoCheckFinish" value="'.$rd['OdoCheckFinish'].'"> </span>');
 	
 	echo('<span  title="'.$TAGS['OdoCheckTrip'][1].' "><label for="OdoCheckTrip">'.$TAGS['OdoCheckTrip'][0].' </label> ');
-	echo('<input  onchange="odoAdjust(true);enableSaveButton();" type="number" step="any" name="OdoCheckTrip" id="OdoCheckTrip" value="'.$rd['OdoCheckTrip'].'"> </span>');
+	echo('<input  onchange="odoAdjust(true);enableSaveButton();" type="number" step="any" min="0" name="OdoCheckTrip" id="OdoCheckTrip" value="'.$rd['OdoCheckTrip'].'"> </span>');
 
 	echo('<span  class="xlabel" title="'.$TAGS['OdoScaleFactor'][1].'"><label for="OdoScaleFactor">'.$TAGS['OdoScaleFactor'][0].' </label> ');
-	echo('<input type="number" step="any" name="OdoScaleFactor" id="OdoScaleFactor"  class="bignumber" onchange="enableSaveButton();" value="'.$rd['OdoScaleFactor'].'"> </span>');
+	echo('<input type="number" step="any" min="0" name="OdoScaleFactor" id="OdoScaleFactor"  class="bignumber" onchange="enableSaveButton();" value="'.$rd['OdoScaleFactor'].'"> </span>');
 	
 	echo('<span  class="xlabel" title="'.$TAGS['OdoRallyStart'][1].' "><label for="OdoRallyStart">'.$TAGS['OdoRallyStart'][0].' </label> ');
-	echo('<input  onchange="odoAdjust();enableSaveButton();" class="bignumber" type="number" step="any" name="OdoRallyStart" id="OdoRallyStart" value="'.$rd['OdoRallyStart'].'"> </span>');
+	echo('<input  onkeypress="digitonly();" onchange="odoAdjust();enableSaveButton();" class="bignumber" type="number" step="any" min="0" name="OdoRallyStart" id="OdoRallyStart" value="'.$rd['OdoRallyStart'].'"> </span>');
 	
 	echo('<span  title="'.$TAGS['OdoRallyFinish'][1].' "><label for="OdoRallyFinish">'.$TAGS['OdoRallyFinish'][0].' </label> ');
-	echo('<input  onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" name="OdoRallyFinish" id="OdoRallyFinish" value="'.$rd['OdoRallyFinish'].'"> </span>');
+	echo('<input  onkeypress="digitonly();" onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" min="0" name="OdoRallyFinish" id="OdoRallyFinish" value="'.$rd['OdoRallyFinish'].'"> </span>');
 	
 	
 	echo('</fieldset>');
