@@ -200,6 +200,18 @@ function showBonus($bonusid) {
 	echo('<label for="Waffle">'.$TAGS['BonusWaffle'][0].'</label> ');
 	echo('<textarea name="Waffle" id="Waffle" cols="80" rows="1">'.str_replace('"','&quot;',$rd['Waffle']).'</textarea>');
 	echo('</span>');
+
+	if (getSetting('useBonusQuestions',"false")=="true") {
+		echo('<span class="vlabel" title="'.$TAGS['BonusQuestion'][1].'">');
+		echo('<label for="Question">'.$TAGS['BonusQuestion'][0].'</label> ');
+		echo('<input type="text" class="wider" name="Question" id="Question" value="'.str_replace('"','&quot;',$rd['Question']).'">');
+		echo('</span>');
+	
+		echo('<span class="vlabel" title="'.$TAGS['BonusAnswer'][1].'">');
+		echo('<label for="Answer">'.$TAGS['BonusAnswer'][0].'</label> ');
+		echo('<input type="text" class="wider" name="Answer" id="Answer" value="'.str_replace('"','&quot;',$rd['Waffle']).'">');
+		echo('</span>');
+	}
 	
 
 
@@ -586,6 +598,10 @@ function saveSingleBonus() {
 	$sql .= ",Waffle='".$DB->escapeString($_REQUEST['Waffle'])."'";
 	$sql .= ",Coords='".$DB->escapeString($_REQUEST['Coords'])."'";
 	$sql .= ",Image='".$DB->escapeString($_REQUEST['Image'])."'";
+	if (isset($_REQUEST['Question']))
+		$sql .= ",Question='".$DB->escapeString($_REQUEST['Question'])."'";
+	if (isset($_REQUEST['Answer']))
+		$sql .= ",Answer='".$DB->escapeString($_REQUEST['Answer'])."'";
 
 	$flags = '';
 	for ($i= 0; $i < strlen($KONSTANTS['BonusScoringFlags']); $i++) {

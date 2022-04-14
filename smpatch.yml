@@ -22,9 +22,12 @@ maxapp:
 sql:
   - ALTER TABLE bonuses ADD COLUMN Coords TEXT;
   - ALTER TABLE bonuses ADD COLUMN Waffle TEXT;
+  - ALTER TABLE bonuses ADD COLUMN Question TEXT;
+  - ALTER TABLE bonuses ADD COLUMN Answer TEXT;
   - UPDATE importspecs SET fieldspecs = Replace(fieldspecs,'= 0;','= 1;') WHERE specid=' unknown';
   - UPDATE importspecs SET fieldspecs = Replace(fieldspecs,'BCMethod'']       = 0','BCMethod'']       = 1') WHERE specid In ('Rally','Rallyx');
   - UPDATE rallyparams SET ebcsettings = Replace(Printf('%s%c%callowbody:%ctrue%c%c',ebcsettings,char(13),char(10),' ',char(13),char(10)),'^\s*[A-Za-z]','\s*[A-Za-z]');
+  - UPDATE rallyparams SET settings = Printf('{%c%c	"claimsShowPost"%c "false",%c%c	"claimsAutopostAll"%c "true",%c%c	"claimsReloadEBC"%c "60",%c%c	"singleuserMode"%c "false",%c%c	"autoAdjustBonusWidth"%c "true",%c%c "useBonusQuestions"%c "false",%c%c "valBonusQuestions"%c "50"}',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':');
   - UPDATE rallyparams SET DBVersion=10;
 
 files:

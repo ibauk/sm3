@@ -108,7 +108,9 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"claimsAutopostAll": "true",
 	"claimsReloadEBC": "60",
 	"singleuserMode": "false",
-	"autoAdjustBonusWidth", "true"
+	"autoAdjustBonusWidth": "true",
+	"useBonusQuestions": "false",
+	"valBonusQuestions": "50"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com
@@ -397,6 +399,8 @@ CREATE TABLE IF NOT EXISTS "bonuses" (
 	"Image" TEXT,
 	"Coords" TEXT,
 	"Waffle" TEXT,
+	"Question" TEXT,
+	"Answer" TEXT,
 	PRIMARY KEY("BonusID")
 );
 
