@@ -1300,7 +1300,16 @@ function tabsSetupTabs()
 {
 	// Grab the tab links and content divs from the page
    var tabListItems = document.getElementById('tabs').childNodes;
-	
+
+   let tab2show = 0;
+   let vartab2show = document.getElementById('tab2show');
+   if (vartab2show) {
+		tab2show = vartab2show.value;
+		if (tab2show >= tabListItems.length)
+			tab2show = 0;
+   }
+
+
    for ( var i = 0; i < tabListItems.length; i++ ) {
      if ( tabListItems[i].nodeName == "LI" ) {
        var tabLink = getFirstChildWithTagName( tabListItems[i], 'A' );
@@ -1317,7 +1326,7 @@ function tabsSetupTabs()
       for ( var id in tabLinks ) {
         tabLinks[id].onclick = tabsShowTab;
         tabLinks[id].onfocus = function() { this.blur() };
-        if ( i == 0 ) tabLinks[id].className = 'selected';
+        if ( i == tab2show ) tabLinks[id].className = 'selected';
         i++;
       }
 
@@ -1325,7 +1334,7 @@ function tabsSetupTabs()
       var i = 0;
 
       for ( var id in contentDivs ) {
-        if ( i != 0 ) {
+        if ( i != tab2show ) {
 			contentDivs[id].classList.remove('tabContent');
 			contentDivs[id].classList.add('tabContenthide');
 		}
@@ -1339,6 +1348,9 @@ function tabsSetupTabs()
 
 function tabsShowTab() 
 {
+	let tab2show = 0;
+	let vartab2show = document.getElementById('tab2show');
+ 
       var selectedId = tabsGetHash( this.getAttribute('href') );
 
       // Highlight the selected tab, and dim all others.
@@ -1348,11 +1360,24 @@ function tabsShowTab()
           tabLinks[id].className = 'selected';
 		  contentDivs[id].classList.remove('tabContenthide');
           contentDivs[id].classList.add('tabContent');
+		  if (vartab2show) {
+			  vartab2show.value = tab2show;
+			  let links = document.getElementsByClassName('navLink');
+			  for (let l = 0; l < links.length; l++) {
+				  console.log('l=='+links[l].getAttribute('href'));
+				  let p = /tab=\d&/
+				  let r = p.exec(links[l].href);
+				  if (r) {
+					  links[l].href=links[l].href.replace(p,'tab='+tab2show+'&');
+				  }
+			  }
+		  }
         } else {
           tabLinks[id].className = '';
 		  contentDivs[id].classList.remove('tabContent');
           contentDivs[id].classList.add('tabContenthide');
         }
+		tab2show++;
       }
 
       // Stop the browser following the link

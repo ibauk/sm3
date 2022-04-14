@@ -506,9 +506,9 @@ $TAGS = array(
 	'NMinLit'			=> array('Trigger value of N','The minimum value of N before this rule is triggered'),
 	'NoCerts2Print'		=> array('Sorry, no certificates to print.',''),
 	
-	'NoKName'			=> array('NoK name','Name of Next of Kin'),
-	'NoKPhone'			=> array('NoK phone','Phone number for Next of Kin'),
-	'NoKRelation'		=> array('NoK relation','Relationship of Next of Kin'),
+	'NoKName'			=> array('NoK name','Name of Next of Kin (emergency contact)'),
+	'NoKPhone'			=> array('NoK phone','Phone number for Next of Kin (emergency contact)'),
+	'NoKRelation'		=> array('NoK relation','Relationship of Next of Kin (emergency contact'),
 	'NoScoreX2Print'	=> array('Sorry, no score explanations to print.',''),
 	'NoSelection'		=> array('{no selection}','{no selection}'),
 	'nowlit'			=> array('Now','Record the current date/time'),

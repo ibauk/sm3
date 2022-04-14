@@ -59,13 +59,41 @@ function fetchShowEntrant()
 {
 	global $DB, $TAGS, $KONSTANTS;
 
+	//print_r($_REQUEST);
+	$entrant = intval($_REQUEST['id']);
+	$rel = '=';
+	$ord = '';
+	if (isset($_REQUEST['next'])) 
+		$rel = '>';
+	elseif (isset($_REQUEST['prev']))
+		$rel = '<';
+	if (isset($_REQUEST['ord'])) {
+		$ord = $_REQUEST['ord'];
+		if ($rel == '<') {
+			if (strpos(strtolower($ord),' desc')===false)
+				$ord .= ' desc';
+		}
+	}
+	while(true) {
+		$sql = "SELECT * FROM entrants WHERE EntrantID";
+		$sql .= $rel;
+		$sql .= intval($_REQUEST['id']);
+		if ($ord != '')
+			$sql .= " ORDER BY ".$ord;
 	
-	$sql = "SELECT * FROM entrants WHERE EntrantID=".intval($_REQUEST['id']);
+			//echo('<hr>'.$sql.'<hr>');
+			$R = $DB->query($sql);
 	
-	$R = $DB->query($sql);
-	
-	if ($rd = $R->fetchArray())
-		if ($_REQUEST['mode']!='check')
+		if (!$rd = $R->fetchArray()) {
+			if ($rel == '=') {
+				return;
+			}
+			$rel = '=';
+		} else
+			break;
+	}
+
+		if (!isset($_REQUEST['mode']) || $_REQUEST['mode']!='check')
 			showEntrantRecord($rd);
 		else
 			showEntrantChecks($rd);
@@ -137,6 +165,14 @@ function listEntrants($ord = "EntrantID")
 			$sql .= " WHERE EntrantID=$n";
 		}
 	}
+	if (isset($_REQUEST['ord'])) {
+		$ord = $_REQUEST['ord'];
+	}
+	$tab = '0';
+	if (isset($_REQUEST['tab'])) {
+		$tab = $_REQUEST['tab'];
+	}
+
 	if ($ord <> '')
 		$sql .= " ORDER BY $ord";
 	//echo('<br>listEntrants: '.$sql.'<br>');
@@ -192,6 +228,7 @@ function listEntrants($ord = "EntrantID")
 	$fldsrch = (isset($_REQUEST['x']) &&  strpos($_REQUEST['x'],'=') != FALSE);
 	if ($fldsrch)
 		$fv = explode('=',$_REQUEST['x']);
+	
 	while ($rd = $R->fetchArray(SQLITE3_ASSOC))
 	{
 		//print_r($rd); echo('<hr>');
@@ -215,7 +252,8 @@ function listEntrants($ord = "EntrantID")
 		}
 		$bclast = (isset($_REQUEST['nobc']) ? '' : '');
 		
-		echo('<tr class="link" onclick="window.location.href=\'entrants.php?c=entrant&amp;id='.$rd['EntrantID'].'&amp;mode='.$_REQUEST['mode'].'\'">');
+		echo('<tr class="link" onclick="window.location.href=\'entrants.php?c=entrant&amp;id='.$rd['EntrantID']);
+		echo('&amp;mode='.$_REQUEST['mode'].'&amp;ord='.$ord.'&amp;tab='.$tab.'\'">');
 		foreach($COLS as $flds) {
 			if ($flds[0] == 'TeamID' && !$ShowTeamCol)
 				continue;
@@ -1233,7 +1271,16 @@ function showEntrantRecord($rd)
 	$is_new_record = ($rd['EntrantID']=='');
 	echo('<form method="post" action="entrants.php">');
 
-	
+	if (isset($_REQUEST['ord'])) {
+		echo('<input type="hidden" name="ord" value="'.$_REQUEST['ord'].'">');
+	}
+
+	$tab2show = 0;
+	if (isset($_REQUEST['tab'])) {
+		$tab2show = intval($_REQUEST['tab']);
+	}
+	echo('<input type="hidden" name="tab" id="tab2show" value="'.$tab2show.'">');
+
 	echo('<input type="hidden" name="c" value="entrants">');
 	echo('<span class="vlabel"  style="font-weight: bold;" title="'.$TAGS['EntrantID'][1].'"><label for="EntrantID">'.$TAGS['EntrantID'][0].' </label> ');
 	if ($is_new_record)
@@ -1266,6 +1313,14 @@ function showEntrantRecord($rd)
 	
 		echo(' <input title="'.$TAGS['Print1ClaimLog'][1].'" id="PrintCLButton" type="button" value="'.$TAGS['Print1ClaimLog'][0].'" ');
 		echo(' onclick="window.open('."'claimslog.php?entrant=".$rd['EntrantID']."','cert'".')" >');
+
+		$lnk = '<a class="link navLink" style="text-decoration:none;" title="*" href="entrants.php?c=entrant&amp;id='.$rd['EntrantID'];
+		if (isset($_REQUEST['ord']))
+			$lnk .= '&amp;ord='.$_REQUEST['ord'];
+		if (isset($_REQUEST['tab']))
+			$lnk .= '&amp;tab='.$_REQUEST['tab'];
+		echo('  '.$lnk.'&amp;prev">&Ll;</a> ');
+		echo($lnk.'&amp;next">&Gg;</a> ');
 	}
 echo('</span> ');
 	
@@ -1575,6 +1630,10 @@ function prgListEntrants()
  */
 {
 	$get = "entrants.php?c=entrants";
+	if (isset($_REQUEST['ord']))
+		$get .= '&ord='.$_REQUEST['ord'];
+	if (isset($_REQUEST['tab']))
+		$get .= '&tab='.$_REQUEST['tab'];
 	header("Location: ".$get);
 	exit;
 }
