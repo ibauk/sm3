@@ -70,8 +70,11 @@ function fetchShowEntrant()
 	if (isset($_REQUEST['ord'])) {
 		$ord = $_REQUEST['ord'];
 		if ($rel == '<') {
-			if (strpos(strtolower($ord),' desc')===false)
+			if (strpos(strtolower($ord),' desc')===false) {
+				if ($ord == '')
+					$ord = 'EntrantID';
 				$ord .= ' desc';
+			}
 		}
 	}
 	while(true) {

@@ -53,11 +53,29 @@ function showBonus($bonusid) {
 	}
 
 
+	$rel = '=';
+	$ord = 'BonusID';
+	if (isset($_REQUEST['next'])) 
+		$rel = '>';
+	elseif (isset($_REQUEST['prev'])) {
+		$rel = '<';
+		if (strpos(strtolower($ord),' desc')===false)
+			$ord .= ' desc';
+	}
 
-	$R = $DB->query("SELECT * FROM bonuses WHERE BonusID='".strtoupper($bonusid)."'");
-	if (!$rd = $R->fetchArray()) {
-		echo('OMG!!! '.$bonusid);
-		return;
+	
+	while(true) {
+		$sql = "SELECT * FROM bonuses WHERE BonusID".$rel."'".strtoupper($bonusid)."' ORDER BY ".$ord;
+		//echo($sql.'<br>');
+		$R = $DB->query($sql);
+		if (!$rd = $R->fetchArray()) {
+			if ($rel == '=') {
+				echo("OMG!!");
+				return;
+			}
+			$rel = '=';
+		} else
+			break;
 	}
 
 	echo('<div class="bonusdetail">');
@@ -72,11 +90,17 @@ function showBonus($bonusid) {
 	echo('<label for="deletecmd">'.$TAGS['DeleteEntryLit'][0].'</label> ');
 	echo('<input id="deletecmd" type="checkbox" name="deletebonus"> '); 
 	echo('<input type="submit" id="sdbutton" name="savedata" value="'.$TAGS['SaveBonus'][0].'"> ');
+
+	$lnk = '<a class="link navLink" style="text-decoration:none;" title="*" href="bonuses.php?c=bonus&amp;bonus='.$rd['BonusID'];
+	$lnk .= '&amp;ord=BonusID';
+	echo('  '.$lnk.'&amp;prev">&Ll;</a> ');
+	echo($lnk.'&amp;next">&Gg;</a> ');
+
 	echo('</span>');
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusIDLit'][1].'">');
 	echo('<label for="BonusID">'.$TAGS['BonusIDLit'][0].'</label> ');
-	echo('<input type="text" readonly name="BonusID" id="BonusID" value="'.$bonusid.'">');
+	echo('<input type="text" readonly name="BonusID" id="BonusID" value="'.$rd['BonusID'].'">');
 	echo('</span>');
 
 	echo('<span class="vlabel" title="'.$TAGS['BriefDescLit'][1].'">');
@@ -209,7 +233,7 @@ function showBonus($bonusid) {
 	
 		echo('<span class="vlabel" title="'.$TAGS['BonusAnswer'][1].'">');
 		echo('<label for="Answer">'.$TAGS['BonusAnswer'][0].'</label> ');
-		echo('<input type="text" class="wider" name="Answer" id="Answer" value="'.str_replace('"','&quot;',$rd['Waffle']).'">');
+		echo('<input type="text" class="wider" name="Answer" id="Answer" value="'.str_replace('"','&quot;',$rd['Answer']).'">');
 		echo('</span>');
 	}
 	
@@ -479,7 +503,8 @@ function triggerNewRow()
 		
 		$isspecial = $rd['AskPoints'] == 1 || $rd['AskMinutes'] == 1 || $rd['Compulsory'] != 0 || 
 					$rd['Notes'] != '' || $rd['Flags'] != '' || $rd['RestMinutes'] != 0 ||
-					$rd['Image'] != '' || $rd['Waffle'] != '' || $rd['Coords'] != '';
+					$rd['Image'] != '' || $rd['Waffle'] != '' || $rd['Coords'] != '' ||
+					$rd['Question'] != '' || $rd['Answer'] != '';
 		echo('<tr class="hoverlite" data-indb="1"><td><span><input class="BonusID" type="text" readonly  value="'.$rd['BonusID'].'"></span></td>');
 		echo('<td><span><input class="BriefDesc" type="text" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'" oninput="return showsave(this);"></span></td>');
 		echo('<td><span><input type="number" value="'.$rd['Points'].'" oninput="return showsave(this);"></span></td>');

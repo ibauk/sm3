@@ -24,6 +24,10 @@ sql:
   - ALTER TABLE bonuses ADD COLUMN Waffle TEXT;
   - ALTER TABLE bonuses ADD COLUMN Question TEXT;
   - ALTER TABLE bonuses ADD COLUMN Answer TEXT;
+  - ALTER TABLE claims ADD COLUMN QuestionAsked INTEGER DEFAULT 0;
+  - ALTER TABLE claims ADD COLUMN QuestionAnswered INTEGER DEFAULT 0;
+  - ALTER TABLE claims ADD COLUMN AnswerSupplied TEXT;
+  - UPDATE claims SET QuestionAsked=0,QuestionAnswered=0 WHERE QuestionAsked Is Null;
   - UPDATE importspecs SET fieldspecs = Replace(fieldspecs,'= 0;','= 1;') WHERE specid=' unknown';
   - UPDATE importspecs SET fieldspecs = Replace(fieldspecs,'BCMethod'']       = 0','BCMethod'']       = 1') WHERE specid In ('Rally','Rallyx');
   - UPDATE rallyparams SET ebcsettings = Replace(Printf('%s%c%callowbody:%ctrue%c%c',ebcsettings,char(13),char(10),' ',char(13),char(10)),'^\s*[A-Za-z]','\s*[A-Za-z]');
@@ -35,15 +39,19 @@ files:
   - sm/score.css
   - sm/score.js
   - sm/customvars.php
+  - sm/custom.js
   - sm/recalc.js
   - sm/about.php
   - caddy/ebcfetch.exe
   - sm/importxls.php
   - sm/claims.php
   - sm/claimslog.php
+  - sm/claimsphp.js
   - LICENSE
   - sm/entrants.php
   - sm/combos.php
+  - sm/help/questions.hlp
+  - sm/help/index.hlp
   
 folders:
 

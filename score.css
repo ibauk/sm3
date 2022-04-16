@@ -269,6 +269,9 @@ h4				{ margin-top: .9em; margin-bottom: 5px; }
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
+#CorrectAnswer 	{ font-style: italic; }
+#AnswerSupplied	{ font-weight: bold; }
+
 #FuelWarning,
 #SpeedWarning { padding: .75em; background: var(--bright-background); color: var(--bright-text); }
 

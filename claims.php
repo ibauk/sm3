@@ -426,6 +426,11 @@ function saveClaim()
     updateAutoClass($_REQUEST['EntrantID']);
 
 	$DB->exec("COMMIT TRANSACTION");
+
+	$get = "claims.php";
+	header("Location: ".$get);
+	exit;
+
 }
 
 function saveOldClaim($virtualrally,$virtualstopmins,$XF,$claimtime,$claimid)
@@ -451,6 +456,16 @@ function saveOldClaim($virtualrally,$virtualstopmins,$XF,$claimtime,$claimid)
 		$mins = parseTimeMins($_REQUEST['NextTimeMins']);
 		$sql .= ($sql==''? '' : ',').'NextTimeMins='.$mins;
 	}
+
+	if (isset($_REQUEST['QuestionAsked']))
+		$sql .= ($sql==''? '' : ',')."QuestionAsked=".$_REQUEST['QuestionAsked'];
+	if (isset($_REQUEST['QuestionAnswered']))
+		$sql .= ($sql==''? '' : ',')."QuestionAnswered=1";
+	else
+		$sql .= ($sql==''? '' : ',')."QuestionAnswered=0";
+	if (isset($_REQUEST['AnswerSupplied']))
+		$sql .= ($sql==''? '' : ',')."AnswerSupplied='".$DB->escapeString($_REQUEST['AnswerSupplied'])."'";
+
 	foreach($XF as $F)
 		if (isset($_REQUEST[$F]))
 			$sql .= ($sql==''? '' : ',').$F.'='.intval($_REQUEST[$F]);
@@ -460,7 +475,7 @@ function saveOldClaim($virtualrally,$virtualstopmins,$XF,$claimtime,$claimid)
 		return;
 	$sql.= " WHERE rowid=".$claimid;
 	
-	//echo('<br>'.$sql.'<br>');
+	//echo('<p style="overflow-x:scroll;">'.$sql.'</p>');
 	
 	if (!$DB->exec("UPDATE claims SET ".$sql)) {
 		dberror();
@@ -484,6 +499,11 @@ function saveNewClaim($virtualrally,$virtualstopmins,$XF,$claimtime)
 		$sql .= ",MagicWord";
 	if (isset($_REQUEST['NextTimeMins'])) 
 		$sql .= ",NextTimeMins";
+	if (isset($_REQUEST['QuestionAsked']))
+		$sql .= ",QuestionAsked";
+	$sql .= ",QuestionAnswered"; // Checkbox, only present when checked
+	if (isset($_REQUEST['AnswerSupplied']))
+		$sql .= ",AnswerSupplied";
 	foreach ($XF as $F)
 		if (isset($_REQUEST[$F]))
 			$sql .= ",$F";
@@ -511,6 +531,15 @@ function saveNewClaim($virtualrally,$virtualstopmins,$XF,$claimtime)
 			$mins += $virtualstopmins;
 		$sql .= ",".$mins;
 	}
+	if (isset($_REQUEST['QuestionAsked']))
+		$sql .= ",".$_REQUEST['QuestionAsked'];
+	if (isset($_REQUEST['QuestionAnswered']))
+		$sql .= ",1";
+	else
+		$sql .= ",0";
+	if (isset($_REQUEST['AnswerSupplied']))
+		$sql .= ",'".$DB->escapeString($_REQUEST['AnswerSupplied'])."'";
+
 	foreach($XF as $F)
 		if (isset($_REQUEST[$F]))
 			$sql .= ",".intval($_REQUEST[$F]);
@@ -649,6 +678,27 @@ echo("</script>\n");
 	$oc = ($claimid > 0 && $rd['SpeedPenalty'] != 0 ? '&dzigrarr; <input type="checkbox" value="1" name="SpeedPenalty" oninput="checkEnableSave();" checked>' : '');
 	echo('<span id="SpeedWarning" style="display:'.$ds.';">'.$oc.'</span>');
 	echo('</span>');
+
+	if (getSetting('useBonusQuestions','false')=='true') {
+		echo('<input type="hidden" name="QuestionAsked" id="QuestionAsked" value="'.($claimid> 0 ? $rd['QuestionAsked'] : '0').'"> ');
+		echo('<input type="hidden" id="valBonusQuestions" value="');
+		echo(intval(getSetting('valBonusQuestions','0')).'">');
+		$disp = ($claimid> 0 && $rd['QuestionAsked'] ? 'inline': 'none');
+		echo('<span id="BonusAnswerSpan" class="vlabel" style="display:'.$disp.';" title="'.$TAGS['BonusAnswer'][1].'">');
+		echo('<label for="AnswerSupplied">'.$TAGS['BonusAnswer'][0].'</label> ');
+		echo('<input type="text" tabindex="5" oninput="checkEnableSave();" name="AnswerSupplied" id="AnswerSupplied" value="'.($claimid> 0 ? $rd['AnswerSupplied'] : '').'"> ');
+		echo('<input type="checkbox" tabindex="6" name="QuestionAnswered" onchange="answerQuestion(this);"');
+		if ($claimid > 0 && $rd['QuestionAnswered'] != 0) {
+			echo(' checked');
+		}
+		echo('> ');
+		echo('<span id="CorrectAnswer">');
+		if ($claimid> 0 && $rd['QuestionAsked'] != 0) {
+			echo(getValueFromDB("SELECT Answer FROM bonuses WHERE BonusID='".$rd['BonusID']."'","Answer",""));
+		}
+		echo('</span>');
+		echo('</span>');
+	}
 	
 	if ($virtualrally) {
 		echo('<span class="vlabel" title="'.$TAGS['NextTimeMins'][1].'"><label for="NextTimeMins">'.$TAGS['NextTimeMins'][0].'</label> ');
@@ -737,7 +787,7 @@ function fetchBonusName($b,$htmlok)
 		echo('');
 		return;
 	}
-	$R = $DB->query("SELECT BriefDesc, Points, RestMinutes, AskPoints, AskMinutes, Notes, Flags FROM bonuses WHERE BonusID='".strtoupper($b)."'");
+	$R = $DB->query("SELECT BriefDesc, Points, RestMinutes, AskPoints, AskMinutes, Notes, Flags, Question, Answer FROM bonuses WHERE BonusID='".strtoupper($b)."'");
 	if ($rd = $R->fetchArray()) {
 		$res = '';
 		if ($htmlok) {
@@ -782,7 +832,14 @@ function fetchBonusName($b,$htmlok)
 
 			$res .= '<span style="display:none">[';
 			$res .= 'ap='.$rd['AskPoints'].';pv='.$rd['Points'].';am='.$rd['AskMinutes'].';mv='.$rd['RestMinutes'];
-			$res .= ']</span>';
+			$res .= ']';
+			$res .= '<span id="qqq">';
+			$res .= str_replace('"','&quot;',$rd['Question']);
+			$res .= '</span>';
+			$res .= '<span id="aaa">';
+			$res .= str_replace('"','&quot;',$rd['Answer']);
+			$res .= '</span>';
+			$res .= '</span>';
 		} else {
 			$res .= strip_tags($rd['BriefDesc']);
 			$res .= ' ['.'ap='.$rd['AskPoints'].';pv='.$rd['Points'].';am='.$rd['AskMinutes'].';mv='.$rd['RestMinutes'].']';

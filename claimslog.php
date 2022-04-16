@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2021 Bob Stammers
+ * Copyright (c) 2022 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -106,6 +106,10 @@ function emitDecisionFrame() {
     echo('<input type="hidden" id="ebc_claimtime" name="ClaimTime" value=""> ');
     echo('<span id="ebc_claimtime_show" style="font-weight: bold;"></span><br>');
     echo('<span id="ebc_notes"></span> <span id="ebc_flags"></span><br>');
+
+    if (getSetting('useBonusQuestions','false')=='true') {
+        echo('<span id="ebc_question"></span><br>');
+    }
     echo('<input type="hidden" id="ebc_photo" name="photo" value="">');
     emitDecisionsTable();
 
@@ -175,6 +179,21 @@ function emitEBCjs() {
     echo('<script>const RELOADSECS = '.$reloadseconds.';var RELOADOK = true;</script>');
 ?>
 <script>
+    function answerQuestion(obj) {
+
+        let pts = document.getElementById('ebc_points');
+        let pv = parseInt(pts.value);
+        let qv = parseInt(document.getElementById('valBonusQuestions').value);
+        console.log('Answering question: pv='+pv+' qv='+qv+' checked='+obj.checked);
+        if (obj.checked)
+            pv += qv;
+        else
+            pv -= qv;
+        pts.value = pv;
+        let qa = document.getElementById('AnswerSupplied');
+        qa.value = 1;
+    }
+
     function showClaimEBC(tr) {
         RELOADOK = false;
         let claimid = tr.getAttribute('data-claimid');
@@ -268,6 +287,27 @@ function emitEBCjs() {
                  flagsregion.appendChild(img);
              }
         }
+        let qq = tr.getAttribute('data-question');
+        if (qq != '') {
+            let ebcq = document.getElementById('ebc_question');
+            if (ebcq) {
+                let xx = '<span class="question">'+qq+'? </span>';
+                xx += '<input type="hidden" name="QuestionAsked" value="1">';
+                xx += '<input class="AnswerSupplied" readonly type="text" name="AnswerSupplied" id="AnswerSupplied"';
+                let sa = tr.getAttribute('data-extra');
+                let ca = tr.getAttribute('data-answer');
+                xx += ' value="'+sa+'" > ';
+                let chk = '';
+                if (sa.toLowerCase() === ca.toLowerCase()) {
+                    chk = ' checked';
+                    ebcpoints.value = parseInt(ebcpoints.value) + parseInt(document.getElementById('valBonusQuestions').value);
+
+                }
+                xx += '<input type="checkbox" name="QuestionAnswered" '+chk+' onchange="answerQuestion(this);"> ';
+                xx += '<span id="CorrectAnswer">'+ca+'</span>';
+                ebcq.innerHTML = xx;
+            }
+        }
         log.style.display = "none";
         decider.style.display = "block";
         document.getElementById('goodclaim').focus();
@@ -355,7 +395,14 @@ function saveEBClaim($inTransaction) {
 
     global $DB,$KONSTANTS;
 
-    $sqlx = "INSERT INTO claims(LoggedAt,ClaimTime,EntrantID,BonusID,OdoReading,Decision,Photo,Points,RestMinutes,AskPoints,AskMinutes) VALUES(";
+    $sqlx = "INSERT INTO claims(LoggedAt,ClaimTime,EntrantID,BonusID,OdoReading,Decision,Photo,Points,RestMinutes,AskPoints,AskMinutes";
+    if (isset($_REQUEST['QuestionAsked']))
+        $sqlx .= ",QuestionAsked";
+    if (isset($_REQUEST['AnswerSupplied']))
+        $sqlx .= ",AnswerSupplied";
+    if (isset($_REQUEST['QuestionAnswered']))
+        $sqlx .= ",QuestionAnswered";
+    $sqlx .= ") VALUES(";
     $dtn = new DateTime(Date('Y-m-dTH:i:s'),new DateTimeZone($KONSTANTS['LocalTZ']));
 	$loggedat = $dtn->format('c');
     $sqlx .= "'".$loggedat."'";
@@ -369,6 +416,12 @@ function saveEBClaim($inTransaction) {
     $sqlx .= ",".$_REQUEST['RestMinutes'];
     $sqlx .= ",".$_REQUEST['AskPoints'];
     $sqlx .= ",".$_REQUEST['AskMinutes'];
+    if (isset($_REQUEST['QuestionAsked']))
+        $sqlx .= ",".$_REQUEST['QuestionAsked'];
+    if (isset($_REQUEST['AnswerSupplied']))
+        $sqlx .= ",'".$DB->escapeString($_REQUEST['AnswerSupplied'])."'";
+    if (isset($_REQUEST['QuestionAnswered']))
+        $sqlx .= ",1";
     $sqlx .= ")";
     if (!$inTransaction)
         $DB->exec("BEGIN IMMEDIATE TRANSACTION");
@@ -387,11 +440,14 @@ function saveEBClaim($inTransaction) {
 function listEBClaims() {
     global $DB,$TAGS,$KONSTANTS;
 
+    $useQA = getSetting('useBonusQuestions','false')=='true';
+    $valQA = intval(getSetting('valBonusQuestions','0'));
+
     $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,xbonus.BonusID,xbonus.BriefDesc";
     $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,ebcphotos.Image,Notes,Flags,TeamID";
-    $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes,xbonus.Image as BImage";
+    $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes,xbonus.Image as BImage,Question,Answer";
     $sql .= " FROM ebclaims LEFT JOIN entrants ON ebclaims.EntrantID=entrants.EntrantID";
-    $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,Flags,Points,AskPoints,RestMinutes,AskMinutes,Image FROM bonuses";
+    $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,Flags,Points,AskPoints,RestMinutes,AskMinutes,Image,Question,Answer FROM bonuses";
     $sql .= " ) AS xbonus";
     $sql .= " ON ebclaims.BonusID=xbonus.BonusID  LEFT JOIN ebcphotos ON ebclaims.PhotoID=ebcphotos.rowid WHERE Processed=0 ORDER BY FinalTime;";
 
@@ -416,6 +472,8 @@ function listEBClaims() {
 
     echo('<div class="ebclaimsitems">');
 
+    echo('<input type="hidden" id="useBonusQuestions" value="'.$useQA.'">');
+    echo('<input type="hidden" id="valBonusQuestions" value="'.$valQA.'">');
     echo('<table><thead>');
     if ($claims > 0) {
         echo('<tr><th>Entrant</th><th>Bonus</th><th>Odo</th><th>Claimtime</th></tr>');
@@ -436,9 +494,15 @@ function listEBClaims() {
         echo('data-claimtime-show="'.$lt[1].'" ');
         echo('data-bonusdesc="'.str_replace('"','&quot;',$rs['BriefDesc']).'" data-rider="'.str_replace('"','&quot;',$rs['RiderName']).'" ');
         echo('data-notes="'.str_replace('"','&quot;',$rs['Notes']).'" data-flags="'.$rs['Flags'].'" ');
+        echo('data-extra="'.str_replace('"','&quot;',$rs['ExtraField']).'" ');
         echo('class="link ebc" ');
         echo('onkeydown="testkey(this)" ');
-        echo('onclick="showClaimEBC(this)"');
+        echo('onclick="showClaimEBC(this)" ');
+        if ($useQA) {
+            echo('data-question="'.str_replace('"','&quot;',$rs['Question']).'" ');
+            echo('data-answer="'.str_replace('"','&quot;',$rs['Answer']).'" ');
+            echo('data-qval="'.$valQA.'" ');
+        }
         echo('>');
         echo('<td title="'.$rs['EntrantID'].'">'.$rs['RiderName']);
         if ($rs['PillionName'] != '')

@@ -25,6 +25,7 @@
 - [Import / export](help:importexport) - how do I get stuff in and out of here?
 
 - [Penalties](help:penalties)
+- [Question/answer pairs](help:questions)
 - [Rally params: settings](help:rpsettings)
 - [Rally team](help:teamroles)
 - [Rally time](help:rallytime)

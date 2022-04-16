@@ -77,4 +77,4 @@ const MY_LOCALE	= "en-GB";
 // Regular expression for parsing subject line from emails
 // In English this is rider, bonus, odo, time
 // Odo and time are optional as are the commas
-const EBC_SUBJECT_LINE = /(\d+)\,*\s*([a-z0-9\-]+)\,*\s*(\d+)?\.*\d*\s*\,*\s*(\d\d?[.:]*\d\d)?/i;
+const EBC_SUBJECT_LINE = /(\d+)\,*\s*([a-z0-9\-]+)\,*\s*(\d+)?\.*\d*\s*\,*\s*(\d\d?[.:]*\d\d)?\s*(.*)/i;

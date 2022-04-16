@@ -1,6 +1,22 @@
 
 "use strict";
 
+function answerQuestion(obj) {
+
+	let pts = document.getElementById('PointsValue');
+	let pv = parseInt(pts.value);
+	let qv = parseInt(document.getElementById('valBonusQuestions').value);
+	console.log('Answering question: pv='+pv+' qv='+qv+' checked='+obj.checked);
+	if (obj.checked)
+		pv += qv;
+	else
+		pv -= qv;
+	pts.value = pv;
+	let qa = document.getElementById('AnswerSupplied');
+	qa.value = 1;
+	console.log('answerQuestion enabling save');
+	enableSaveButton();
+}
 function checkMagicWord() {
 	let lmw = '';
 	let lmwtime = '';
@@ -250,6 +266,7 @@ function pasteNewClaim()
 	let b = document.getElementById('BonusID');
 	let o = document.getElementById('OdoReading');
 	let t = document.getElementById('ClaimTime');
+	let qa = document.getElementById('AnswerSupplied');
 
 	
 	
@@ -270,6 +287,11 @@ function pasteNewClaim()
 					t.value = timevalue(matches[4]);
 					console.log("time value is '"+t.value+"' matches[4] is '"+matches[4]+"'");
 					t.dispatchEvent(echg);
+					if (mlen > 5 && typeof(matches[5] !== 'undefined') && qa) {
+						console.log('Answer received : '+matches[5]);
+						qa.value = matches[5];
+						qa.dispatchEvent(echg);
+					}
 				} else
 					t.focus();
 			} else
@@ -319,6 +341,26 @@ function showBonus(obj) {
 					pv.parentNode.className = "hide";
 				document.getElementById('AskPoints').value = match[1];
 				document.getElementById('AskMinutes').value = match[3];
+
+				// Now look for question/answer
+				myRegexp = /<span id="qqq">([^<]*)<\/span><span id="aaa">([^<]*)/;
+				match = myRegexp.exec(myString);
+				if (match.length >= 2) {
+					let qa = document.getElementById('QuestionAsked');
+					if (qa)
+						qa.value = '1';
+					let bas = document.getElementById('BonusAnswerSpan');
+					if (bas) {
+						if (match[1] != '')
+							bas.style.display = 'inline-block';
+						else
+							bas.style.display = 'none';
+					}
+					let ca = document.getElementById('CorrectAnswer');
+					if (ca) {
+						ca.innerText = match[2];
+					}
+				}
 				checkEnableSave();  // Triggered by JayBee submitting fine bug report indicating race condition
 			}
 		}
