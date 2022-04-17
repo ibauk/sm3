@@ -8,7 +8,7 @@ Email is the chosen carrier, pretty much any version, using pretty much any devi
 
 A standard has emerged for the metadata associated with bonus claims. The *Subject:* line of the email should be formatted as:-
 
->*Entrant number*, *Bonusid*, *Odometer reading*, *Time of claim*
+>*Entrant number* *Bonusid* *Odometer reading* *Time of claim*
 
 That information line can be copied and pasted into a new claim form in the [Claims log](help:claimslog) to efficiently record the claim.
 

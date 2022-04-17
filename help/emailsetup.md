@@ -10,7 +10,10 @@ If you don't know what's meant by JSON, don't worry about it but do study the sy
 
 ## Gmail
 
-Interfacing to a Gmail account here also involves changing some settings in the associated GMail account. The most important setting is to be found under *Settings* -> *Accounts* -> *Security*. The **Less secure app access** option must be turned on. You should check this setting at the start of each rally as it gets reset by Google after a period of disuse. You must also disable two-step authentication as that is not yet catered for in ScoreMaster.
+Interfacing to a Gmail account here also involves changing some settings in the associated GMail account. 2-factor authentication must be enabled and an '*app password*' must be created. To do that, edit the Google Account settings, [Security].
+
+Check that all is ok before the rally.
+
 
 ## Public hosting
 

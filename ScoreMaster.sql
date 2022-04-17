@@ -119,7 +119,9 @@ login: ibaukebc@gmail.com
 password:
 
 # If true, only process emails sent from entrant''s registered address
-matchemail: true
+# For general testing purposes you probably want to leave this false so that you can use your own email address to send test claims.
+# You should turn this on for the actual rally though as it will prevent scores being affected by mistaken claims.
+matchemail: false
 
 
 # If this flag is true, EBC fetching will be suppressed

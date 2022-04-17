@@ -21,3 +21,7 @@ is the integer value of an odometer reading in miles or kilometres depending on 
 
 records the moment at which the bonus claim is submitted. If entered by hand, a simple four digit 24 hour clock reading is enough and
 is assumed to be in the same timezone as the rally itself. The claim time can also consist of a standard ISO8601 date/time with timezone info.
+
+## Optional answer
+
+If the [question/answer](help:questions) feature is used, the answer to a bonus question should be supplied as part of the bonus claim and consists of everything after the claim time.

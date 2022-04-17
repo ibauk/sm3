@@ -7,8 +7,8 @@ Multiple records are entered to trigger penalties at different speeds. Only one 
 The ultimate time penalty is that entrants finishing after the rally finish time are DNF. Point or multiplier deductions can be specified for late arrivals short of the finish time.
 
 Any number of time penalty records can be entered detailing time slots incurring different penalties. Penalties can be a number of points or a number of multipliers, a fixed value or per minute.
-### Mileage penalties
-The ultimate mileage penalty is to impose a maximum mileage. Entrants exceeding the maximum mileage are DNF. Lesser penalties may be incurred being either a fixed number of points or multipliers or a number of points per excess mile.
+### Distance penalties
+The ultimate distance penalty is to impose a maximum distance. Entrants exceeding the maximum distance are DNF. Lesser penalties may be incurred being either a fixed number of points or multipliers or a number of points per excess mile/km.
 ### Category penalties
 Category penalties may be specified using compound calculation rules either by assigning negative values to the point/multiplier scores of the rule or by specifying a rule resulting in DNF when triggered or not triggered. For example, it is possible to specify that an entrant who fails to score at least one bonus in each of three categories is DNF.
 ### Arbitrary penalties

@@ -2,4 +2,4 @@
 
 These fields, maintained in JSON format, hold settings used to fine-tune the behaviour of various parts of ScoreMaster.
 
-The fields are described in detail in the online [Technical Reference manual](https://docs.google.com/document/d/1IUiCZhgov1RSNxQ26CvoiSGEdEyFchIaFsXWaLnvUjM/edit?usp=sharing).
+The fields are generally self-explanatory but if in doubt as to their exact use, either ask a grownup or inspect the source.

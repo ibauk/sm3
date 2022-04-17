@@ -13,6 +13,7 @@ Minor changes include:-
 - Negative odo readings are prevented
 - Odo setting and country are defaulted to rally settings during entrant import
 - Bonus claim method defaults to EBC for entrant imports because, let's face it, that is the future
+- EBC matchemail setting defaults to false
 
 ## Rally book images
 Each bonus (not combo) can have a single image associated with it. This is used for side-by-side comparison with electronic bonus claim images and is also used by the [RBook rally book generator](https://github.com/ibauk/rbook). The images, in .JPG or .PNG format, must be stored in the **images/bonuses** folder with their filename being stored in the *Image* field on the bonus record.

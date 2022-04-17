@@ -77,7 +77,7 @@ $KONSTANTS['RPT_Tooltip']	= "Click for explanation\rdoubleclick to print";
 $KONSTANTS['RPT_Bonuses']	= "Bonuses ticked";
 $KONSTANTS['RPT_Specials']	= "Specials";
 $KONSTANTS['RPT_Combos']	= "Combos";
-$KONSTANTS['RPT_MPenalty']	= "Mileage penalty";
+$KONSTANTS['RPT_MPenalty']	= "Distance penalty";
 $KONSTANTS['RPT_TPenalty']	= "Late penalty";
 $KONSTANTS['RPT_Total'] 	= "TOTAL";
 $KONSTANTS['RPT_SPenalty']	= "Speed penalty";
@@ -327,7 +327,7 @@ $TAGS = array(
 	
 	'ContactDetails'	=> array('Contacts',''),
 	
-	'CorrectedMiles'	=> array('Distance ridden','Official rally mileage'),	// Miles/Kms
+	'CorrectedMiles'	=> array('Distance ridden','Official rally distance ridden'),	// Miles/Kms
 	
 	'Country'			=> array('Country',"Entrant's home country"),
 	'dberroragain'		=> array('The database save failed because [%s]. Please <button onClick="window.location.reload();">resubmit</button>. If problem persists tell Bob','The database save failed, probably temporary lock issue'),
@@ -476,14 +476,14 @@ $TAGS = array(
 	'MarkConfirmed'		=> array('Mark as confirmed','Mark all bonus claim decisions as having been confirmed'),
 	'MarkConfirmedFull'	=> array('Mark scorecards as confirmed/reconciled.','Normally carried out by two people comparing the claims log or other evidence to the details recorded on the scorecards.'),
 	'MaxHours'			=> array('Rideable hours','The maximum rideable hours available. Used to calculate DNF time, may show on certificates'),
-	'MaxMilesFixedM'	=> array('Multiplier','Excess mileage incurs deduction of multipliers'),							// Miles/Kms
-	'MaxMilesFixedP'	=> array('Fixed points','Excess mileage incurs fixed points deduction'),							// Miles/Kms
+	'MaxMilesFixedM'	=> array('Multiplier','Excess distance incurs deduction of multipliers'),							// Miles/Kms
+	'MaxMilesFixedP'	=> array('Fixed points','Excess distance incurs fixed points deduction'),							// Miles/Kms
 	
-	'MaxMilesPerMile'	=> array('Points per mile/km','Excess mileage incurs points deduction per excess mile/km'),				// Miles/Kms
+	'MaxMilesPerMile'	=> array('Points per mile/km','Excess distance incurs points deduction per excess mile/km'),				// Miles/Kms
 	
 	'MaxMilesPoints'	=> array('Points or Multipliers deducted','Number of points or multipliers for excess distance'),	// Miles/Kms
 	'MaxMilesUsed'		=> array('Tick if maximum distance used','Will entrants be DNF if they exceed a maximum distance?'),	// Miles/Kms
-	'MilesPenaltyText'	=> array('Mileage penalty deduction',''),															// Miles/Kms
+	'MilesPenaltyText'	=> array('Distance penalty deduction',''),															// Miles/Kms
 	'MinimumTicks'		=> array('Minimum Ticks','Minimum bonus ticks for this combo; 0=all'),
 	'MinMiles'			=> array('Minimum distance','Minimum number of miles/kms to qualify as a finisher'),						// Miles/Kms
 	'MinMilesUsed'		=> array('Tick if minimum distance used','Will entrants need to ride a minimum distance in order to qualify as finishers?'), // Miles/Kms
@@ -541,8 +541,8 @@ $TAGS = array(
 	'optCompulsory'		=> array('Compulsory',''),
 	'optOptional'		=> array('Optional',''),
 	
-	'PenaltyMaxMiles'	=> array('Max distance (penalties)','Mileage beyond this incurs penalties; 0=doesn\'t apply'),			// Miles/Kms
-	'PenaltyMilesDNF'	=> array('DNF mileage','Miles/kms beyond here result in DNF; 0=doesn\'t apply'),						// Miles/Kms
+	'PenaltyMaxMiles'	=> array('Max distance (penalties)','Distance ridden beyond this incurs penalties; 0=doesn\'t apply'),			// Miles/Kms
+	'PenaltyMilesDNF'	=> array('DNF distance','Miles/kms beyond here result in DNF; 0=doesn\'t apply'),						// Miles/Kms
 	
 	'PickAnEntrant'		=> array('Pick an entrant','Pick an entrant by entering his number or using the list'),
 	'PillionFirst'		=> array('Informal name',"Used for repeat mentions on finisher's certificate"),
@@ -822,9 +822,9 @@ $TAGS = array(
 	'WizStartOption1'	=> array('First claim starts','Each entrant is checked-out on receipt of his first bonus claim'),
 	'WizStartOption2'	=> array('Staggered start','Entrants are split into cohorts for starting purposes'),
 	'WizStopMins'		=> array('Minutes per stop','The number of minutes stopped at each bonus stop'),
-	'WizTiedPoints'		=> array('Split ties by mileage','In the event of a tie, entrants can be left tied, or ranked by mileage: lower mileage ranked first'),	// Miles/Kms
+	'WizTiedPoints'		=> array('Split ties by distance travelled','In the event of a tie, entrants can be left tied, or those riding further are ranked lower'),	// Miles/Kms
 	'WizTiedPoints0'	=> array('Leave tied','Entrants tied on points are assigned the same rank'),
-	'WizTiedPoints1'	=> array('Split','When entrants are tied on points, the one with lower mileage will be ranked higher'),
+	'WizTiedPoints1'	=> array('Split','When entrants are tied on points, the one with lower distance travelled will be ranked higher'),
 	'WizTitle'			=> array('This rally needs to be configured, please fill in the blanks',''),
 	'WizVirtualPage'	=> array('Virtual rally parameters','Virtual rally parameters'),
 	'WizTankRange'		=> array('Tank range','The maximum distance travelled before refuelling'),

@@ -49,12 +49,6 @@ $ENTRANT_FIELDS = [$IGNORE_COLUMN=>'ignore','RiderLast'=>'RiderLast','PillionLas
 $BONUS_FIELDS = [$IGNORE_COLUMN=>'ignore'];
 $COMBO_FIELDS = [$IGNORE_COLUMN=>'ignore'];
 
-$sql = "SELECT MilesKms, HostCountry FROM rallyparams";
-$R = $DB->query($sql);
-$rd = $R->fetchArray();
-
-$IMPORTSPEC['default']['OdoKms'] = $rd['MilesKms'];
-$IMPORTSPEC['default']['Country'] = $rd['HostCountry'];
 
 
 // Load list of templates
@@ -212,6 +206,27 @@ function loadSpreadsheet()
 {
 	global $DB,$TAGS,$IMPORTSPEC,$KONSTANTS,$target_dir,$TYPE_BONUSES,$TYPE_COMBOS,$TYPE_ENTRANTS;
 
+
+	switch($IMPORTSPEC['type']) {
+		case $TYPE_BONUSES:
+			$tablename = 'bonuses';
+			break;
+		case $TYPE_COMBOS:
+			$tablename = 'combinations';
+			break;
+		case $TYPE_ENTRANTS:
+		default:
+			$tablename = 'entrants';
+			
+			$sql = "SELECT MilesKms, HostCountry FROM rallyparams";
+			$R = $DB->query($sql);
+			$rd = $R->fetchArray();
+			
+			$IMPORTSPEC['default']['OdoKms'] = $rd['MilesKms'];
+			$IMPORTSPEC['default']['Country'] = $rd['HostCountry'];
+			
+	}
+
 	// Load the relevant specs
 
 	loadSpecs();
@@ -233,17 +248,6 @@ function loadSpreadsheet()
 
 	echo("<p>".$TAGS['xlsImporting'][1]."</p>");
 
-	switch($IMPORTSPEC['type']) {
-		case $TYPE_BONUSES:
-			$tablename = 'bonuses';
-			break;
-		case $TYPE_COMBOS:
-			$tablename = 'combinations';
-			break;
-		case $TYPE_ENTRANTS:
-		default:
-			$tablename = 'entrants';
-	}
 	
 	// Check for overwriting
 	$sql = "SELECT Count(*) AS Rex FROM $tablename";

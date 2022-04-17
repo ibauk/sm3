@@ -182,7 +182,7 @@ function showAbout()
 	$mk = ($KONSTANTS['BasicDistanceUnit'] == $KONSTANTS['DistanceIsMiles'] ? 'miles' : 'kilometres');
 	echo('<dt title="'.$TAGS['abtBasicDistance'][1].'">'.$TAGS['abtBasicDistance'][0].'</dt><dd>'.$mk.'</dd>');
 	echo('<dt title="'.$TAGS['abtAuthor'][1].'">'.$TAGS['abtAuthor'][0].'</dt><dd>Bob Stammers &lt;webmaster@ironbutt.co.uk&gt; (IBA #51220)</dd>');
-	echo('<dt title="'.$TAGS['abtInspired'][1].'">'.$TAGS['abtInspired'][0].'</dt><dd><span class="keep">Chris Kilner #40058</span>, <span class="keep">Steve Eversfield #169</span>, <span class="keep">Lee Edwards #59974</span>, <span class="keep">Robert Koeber #552</span>, <span class="keep">Graeme Dawson #40020</span>, <span class="keep">Peter Ihlo #576</span></dd>');
+	echo('<dt title="'.$TAGS['abtInspired'][1].'">'.$TAGS['abtInspired'][0].'</dt><dd><span class="keep">Chris Kilner #40058</span>, <span class="keep">Steve Eversfield #169</span>, <span class="keep">Lee Edwards #59974</span>, <span class="keep">Robert Koeber #552</span>, <span class="keep">Graeme Dawson #40020</span>, <span class="keep">Peter Ihlo #576</span>, <span class="keep">Steve Westall #40092</span></dd>');
 	echo('<dt title="'.$TAGS['abtLicence'][1].'">'.$TAGS['abtLicence'][0].'</dt><dd class="clickme" onclick="document.getElementById(\'mit\').className=\'show\';">MIT</dd>');
 	echo('</dl>');
 	echo('<p id="mit" class="hide">'.$MIT.'</p>');

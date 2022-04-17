@@ -47,11 +47,16 @@ files:
   - sm/claims.php
   - sm/claimslog.php
   - sm/claimsphp.js
-  - LICENSE
+  - sm/LICENSE
   - sm/entrants.php
   - sm/combos.php
   - sm/help/questions.hlp
   - sm/help/index.hlp
+  - sm/help/emailsetup.hlp
+  - sm/help/stdclaim.hlp
+  - sm/help/ebc.hlp
+  - sm/help/penalties.hlp
+  - sm/help/rpsettings.hlp
   
 folders:
 
