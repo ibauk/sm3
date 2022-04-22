@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.1",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.1.1",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -78,6 +78,7 @@ $PROGRAM = array("version" => "3.1",	"title"	=> "ScoreMaster");
  *  2.8.1		Updated PHPMailer, PHPSpreadsheet
  *  2.9			Claims log
  *  3.0			Complete refactor
+ *  3.1.1		urlencode bonus image filenames
  */
 
 $MIT = <<<'EOT'

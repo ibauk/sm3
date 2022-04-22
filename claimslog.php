@@ -482,7 +482,7 @@ function listEBClaims() {
     while ($rs = $R->fetchArray()) {
         echo('<tr data-claimid="'.$rs['rowid'].'" ');
         echo('data-entrant="'.$rs['EntrantID'].'" data-photo="'.$rs['Image'].'" ');
-        echo('data-bphoto="'.$rs['BImage'].'" ');
+        echo('data-bphoto="'.rawurlencode($rs['BImage']).'" ');
         echo('data-team="'.$rs['TeamID'].'" ');
         echo('data-bonus="'.$rs['BonusID'].'" data-odo="'.$rs['OdoReading'].'" ');
         echo('data-points="'.$rs['Points'].'" data-askpoints="'.$rs['AskPoints'].'"');

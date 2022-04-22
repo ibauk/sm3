@@ -4,59 +4,27 @@
 
 
 ## The id of this patch, displayed at run time
-id: Upgrade database from 9 to 10, app from 3.0 to 3.1
+id: urlencode bonus image filenames
 
 ## Only apply this patch to installations with at least this DBVersion
 mindb: 9
 
 ## Only apply this patch to installations with at most this DBVersion
-maxdb: 9
+maxdb: 10
 
 
 ## Only apply this patch to installations with at least this AppVersion
-minapp: 3.0
+minapp: 3.1
 
 ## Only apply this patch to installations with at most this DBVersion
 maxapp: 
 
 sql:
-  - ALTER TABLE bonuses ADD COLUMN Coords TEXT;
-  - ALTER TABLE bonuses ADD COLUMN Waffle TEXT;
-  - ALTER TABLE bonuses ADD COLUMN Question TEXT;
-  - ALTER TABLE bonuses ADD COLUMN Answer TEXT;
-  - ALTER TABLE claims ADD COLUMN QuestionAsked INTEGER DEFAULT 0;
-  - ALTER TABLE claims ADD COLUMN QuestionAnswered INTEGER DEFAULT 0;
-  - ALTER TABLE claims ADD COLUMN AnswerSupplied TEXT;
-  - UPDATE claims SET QuestionAsked=0,QuestionAnswered=0 WHERE QuestionAsked Is Null;
-  - UPDATE importspecs SET fieldspecs = Replace(fieldspecs,'= 0;','= 1;') WHERE specid=' unknown';
-  - UPDATE importspecs SET fieldspecs = Replace(fieldspecs,'BCMethod'']       = 0','BCMethod'']       = 1') WHERE specid In ('Rally','Rallyx');
-  - UPDATE rallyparams SET ebcsettings = Replace(Printf('%s%c%callowbody:%ctrue%c%c',ebcsettings,char(13),char(10),' ',char(13),char(10)),'^\s*[A-Za-z]','\s*[A-Za-z]');
-  - UPDATE rallyparams SET settings = Printf('{%c%c	"claimsShowPost"%c "false",%c%c	"claimsAutopostAll"%c "true",%c%c	"claimsReloadEBC"%c "60",%c%c	"singleuserMode"%c "false",%c%c	"autoAdjustBonusWidth"%c "true",%c%c "useBonusQuestions"%c "false",%c%c "valBonusQuestions"%c "50"}',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':',char(13),char(10),':');
-  - UPDATE rallyparams SET DBVersion=10;
 
 files:
   - sm/bonuses.php
-  - sm/score.css
-  - sm/score.js
-  - sm/customvars.php
-  - sm/custom.js
-  - sm/recalc.js
-  - sm/about.php
-  - caddy/ebcfetch.exe
-  - sm/importxls.php
-  - sm/claims.php
   - sm/claimslog.php
-  - sm/claimsphp.js
-  - sm/LICENSE
-  - sm/entrants.php
-  - sm/combos.php
-  - sm/help/questions.hlp
-  - sm/help/index.hlp
-  - sm/help/emailsetup.hlp
-  - sm/help/stdclaim.hlp
-  - sm/help/ebc.hlp
-  - sm/help/penalties.hlp
-  - sm/help/rpsettings.hlp
+  - sm/about.php
   
 folders:
 

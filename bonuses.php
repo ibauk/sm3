@@ -180,7 +180,7 @@ function showBonus($bonusid) {
 	}
 </script>
 <?php
-	echo('<img style="vertical-align: middle;" src="images/bonuses/'.$rd['Image'].'" alt="*" class="thumbnail" onclick="thumbimg(this);" data-t="1" loading="lazy"/>');
+	echo('<img style="vertical-align: middle;" src="images/bonuses/'.rawurlencode($rd['Image']).'" alt="**" class="thumbnail" onclick="thumbimg(this);" data-t="1" loading="lazy"/>');
 	echo('</span>');
 	
 	
