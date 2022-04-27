@@ -79,6 +79,7 @@ $PROGRAM = array("version" => "3.1.1",	"title"	=> "ScoreMaster");
  *  2.9			Claims log
  *  3.0			Complete refactor
  *  3.1.1		urlencode bonus image filenames
+ *  3.1.2		Remove references to retraceBreadcrumb
  */
 
 $MIT = <<<'EOT'

@@ -303,8 +303,6 @@ function saveCertificateW() {
 	if ($DB->lastErrorCode() <> 0)
 		echo($DB->lastErrorCode().' == '.$DB->lastErrorMsg().'<br>'.$sql.'<hr>');
 
-	if (retraceBreadcrumb())
-		;
 	
 }
 

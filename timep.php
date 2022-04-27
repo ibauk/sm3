@@ -87,8 +87,6 @@ function saveTimePenalties()
 	$DB->exec('COMMIT TRANSACTION');
 	if ($DB->lastErrorCode()<>0) 
 		return dberror();			
-	if (retraceBreadcrumb())
-		exit;
 	if (isset($_REQUEST['menu'])) 
 	{
 		$_REQUEST['c'] = $_REQUEST['menu'];

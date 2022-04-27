@@ -25,6 +25,8 @@ files:
   - sm/bonuses.php
   - sm/claimslog.php
   - sm/about.php
+  - sm/certedit.php
+  - sm/speeding.php
   
 folders:
 

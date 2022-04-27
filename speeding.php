@@ -149,8 +149,6 @@ function saveSpeedPenalties()
 		
 	}
 	$DB->exec('COMMIT TRANSACTION');
-	if (retraceBreadcrumb())
-		exit;
 }
 
 //print_r($_REQUEST);
