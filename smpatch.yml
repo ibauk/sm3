@@ -4,7 +4,7 @@
 
 
 ## The id of this patch, displayed at run time
-id: urlencode bonus image filenames
+id: Bug fixes since v3.1
 
 ## Only apply this patch to installations with at least this DBVersion
 mindb: 9
@@ -28,6 +28,7 @@ files:
   - sm/certedit.php
   - sm/speeding.php
   - sm/timep.php
+  - sm/recalc.js
   
 folders:
 

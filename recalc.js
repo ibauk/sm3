@@ -622,7 +622,7 @@ function tickBonus(obj) {
 
     let bv = document.getElementById('BonusesVisited');
     let ticks = bv.value.split(',');
-    console.log("Bonuses ticked - "+bv.value);
+    console.log("tb: Bonuses ticked - "+bv.value);
     let b = {};
     let bix = [];
     for (let t of ticks) {
@@ -635,13 +635,15 @@ function tickBonus(obj) {
             bix.push(t.substring(0,e));
         }
     }
-    console.log('bix = '+JSON.stringify(bix));
+    console.log('tb: bix = '+JSON.stringify(bix));
     if (obj.checked) {
+        console.log('tb: checked');
         if (b[obj.value] === undefined) {
             b[obj.value] = obj.value;
             bix.push(obj.value);
         }
         if (bonusScoredOk(obj)) {
+            console.log('tb: scoredok');
             obj.parentElement.classList.add('checked');
             obj.parentElement.classList.remove('rejected');
             var lbl = obj.parentNode.firstChild.innerHTML;
@@ -663,10 +665,13 @@ function tickBonus(obj) {
         
             }
         } else {
+            console.log('tb: not scored ok');
             obj.parentElement.classList.add('rejected');
             obj.parentElement.classList.remove('checked');
         }
     } else {
+        console.log('tb: unchecked');
+        setRejectedClaim(obj.value,0);
         obj.parentElement.className = "showbonus";
         if (b[obj.value] !== undefined) {
             delete b[obj.value];
@@ -692,13 +697,13 @@ function tickBonus(obj) {
                 x = b[key].substring(0,e);
             }
     
-            console.log("Getting bonus "+x);
+            console.log("tb: Getting bonus "+x);
             let B = document.getElementById(x);
             bv.value += x+'='+B.getAttribute('data-points')+';'+B.getAttribute('data-minutes');
         }            
     }
     
-    console.log("Bonuses ticked : "+bv.value);
+    console.log("tb2: Bonuses ticked : "+bv.value);
     recalcScorecard();
 }
 
