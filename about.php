@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.1.1",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.1.2",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
