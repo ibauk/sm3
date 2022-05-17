@@ -21,6 +21,7 @@ maxapp:
 
 sql:
   - UPDATE entrants SET ScoreX=Replace(ScoreX,'&checkmark;','&#x2713;');
+  - UPDATE rallyparams SET EmailParams=Replace(EmailParams,'"SetFrom',Printf('"Encoding"%c "quoted-printable", "CharSet"%c "UTF-8", "SetFrom',':',':'));
 
 files:
   - sm/bonuses.php

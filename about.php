@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.1.2",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.1.3",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -80,6 +80,7 @@ $PROGRAM = array("version" => "3.1.2",	"title"	=> "ScoreMaster");
  *  3.0			Complete refactor
  *  3.1.1		urlencode bonus image filenames
  *  3.1.2		Remove references to retraceBreadcrumb, clear rejected status of bonus
+ *  3.1.3		Email character set clearups
  */
 
 $MIT = <<<'EOT'
