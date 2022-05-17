@@ -454,7 +454,7 @@ function recalcScorecard() {
         let points = chooseNZ(ccr_pwr,nzCount);
         let bpx = '';
         if (ccr_rtype === CAT_DNF_Unless_Triggered) { // DNF type condition
-            points = '&checkmark;';
+            points = '&#x2713;'; //checkmark
         } else if (ccr_rtype === CAT_DNF_If_Triggered) {
             points = EntrantStatusDNF;
         } else if (ccr_rtype === CAT_PlaceholderRule ) {
@@ -538,7 +538,7 @@ function recalcScorecard() {
         let basicPoints = 0;
         let bpx = '';
         if (ccr_rtype === CAT_DNF_Unless_Triggered) { // DNF type condition
-            basicPoints = '&checkmark;';
+            basicPoints = '&#x2713;';//checkmark
         } else if (ccr_rtype === CAT_DNF_If_Triggered) {
             basicPoints = EntrantStatusDNF;
         } else if (ccr_rtype === CAT_PlaceholderRule ) {

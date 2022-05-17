@@ -20,6 +20,7 @@ minapp: 3.1
 maxapp: 
 
 sql:
+  - UPDATE entrants SET ScoreX=Replace(ScoreX,'&checkmark;','&#x2713;');
 
 files:
   - sm/bonuses.php
