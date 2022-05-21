@@ -120,6 +120,27 @@ function emitCatCompoundRules() {
         echo('>');
     }
 }
+
+function emitPenalties() {
+
+    global $DB;
+    
+    //	Time penalties
+		
+	$R = $DB->query('SELECT rowid AS id,TimeSpec,PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor FROM timepenalties ORDER BY PenaltyStart,PenaltyFinish');
+	while ($rd = $R->fetchArray())
+		echo('<input type="hidden" name="TimePenalty[]" data-spec="'.$rd['TimeSpec'].'" data-start="'.$rd['PenaltyStart'].'" data-end="'.$rd['PenaltyFinish'].'" data-factor="'.$rd['PenaltyFactor'].'" data-method="'.$rd['PenaltyMethod'].'">');
+
+    // Speed penalties
+
+    $R = $DB->query('SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints FROM speedpenalties ORDER BY MinSpeed DESC');
+    while ($rd = $R->fetchArray()) {
+        echo('<input type="hidden" name="SpeedPenalty[]" data-Basis="'.$rd['Basis'].'" data-MinSpeed="'.$rd['MinSpeed'].'" ');
+        echo('data-PenaltyType="'.$rd['PenaltyType'].'" value="'.$rd['PenaltyPoints'].'">');
+    }
+
+}
+
 // This fetches and emits the various rally-specific variables needed by an active scorecard
 function emitScorecardVars() {
 
@@ -163,7 +184,11 @@ function emitScorecardVars() {
     echo('<input type="hidden" id="RallyTimeStart" value="'.$RP['StartTime'].'">');
 
     emitCatCompoundRules();
+    emitPenalties();
 
+    echo('<input type="hidden" id="RTP_TPenalty" value="'.htmlentities(getSetting('RPT_TPenalty',$KONSTANTS['RPT_TPenalty'])).'">');
+    echo('<input type="hidden" id="RTP_MPenalty" value="'.htmlentities(getSetting('RPT_MPenalty',$KONSTANTS['RPT_MPenalty'])).'">');
+    echo('<input type="hidden" id="RTP_SPenalty" value="'.htmlentities(getSetting('RPT_SPenalty',$KONSTANTS['RPT_SPenalty'])).'">');
     // Needed for use with setFinisherStatus (score.js)
 
     echo("\r\n<!--End of rally standard variables-->\r\n");
@@ -490,7 +515,7 @@ function showScorecard($entrant) {
     $style .= 'td.sxitempoints,';
     $style .= 'td.sxtotalpoints { text-align: right; }';
 
-    echo('<div id="scorex" oncontextmenu="showBonusOrder()" title="'.$TAGS['ScorexHints'][0].'" class="scorex" data-show="0" ondblclick="sxprint();" ');
+    echo('<div id="scorex" oncontextmenu="showBonusOrder()" title="'.$TAGS['ScorexHints'][0].'" class="scorex" data-show="0" ondblclick="printscorex();" ');
     echo('data-title="'.htmlspecialchars($RP['RallyTitle']).'" ');
     echo('data-style="'.$style.'" >');
     echo($rd['ScoreX'].'</div>');

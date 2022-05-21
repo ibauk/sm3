@@ -42,6 +42,8 @@ $scorex = [];
 $reasons = [];
 $axisLabels = [];
 $catlabels = [];
+$timePenalties = [];
+$speedPenalties = [];
 $finisherStatus = $KONSTANTS['EntrantOK'];
 eval("\$evs = ".$TAGS['EntrantStatusV'][0]);
 
@@ -233,13 +235,25 @@ function calcEntrantStatus($rd) {
     $sx = new SCOREXLINE();
     $sx->id = $TAGS['EntrantDNF'][0];
 
+    if (calcSpeedPenalty(true,$rd['AvgSpeed'])) {
+        $sx->desc = $KONSTANTS['DNF_SPEEDING'];
+        $scorex[] = $sx;
+        return $KONSTANTS['EntrantDNF'];
+    }
+
+    if ($RP['MilesKms'] != 0)
+        $bdu = $TAGS['OdoKmsK'][0];
+    else
+        $bdu = $TAGS['OdoKmsM'][0];
+
+
     if ($rd['CorrectedMiles'] < $RP['MinMiles']) {
-        $sx->desc = $KONSTANTS['DNF_TOOFEWMILES'];
+        $sx->desc = $bdu.' < '.$RP['MinMiles']; //$KONSTANTS['DNF_TOOFEWMILES'];
         $scorex[] = $sx;
         return $KONSTANTS['EntrantDNF'];
     }
     if ($rd['CorrectedMiles'] > $RP['PenaltyMilesDNF']  && $RP['PenaltyMilesDNF'] > 0) {
-        $sx->desc = $KONSTANTS['DNF_TOOMANYMILES'];
+        $sx->desc = $bdu.' > '.$RP['PenaltyMilesDNF']; //$KONSTANTS['DNF_TOOMANYMILES'];
         $scorex[] = $sx;
         return $KONSTANTS['EntrantDNF'];
     }
@@ -247,7 +261,12 @@ function calcEntrantStatus($rd) {
     // Check for finish time DNF        
     $ft = calcFinishTimeDNF($rd);
     if ($rd['FinishTime'] > $ft) {
-        $sx->desc = $KONSTANTS['DNF_FINISHEDTOOLATE'].' > '.str_replace('T',' ',$ft);
+        if (substr($rd['FinishTime'],0,10) == substr($ft,0,10))
+            $sx->desc = substr($rd['FinishTime'],11).' > '.substr($ft,11);
+        else
+            $sx->desc = str_replace('T',' ',$rd['FinishTime']).' > '.str_replace('T',' ',$ft);
+    
+        //$sx->desc = $KONSTANTS['DNF_FINISHEDTOOLATE'].' > '.str_replace('T',' ',$ft);
         $scorex[] = $sx;
         return $KONSTANTS['EntrantDNF'];
     }
@@ -320,6 +339,140 @@ function calcFinishTimeDNF($rd) {
     return $finishTime;
 
 }
+
+function calcMileagePenalty($correctedMiles) {
+
+    global $KONSTANTS, $RP;
+
+	$CM = $correctedMiles;
+	$PMM = $RP['PenaltyMaxMiles'];
+	$PMMethod = $RP['MaxMilesMethod'];
+	$PMPoints = $RP['MaxMilesPoints'];
+	$PenaltyMiles = $CM - $PMM;
+	
+	if ($PenaltyMiles <= 0) // No penalty
+		return [0,0,$PMM,$PenaltyMiles]; 
+		
+	
+	switch ($PMMethod) 	{
+		case $KONSTANTS['MMM_PointsPerMile']:
+			return [0 - $PMPoints * $PenaltyMiles,0,$PMM,$PenaltyMiles];
+		case $KONSTANTS['MMM_Multipliers']:
+			return [0,0 - $PMPoints,$PMM,$PenaltyMiles];
+		default:
+			return [0 - $PMPoints,0,$PMM,$PenaltyMiles];
+	}
+		
+}
+
+function calcSpeedPenalty($dnf,$AvgSpeed)
+/*
+ * If parameter dnf is false then
+ * This will return the number of penalty points (not multipliers) or 0
+ * If highest match gives DNF, I return 0
+ *
+ * If parameter dnf is true then
+ * If highest match give DNF, return true otherwise false
+ *
+ */
+{
+    global $RP, $KONSTANTS, $speedPenalties;
+
+	$speed = floatval($AvgSpeed);
+	//console.log('Checking '+speed+' against '+SP.length+' speed penalty records');
+	foreach ($speedPenalties as $SP) {
+		if ($speed >= floatval($SP->MinSpeed))	{
+			//console.log('Matched '+speed+' to '+SP[i].getAttribute('data-MinSpeed'));
+			if (intval($SP->PenaltyType)==1) {
+				if ($dnf)
+					return true;
+				else
+					return 0; /* Penalty points */
+			}
+			if ($dnf)
+				return false;
+			else
+				return 0 - intval($SP->value);
+		}
+    }
+	return 0;
+}
+
+
+
+function calcTimePenalty($STDate,$FTDate) {
+
+    global $timePenalties, $KONSTANTS, $RP;
+
+	$OneMinute = 1000 * 60;
+
+
+    // Start/finish times
+    if (is_null($STDate)) {
+        $STDate = $RP['StartTime'];
+    }
+
+    $mtDNF = DateTime::createFromFormat('Y\-m\-d\TH\:i',$STDate);
+    try {
+        $mtDNF = date_add($mtDNF,new DateInterval("PT".$RP['MaxHours']."H"));
+    } catch(Exception $e) {
+        echo('omg! '.$e->getMessage());
+    }
+    $myTimeDNF = joinDateTime(date_format($mtDNF,'Y-m-d'),date_format($mtDNF,'H:i'));
+    if ($RP['FinishTime'] < $myTimeDNF)
+        $myTimeDNF = $RP['FinishTime'];
+
+    error_log('myTimeDNF is '.$myTimeDNF.' FTDate is '.$FTDate);
+
+    $EntrantFinishTime = new DateTime($FTDate);
+
+    foreach ($timePenalties as $TP) {
+        switch($TP->spec) {
+
+            // Do I need 'Z'?
+            case $KONSTANTS['TimeSpecRallyDNF']:
+                $dnf = new DateTime($RP['FinishTime']);
+                $ds = date_sub($dnf,new DateInterval("PT".$TP->start."i"));
+                $de = date_sub($dnf,new DateInterval("PT".$TP->end."i"));
+                break;
+            case $KONSTANTS['TimeSpecEntrantDNF']:
+                $dnf = new DateTime($myTimeDNF);
+                $ds = date_sub($dnf,new DateInterval("PT".$TP->start."i"));
+                $de = date_sub($dnf,new DateInterval("PT".$TP->end."i"));
+                break;
+            default:
+                $ds = new DateTime($TP->start);
+                $de = new DateTime($TP->end);
+        }
+        if ($EntrantFinishTime >= $ds && $EntrantFinishTime <= $de) {
+            $PF = $TP->factor;
+            $PM = $TP->method;
+            $PStartDate = $ds;
+            $xs = date_diff($EntrantFinishTime,$PStartDate,TRUE);
+            $Mins = intval($xs->format("%i")) + 1;
+            $DTx = date_format($ds,'Y-m-d H:i');
+            switch($PM) {
+
+                case $KONSTANTS['TPM_MultPerMin']:
+                    return [0,0 - $PF * $Mins,$Dtx,$FTDate];
+                case $KONSTANTS['TPM_PointsPerMin']:
+                    return [0 - $PF * $Mins,0,$DTx,$FTDate];
+                case $KONSTANTS['TPM_FixedMult']:
+                    return [0,0 - $PF,$DTx,$FTDate];
+                default:
+                    return [0 - $PF,0,$DTx,$FTDate];
+            }
+        }
+    }
+  	return [0,0,0,0];
+
+}
+
+
+
+
+
+
 
 function catFieldList() {
 
@@ -425,6 +578,18 @@ function debugCombos() {
 
 }
 
+function debugTimePenalties() {
+
+    global $timePenalties;
+
+    echo('<br>');
+    foreach($timePenalties as $t) {
+        echo(' TP: ');
+        print_r($t);
+        echo('<br>');
+    }
+}
+
 // This recalculates all dirty scorecards (or all scorecards if forced)
 function recalcAll($force) {
 
@@ -453,7 +618,7 @@ function recalcAll($force) {
 
 function initRallyVariables() {
 
-    global $RP, $catlabels, $axisLabels, $reasons, $comboValues, $specialValues, $bonusValues,$catCompoundRules, $sgroups, $KONSTANTS, $DB, $TAGS;
+    global $RP, $catlabels, $axisLabels, $reasons, $comboValues, $specialValues, $bonusValues,$timePenalties,$speedPenalties,$catCompoundRules, $sgroups, $KONSTANTS, $DB, $TAGS;
 
     if (isset($RP['RallyTitle']))
         return;
@@ -561,6 +726,33 @@ function initRallyVariables() {
         $bonusValues[] = $bon;
     }
 //    debugBonuses();
+
+//	Time penalties
+		
+    $R = $DB->query('SELECT rowid AS id,TimeSpec,PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor FROM timepenalties ORDER BY PenaltyStart,PenaltyFinish');
+    while ($rd = $R->fetchArray()) {
+        $timp = new StdClass();
+        $timp->spec = $rd['TimeSpec'];
+        $timp->start = $rd['PenaltyStart'];
+        $timp->end = $rd['PenaltyFinish'];
+        $timp->factor = $rd['PenaltyFactor'];
+        $timp->method = $rd['PenaltyMethod'];
+        $timePenalties[] = $timp;
+    }
+
+    debugTimePenalties();
+
+// Speed penalties
+
+    $R = $DB->query('SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints FROM speedpenalties ORDER BY MinSpeed DESC');
+    while ($rd = $R->fetchArray()) {
+        $spd = new StdClass();
+        $spd->Basis = $rd['Basis'];
+        $spd->MinSpeed = $rd['MinSpeed'];
+        $spd->PenaltyType = $rd['PenaltyType'];
+        $spd->value = $rd['PenaltyPoints'];
+        $speedPenalties[] = $spd;
+    }
 
 }
 
@@ -1012,6 +1204,64 @@ function recalcScorecard($entrant,$intransaction) {
 
     } // Bonus per cat axis
 
+
+
+    $tp = calcTimePenalty($rd['StartTime'],$rd['FinishTime']);
+    $tpP = $tp[0]; // Points
+    $tpM = $tp[1]; // Multipliers
+
+    if ($tpM != 0 || $tpP != 0) {
+        $multipliers += $tpM;
+        $bonusPoints += $tpP;
+        $sx = new SCOREXLINE();
+        if (substr($tp[2],0,10) == substr($tp[3],0,10) && substr($tp[3],11,5) >= substr($tp[2],11,5)) {
+            $y = ''.substr($tp[3],11,5).' >= '.substr($tp[2],11,5);
+        } else {
+            $y = ''.str_replace('T',' ',substr($tp[3],0,16)).' >= '.str_replace('T',' ',$tp[2]);
+        }
+        $sx->desc = getSetting('RPT_TPenalty',$KONSTANTS['RPT_TPenalty']).$y;
+        if ($tpM != 0) {
+            $sx->points = "$tpM x";
+        } else {
+            $sx->points = $tpP;
+        }
+        $sx->totalPoints = $bonusPoints;
+        $scorex[] = $sx;
+    }
+
+    $tp = calcMileagePenalty($rd['CorrectedMiles']);
+    $tpP = $tp[0]; // Points
+    $tpM = $tp[1]; // Multipliers
+
+    if ($tpM != 0 || $tpP != 0) {
+        $multipliers += $tpM;
+        $bonusPoints += $tpP;
+        $sx = new SCOREXLINE();
+        //$sx->desc = getSetting('RPT_MPenalty',$KONSTANTS['RPT_MPenalty']); //."m=$tpM, $p=$tpP";
+        if ($RP['MilesKms'] != 0)
+            $bdu = $TAGS['OdoKmsK'][0];
+        else
+            $bdu = $TAGS['OdoKmsM'][0];
+
+        $sx->desc = getSetting('RPT_MPenalty',$KONSTANTS['RPT_MPenalty']).$tp[3]." $bdu > ".$tp[2];
+        if ($tpM != 0) {
+            $sx->points = "$tpM x";
+        } else {
+            $sx->points = $tpP;
+        }
+        $sx->totalPoints = $bonusPoints;
+        $scorex[] = $sx;
+    }
+
+    $spp = calcSpeedPenalty(false,$rd['AvgSpeed']);
+    if ($spp != 0) {
+        $bonusPoints += $spp;
+        $sx = new SCOREXLINE();
+        $sx->desc = getSetting('RPT_SPenalty',$KONSTANTS['RPT_SPenalty']);
+        $sx->points = $spp;
+        $sx->totalPoints = $bonusPoints;
+        $scorex[] = $sx;
+    }
 
     if ($multipliers > 1) {
         $sx = new SCOREXLINE();

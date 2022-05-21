@@ -64,8 +64,8 @@ $KONSTANTS['DefaultScorer'] = 'Bob';
 // Used for offline score recalculations - check with custom.js
  
 $KONSTANTS['DNF_TOOFEWPOINTS'] = "Not enough points";
-$KONSTANTS['DNF_TOOFEWMILES'] = "Not enough miles";
-$KONSTANTS['DNF_TOOMANYMILES'] = "Too many miles";
+$KONSTANTS['DNF_TOOFEWMILES'] = "Not enough distance";
+$KONSTANTS['DNF_TOOMANYMILES'] = "Too much distance";
 $KONSTANTS['DNF_FINISHEDTOOLATE'] = "Finished too late";
 $KONSTANTS['DNF_MISSEDCOMPULSORY'] = "Missed a compulsory bonus";
 $KONSTANTS['DNF_HITMUSTNOT'] = "Breached a rule";
@@ -77,10 +77,10 @@ $KONSTANTS['RPT_Tooltip']	= "Click for explanation\rdoubleclick to print";
 $KONSTANTS['RPT_Bonuses']	= "Bonuses ticked";
 $KONSTANTS['RPT_Specials']	= "Specials";
 $KONSTANTS['RPT_Combos']	= "Combos";
-$KONSTANTS['RPT_MPenalty']	= "Distance penalty";
-$KONSTANTS['RPT_TPenalty']	= "Late penalty";
+$KONSTANTS['RPT_MPenalty']	= "Excess distance penalty";
+$KONSTANTS['RPT_TPenalty']	= "&#x23F0;Late arrival penalty";
 $KONSTANTS['RPT_Total'] 	= "TOTAL";
-$KONSTANTS['RPT_SPenalty']	= "Speed penalty";
+$KONSTANTS['RPT_SPenalty']	= "Excess speed penalty";
 
 $KONSTANTS['CLAIM_REJECTED'] = "Claim rejected";
 

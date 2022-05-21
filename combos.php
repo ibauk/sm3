@@ -594,7 +594,7 @@ function saveSingleCombo() {
 	if ($isnew) {
 		$sql = "INSERT INTO combinations(ComboID,BriefDesc,ScoreMethod,MinimumTicks,ScorePoints,Bonuses,Compulsory";
 		for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
-			if (isset($REQUEST['Cat'.$i.'Entry']))
+			if (isset($_REQUEST['Cat'.$i.'Entry']))
 				$sql .= ",Cat".$i;
 		$sql .= ") VALUES (";
 		$sql .= "'".$DB->escapeString($comboid)."'";
@@ -622,6 +622,7 @@ function saveSingleCombo() {
 				$sql .= ",Cat".$i."=".$_REQUEST['Cat'.$i.'Entry'];
 		$sql .= " WHERE ComboID='".$DB->escapeString($comboid)."'";
 	}
+	//print_r($_REQUEST);echo('<hr>'.$sql); exit;
 	$DB->exec($sql);
 	if ($DB->lastErrorCode()<>0) 
 		return dberror();

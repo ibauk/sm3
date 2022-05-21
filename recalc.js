@@ -356,7 +356,8 @@ function recalcScorecard() {
         let pointsDesc = "";
         let mults = 0;
         let basicBonusPoints = 0;
-        if (c.getAttribute('data-pm') === CMB_ScoreMults) {
+        if (c.getAttribute('data-pm') == CMB_ScoreMults) {
+            console.log('Combo scores mults '+pts[numbids - 1]);
             mults = pts[numbids - 1];
             basicBonusPoints = 0;
         } else {
@@ -373,13 +374,17 @@ function recalcScorecard() {
 
         bonusPoints += parseInt(basicBonusPoints);
         console.log("Processing combo "+c.value+' + '+basicBonusPoints+' = '+bonusPoints+' ['+numbids+'/'+c.getAttribute('data-minticks')+']');
-        multipliers += mults;
+        multipliers += parseInt(mults);
 
         let sx = new SCOREXLINE();
         sx.id = c.value;
         sx.desc = c.getAttribute('data-desc');
         sx.pointsDesc = " ( "+numbids+" / "+c.getAttribute('data-maxticks')+" ) ";
-        sx.points = basicBonusPoints;
+        if (c.getAttribute('data-pm') == CMB_ScoreMults) {
+            sx.points = 'x '+mults;
+        } else {
+            sx.points = basicBonusPoints;
+        }
         sx.totalPoints = bonusPoints;
         scorex.push(sx);
 
@@ -549,7 +554,7 @@ function recalcScorecard() {
             //echo("RC $basicPoints / $bonusPoints <br>");
         } else { // Multipliers then
             let mults = chooseNZ(ccr_pwr,catcount);
-            multipliers += mults;
+            multipliers += parseInt(mults);
             bpx = 'x ';
             basicPoints = mults;
         }
@@ -587,6 +592,77 @@ function recalcScorecard() {
 
     } // Bonus per cat axis
 
+    let tp = calcTimePenalty();
+    let tpP = tp[0]; // Points
+    let tpM = tp[1]; // Multipliers
+
+    if (tpM != 0 || tpP != 0) {
+        multipliers += parseInt(tpM);
+        bonusPoints += tpP;
+        let sx = new SCOREXLINE();
+        let tpx = RPT_TPenalty;
+        let tpxx = document.getElementById('RTP_TPenalty');
+        console.log('tpxx is '+tpxx+' tp2='+tp[2]);
+        if (tpxx) {
+            tpx = tpxx.value;
+        }
+        if (tp[2].length > 1 && (tp[2].substring(0,10) == tp[3].substring(0,10))) {
+            sx.desc = tpx+tp[3].substring(11,16)+' >= '+tp[2].substring(11,16);
+        } else {
+            sx.desc = tpx+tp[3].replace('T',' ')+' >= '+tp[2].replace('T',' ').substring(0,16);
+        }
+        if (tpM != 0) {
+            sx.points = ''+tpM+' x';
+        } else {
+            sx.points = tpP;
+        }
+        sx.totalPoints = bonusPoints;
+        scorex.push(sx);
+    }
+
+    let mp = calcMileagePenalty();
+    let mpP = mp[0]; // Points
+    let mpM = mp[1]; // Multipliers
+
+    if (mpM != 0 || mpP != 0) {
+        multipliers += parseInt(mpM);
+        bonusPoints += mpP;
+        let sx = new SCOREXLINE();
+        let tpx = RPT_MPenalty;
+        let tpxx = document.getElementById('RTP_MPenalty');
+        console.log('mpxx is '+tpxx);
+        if (tpxx) {
+            tpx = tpxx.value;
+        }
+        sx.desc = tpx+mp[3]+' '+document.getElementById('bduText').value+' > '+mp[2];
+        if (mpM != 0) {
+            sx.points = ''+mpM+' x';
+        } else {
+            sx.points = mpP;
+        }
+        sx.totalPoints = bonusPoints;
+        scorex.push(sx);
+    }
+
+    calcAvgSpeed();
+    
+    let sp = calcSpeedPenalty(false);
+
+    if (sp != 0) {
+        bonusPoints += sp;
+        let sx = new SCOREXLINE();
+        let tpx = RPT_SPenalty;
+        let tpxx = document.getElementById('RTP_SPenalty');
+        console.log('spxx is '+tpxx);
+        if (tpxx) {
+            tpx = tpxx.value;
+        }
+        sx.desc = tpx;
+        sx.points = sp;
+        sx.totalPoints = bonusPoints;
+        scorex.push(sx);
+    }
+    
 
     if (multipliers > 1) {
         let sx = new SCOREXLINE();
@@ -607,8 +683,6 @@ function recalcScorecard() {
     sxl.points = parseInt(document.getElementById('TotalPoints').value);
     scorex.push(sxl);
 
-
-    calcAvgSpeed();
 
     setFinisherStatusx();
     writeScorex();
@@ -783,18 +857,24 @@ function setFinisherStatusx()
 	if (calcSpeedPenalty(true))
 		return SFSx(EntrantDNF,DNF_SPEEDING);
 	
+    let bdu = document.getElementById('bduText').value;
+
 	var CM = parseInt(document.getElementById('CorrectedMiles').value);
 	var MM = parseInt(document.getElementById('MinMiles').value);
 	if (MM > 0 && CM < MM)
-		return SFSx(EntrantDNF,DNF_TOOFEWMILES);
+		return SFSx(EntrantDNF,bdu+' < '+MM);
 	var PM = parseInt(document.getElementById('PenaltyMilesDNF').value);
 	if (PM > 0 && CM > PM)
-		return SFSx(EntrantDNF,DNF_TOOMANYMILES);
+		return SFSx(EntrantDNF,bdu+' > '+PM);
 
 	var DT = document.getElementById('FinishTimeDNF').value;
 	var FT = document.getElementById('FinishDate').value + 'T' + document.getElementById('FinishTime').value;
-	if (FT != 'T' && FT > DT)
-		return SFSx(EntrantDNF,DNF_FINISHEDTOOLATE+' > '+DT.replace('T',' '));
+	if (FT != 'T' && FT > DT) {
+        if (FT.substring(0,10) == DT.substring(0,10))
+            return SFSx(EntrantDNF,FT.substring(11)+' > '+DT.substring(11));
+        else
+		    return SFSx(EntrantDNF,FT.replace('T',' ')+' > '+DT.replace('T',' '));
+    }
 	
 	var BL = document.getElementsByName('BonusID[]');
     console.log('Checking '+BL.length+' bonuses');

@@ -306,17 +306,17 @@ function calcMileagePenalty()
 	var PenaltyMiles = CM - PMM;
 	
 	if (PenaltyMiles <= 0) // No penalty
-		return [0,0]; 
+		return [0,0,PMM,0]; 
 		
 	//console.log('PM='+PenaltyMiles+'; Method='+PMMethod+'; Points='+PMPoints);
 	switch (PMMethod)
 	{
 		case MMM_PointsPerMile:
-			return [0 - PMPoints * PenaltyMiles,0];
+			return [0 - PMPoints * PenaltyMiles,0,PMM,PenaltyMiles];
 		case MMM_Multipliers:
-			return [0,PMPoints];
+			return [0,0 - PMPoints,PMM,PenaltyMiles];
 		default:
-			return [0 - PMPoints,0];
+			return [0 - PMPoints,0,PMM,PenaltyMiles];
 	}
 		
 }
@@ -337,11 +337,11 @@ function calcSpeedPenalty(dnf)
  */
 {
 	let SP = document.getElementsByName('SpeedPenalty[]');
-	let tmp = document.getElementById('CalculatedAvgSpeed');
+	let tmp = document.getElementById('AvgSpeed');
 	if (tmp == null)
 		return (dnf ? false : 0);
 	let speed = parseFloat(tmp.value);
-	//console.log('Checking '+speed+' against '+SP.length+' speed penalty records');
+	console.log('Checking '+speed+' against '+SP.length+' speed penalty records');
 	for (let i =0; i < SP.length; i++)
 		if (speed >= parseFloat(SP[i].getAttribute('data-MinSpeed')))
 		{
@@ -366,7 +366,8 @@ function calcTimePenalty()
 {
 	const OneMinute = 1000 * 60;
 	var TP = document.getElementsByName('TimePenalty[]');
-	var FT = new Date(document.getElementById('FinishDate').value + 'T' + document.getElementById('FinishTime').value+'Z');
+	let FTx = document.getElementById('FinishDate').value + 'T' + document.getElementById('FinishTime').value;
+	var FT = new Date(FTx+'Z');
 	var  FTDate = new Date(FT);
 	//console.log("TP: "+FTDate);
 	for ( var i = 0 ; i < TP.length ; i++ )
@@ -388,8 +389,10 @@ function calcTimePenalty()
 				ds = new Date(TP[i].getAttribute('data-start')+'Z');
 				de = new Date(TP[i].getAttribute('data-end')+'Z');
 		}
-		
+
+		let DTx = ds.toISOString();
 		//if (FT >= TP[i].getAttribute('data-start') && FT <= TP[i].getAttribute('data-end'))
+
 		if (FT >= ds && FT <= de)
 		{
 			var PF = parseInt(TP[i].getAttribute('data-factor'));
@@ -400,17 +403,17 @@ function calcTimePenalty()
 			switch(PM)
 			{
 				case TPM_MultPerMin:
-					return [0,0 - PF * Mins];
+					return [0,0 - PF * Mins,DTx,FTx];
 				case TPM_PointsPerMin:
-					return [0 - PF * Mins,0];
+					return [0 - PF * Mins,0,DTx,FTx];
 				case TPM_FixedMult:
-					return [0,0 - PF];
+					return [0,0 - PF,DTx,FTx];
 				default:
-					return [0 - PF,0];
+					return [0 - PF,0,DTx,FTx];
 			}
 		}
 	}
-	return [0,0];
+	return [0,0,0,0];
 
 }
 

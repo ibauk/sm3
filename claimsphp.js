@@ -12,7 +12,7 @@ function answerQuestion(obj) {
 	else
 		pv -= qv;
 	pts.value = pv;
-	let qa = document.getElementById('AnswerSupplied');
+	let qa = document.getElementById('QuestionAnswered');
 	qa.value = 1;
 	console.log('answerQuestion enabling save');
 	enableSaveButton();

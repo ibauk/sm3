@@ -98,6 +98,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
     "Host": "smtp.gmail.com",
     "Username": "ibaukebc@gmail.com",
     "Password": "",
+	"Encoding": "quoted-printable",
+	"CharSet": "UTF-8",
     "SetFrom": [
         "ibaukebc@gmail.com",
         "The Rally Team"
@@ -110,7 +112,10 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"singleuserMode": "false",
 	"autoAdjustBonusWidth": "true",
 	"useBonusQuestions": "false",
-	"valBonusQuestions": "50"
+	"valBonusQuestions": "50",
+	"RPT_TPenalty": "&#x23F0;Late arrival penalty",
+	"RPT_MPenalty": "Excess distance penalty",
+	"RPT_SPenalty": "Excess speed penalty"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com

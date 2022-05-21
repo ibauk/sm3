@@ -28,8 +28,8 @@
 
  
 const DNF_TOOFEWPOINTS = "Not enough points";
-const DNF_TOOFEWMILES = "Not enough miles";
-const DNF_TOOMANYMILES = "Too many miles";
+const DNF_TOOFEWMILES = "Not enough distance";
+const DNF_TOOMANYMILES = "Too much distance";
 const DNF_FINISHEDTOOLATE = "Finished too late";
 const DNF_MISSEDCOMPULSORY = "Missed a compulsory bonus";
 const DNF_HITMUSTNOT = "Breached a rule";
@@ -42,10 +42,10 @@ const RPT_Tooltip	= "Click for explanation\rdoubleclick to print";
 const RPT_Bonuses	= "Bonuses ticked";
 const RPT_Specials	= "Specials";
 const RPT_Combos	= "Combos";
-const RPT_MPenalty	= "Mileage penalty";
-const RPT_TPenalty	= "Late penalty";
+const RPT_MPenalty	= "Excess distance penalty";
+const RPT_TPenalty	= "&#x23F0;Late arrival penalty";
 const RPT_Total 	= "TOTAL";
-const RPT_SPenalty	= "Speed penalty";
+const RPT_SPenalty	= "Excess speed penalty";
 
 const EBC_Flag2     = "Team rules";
 const EBC_FlagA     = "Read the notes!";

@@ -926,6 +926,8 @@ function calcMaxHours() {
 	let finish = Date.parse(fd+' '+ft);
 	let msecs = Math.abs(finish - start);
 	let hrs = Math.trunc(msecs / ((1000 * 60) * 60));
+	if (hrs * ((1000 * 60) *60) < msecs)
+		hrs++;  //Peter Ihlo
 	let mh = document.getElementById('MaxHours');
 	console.log('MaxHours == '+hrs);
 	if (hrs > 0)
@@ -937,6 +939,8 @@ function calcMaxHours() {
 	$date2 = new DateTime($rd['FinishTime']);
 	$diff = $date2->diff($date1);
 	$maxhours = ($diff->h) + ($diff->days*24);
+	if ($diff->i > 0)
+		$maxhours++;// Peter Ihlo
 	
 
 	$dt = splitDatetime($rd['StartTime']); 

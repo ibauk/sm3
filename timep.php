@@ -80,7 +80,7 @@ function saveTimePenalties()
 				return dberror();			
 		}
 		else
-			echo('Row '.$i." wasn't posted");
+			; //echo('Row '.$i." wasn't posted");
 		
 		
 	}

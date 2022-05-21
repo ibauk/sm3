@@ -190,7 +190,7 @@ function emitEBCjs() {
         else
             pv -= qv;
         pts.value = pv;
-        let qa = document.getElementById('AnswerSupplied');
+        let qa = document.getElementById('QuestionAnswered');
         qa.value = 1;
     }
 
