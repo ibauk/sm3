@@ -1221,9 +1221,12 @@ function settitle(sel) {
 	echo('</p>');
 	
 	echo('<span class="vlabel"><label for="EmailParams"> </label> '); // Label merely to maintain spacing
-	echo('<textarea id="EmailParams" name="EmailParams" cols="100" rows="15" oninput="enableSaveButton();">');
+	echo('<textarea id="EmailParams" name="EmailParams" cols="160" rows="20" oninput="enableSaveButton();">');
 	//echo($rd['EmailParams']);
-	echo(json_encode($email,JSON_PRETTY_PRINT));  // Make sure it's legible
+	if ($email)
+		echo(json_encode($email,JSON_PRETTY_PRINT));  // Make sure it's legible
+	else
+		echo($rd['EmailParams']);
 	echo('</textarea></span>');
 
 	echo('</fieldset>');
@@ -1237,9 +1240,12 @@ function settitle(sel) {
 		echo('</p>');
 	
 		echo('<span class="vlabel"><label for="settings"> </label> '); // Label merely to maintain spacing
-		echo('<textarea id="settings" name="settings" cols="100" rows="15" oninput="enableSaveButton();">');
+		echo('<textarea id="settings" name="settings" cols="160" rows="20" oninput="enableSaveButton();">');
 	
-		echo(json_encode($settings,JSON_PRETTY_PRINT));  // Make sure it's legible
+		if ($settings)
+			echo(json_encode($settings,JSON_PRETTY_PRINT));  // Make sure it's legible
+		else
+			echo($rd['settings']);
 		echo('</textarea></span>');
 
 

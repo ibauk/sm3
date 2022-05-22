@@ -225,7 +225,7 @@ function recalcScorecard() {
         if (obj.points === '')
             obj.points = bonv.getAttribute('data-points');
         if (obj.minutes === '')
-            obj.minutes = bonv.mins;
+            obj.minutes = bonv.getAttribute('data-minutes');
 
         if (obj.bon === '' || rejectedClaims.hasOwnProperty(obj.bon)) { // is it a rejected claim?
             let sx = new SCOREXLINE();
@@ -246,6 +246,10 @@ function recalcScorecard() {
         restMinutes += parseInt(obj.minutes);
         let pointsDesc = "";
         
+        if (obj.minutes > 0) {
+            pointsDesc = pointsDesc+' ['+formatRestMinutes(obj.minutes)+'] ';
+        }
+
         // Keep track of cat counts
         catcounts = updateCatcounts(bonv,catcounts);
 
@@ -269,32 +273,38 @@ function recalcScorecard() {
                 if (bonv.getAttribute('data-cat'+ccr_axis) != ccr_cat)
                     continue;
 
-            console.log("Applying rule ");
+            console.log("Applying rule ccr_cat="+ccr_cat);
             let catcount = 0;
-            if (ccr_cat == 0)
-                for(let cc of catcounts[ccr_axis])
-                    catcount += cc;
+            if (ccr_cat == 0) {
+                for(let cc of catcounts[ccr_axis]) {
+                    console.log('testing cc = '+cc);
+                    if (typeof cc !== 'undefined')
+                        catcount += cc;
+                }
+            }
             else if (typeof(catcounts[ccr_axis][ccr_cat]) !== 'undefined')
                 catcount = catcounts[ccr_axis][ccr_cat];
             console.log("Catcount="+catcount+' Min='+ccr_min);
             if (catcount < ccr_min)
                 continue;
-        
+
+            let pdx = '';
             if (ccr_pwr === 0) {
-                pointsDesc = ""+basicBonusPoints+" x "+(catcount - 1);
+                pdx = basicBonusPoints+" x "+(catcount - 1);
                 basicBonusPoints = basicBonusPoints * (catcount - 1);
             } else {
-                pointsDesc = ""+basicBonusPoints+" x "+ccr_pwr+"^"+(catcount - 1);
+                pdx = ""+basicBonusPoints+" x "+ccr_pwr+"^"+(catcount - 1);
                 basicBonusPoints = basicBonusPoints * (Math.pow(ccr_pwr,(catcount - 1)));
             }
-            if (pointsDesc !== "")
-                pointsDesc = " ( "+pointsDesc+" )";
+            if (pdx !== "")
+                pointsDesc = pointsDesc+" ( "+pdx+" ) ";
 
-            //echo(" BonusMod $catcount = $basicBonusPoints<br>");
+                    //echo(" BonusMod $catcount = $basicBonusPoints<br>");
 
             break;  // Only apply the first matching rule
             
         }
+
 
         // basicBonusPoints is now the live figure
         bonusPoints += parseInt(basicBonusPoints);    
@@ -392,6 +402,8 @@ function recalcScorecard() {
 
     }
 
+    console.log("Setting RestMinutes to "+restMinutes);
+    document.getElementById('RestMinutes').value = restMinutes;
 
     let bv = document.getElementById('CombosTicked');
     const keys = Object.keys(combosScored);
@@ -606,10 +618,11 @@ function recalcScorecard() {
         if (tpxx) {
             tpx = tpxx.value;
         }
+        sx.id = tpx;
         if (tp[2].length > 1 && (tp[2].substring(0,10) == tp[3].substring(0,10))) {
-            sx.desc = tpx+tp[3].substring(11,16)+' >= '+tp[2].substring(11,16);
+            sx.desc = tp[3].substring(11,16)+' >= '+tp[2].substring(11,16);
         } else {
-            sx.desc = tpx+tp[3].replace('T',' ')+' >= '+tp[2].replace('T',' ').substring(0,16);
+            sx.desc = tp[3].replace('T',' ')+' >= '+tp[2].replace('T',' ').substring(0,16);
         }
         if (tpM != 0) {
             sx.points = ''+tpM+' x';
@@ -634,7 +647,8 @@ function recalcScorecard() {
         if (tpxx) {
             tpx = tpxx.value;
         }
-        sx.desc = tpx+mp[3]+' '+document.getElementById('bduText').value+' > '+mp[2];
+        sx.id = tpx;
+        sx.desc = mp[3]+' '+document.getElementById('bduText').value+' > '+mp[2];
         if (mpM != 0) {
             sx.points = ''+mpM+' x';
         } else {
@@ -648,8 +662,8 @@ function recalcScorecard() {
     
     let sp = calcSpeedPenalty(false);
 
-    if (sp != 0) {
-        bonusPoints += sp;
+    if (sp[0] != 0) {
+        bonusPoints += sp[0];
         let sx = new SCOREXLINE();
         let tpx = RPT_SPenalty;
         let tpxx = document.getElementById('RTP_SPenalty');
@@ -657,8 +671,9 @@ function recalcScorecard() {
         if (tpxx) {
             tpx = tpxx.value;
         }
-        sx.desc = tpx;
-        sx.points = sp;
+        sx.id = tpx;
+        sx.desc = document.getElementById('AvgSpeed').value+' > '+sp[1];
+        sx.points = sp[0];
         sx.totalPoints = bonusPoints;
         scorex.push(sx);
     }
@@ -675,8 +690,6 @@ function recalcScorecard() {
 
 
 
-    console.log("Setting RestMinutes to "+restMinutes);
-    document.getElementById('RestMinutes').value = restMinutes;
     document.getElementById('TotalPoints').value = bonusPoints;
     let sxl = new SCOREXLINE();
     sxl.desc = RPT_Total;
@@ -804,6 +817,24 @@ function updateCatcounts(bonus,catcounts) {
     return catcounts;
 }
 
+function formatRestMinutes(minutes) {
+
+    if (minutes < 1)
+        return '0';
+    let h = Math.floor(minutes / 60);
+    let m = minutes % 60;
+    
+    if (h > 1 && m == 0)
+        return h+" hrs";
+    if (h == 1 && m == 0)
+        return '60 mins';
+    if (h > 0)
+        return h+'h '+m+'m';
+    if (m == 1)
+        return '1 min';
+    return m+' mins';
+}
+
 function getRiderNames() {
 
     let t = parseInt(document.getElementById('TeamID').value);
@@ -833,8 +864,8 @@ function SFSx(status,x)
 	if (x != '') {
         let sx = new SCOREXLINE();
         sx.id = '';
-        sx.desc = es.options[status].text;
-        sx.pointsDesc = ' '+x;
+        sx.id = es.options[status].text;
+        sx.desc = ' '+x;
         scorex.push(sx);
     }
 }
@@ -854,8 +885,9 @@ function setFinisherStatusx()
 	//if (CS != EntrantOK && CS != EntrantFinisher)
 		//return;
 	
-	if (calcSpeedPenalty(true))
-		return SFSx(EntrantDNF,DNF_SPEEDING);
+    let sp = calcSpeedPenalty(true);
+	if (sp[0])
+		return SFSx(EntrantDNF,document.getElementById('AvgSpeed').value+' > '+sp[1]);
 	
     let bdu = document.getElementById('bduText').value;
 

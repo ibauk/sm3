@@ -27,7 +27,6 @@ ini_set('display_errors', 1);
  */
 
 
-// TODO CalcAvgSpeed
 // TODO Average speed penalties
 
 require_once('common.php');
@@ -131,6 +130,7 @@ function applyClaim($claimid,$intransaction) {
         }
     }
     if ($appendclaim) {
+        error_log('Appending new claim for '.$rc['BonusID']);
         $newclaim = $rc['BonusID'].'='.$rc['Points'].';'.$rc['RestMinutes'];
         array_push($bv,$newclaim);
     }
@@ -210,6 +210,7 @@ function calcAvgSpeed($rd) {
 	$rideDuration = $dtFinish->diff($dtStart);
     $minsDuration = ($rideDuration->days * 24 * 60) + ($rideDuration->h * 60) + $rideDuration->i;
     $restMins = $rd['RestMinutes'];
+    error_log('Duration mins = '.$minsDuration.' rest mins = '.$restMins);
 	
     $minsDuration = $minsDuration - $restMins;
 
@@ -235,8 +236,10 @@ function calcEntrantStatus($rd) {
     $sx = new SCOREXLINE();
     $sx->id = $TAGS['EntrantDNF'][0];
 
-    if (calcSpeedPenalty(true,$rd['AvgSpeed'])) {
-        $sx->desc = $KONSTANTS['DNF_SPEEDING'];
+    $spp = calcSpeedPenalty(true,$rd['AvgSpeed']);
+    error_log('spp0='.$spp[0].' spp1='.$spp[1]);
+    if ($spp[0]) {
+        $sx->desc = $rd['AvgSpeed'].$RP['speedLabel'].' > '.$spp[1];
         $scorex[] = $sx;
         return $KONSTANTS['EntrantDNF'];
     }
@@ -379,23 +382,25 @@ function calcSpeedPenalty($dnf,$AvgSpeed)
     global $RP, $KONSTANTS, $speedPenalties;
 
 	$speed = floatval($AvgSpeed);
-	//console.log('Checking '+speed+' against '+SP.length+' speed penalty records');
+	error_log('Checking '.$speed.' against '.sizeof($speedPenalties).' speed penalty records');
 	foreach ($speedPenalties as $SP) {
 		if ($speed >= floatval($SP->MinSpeed))	{
-			//console.log('Matched '+speed+' to '+SP[i].getAttribute('data-MinSpeed'));
+			error_log('Matched '.$speed.' to '.$SP->MinSpeed);
 			if (intval($SP->PenaltyType)==1) {
 				if ($dnf)
-					return true;
+					return [1,$SP->MinSpeed];
 				else
-					return 0; /* Penalty points */
+					return [0,$SP->MinSpeed]; /* Penalty points */
 			}
 			if ($dnf)
-				return false;
-			else
-				return 0 - intval($SP->value);
+				return [0,$SP->MinSpeed];
+			else {
+                error_log('Returning points '.$SP->value);
+				return [0 - $SP->value,$SP->MinSpeed];
+            }
 		}
     }
-	return 0;
+	return [0,0];
 }
 
 
@@ -638,6 +643,8 @@ function initRallyVariables() {
             $axisLabels[$i] = $RP['Cat'.$i.'Label'];
     }
 
+    $RP['speedLabel'] = ($KONSTANTS['BasicDistanceUnit']==$KONSTANTS['DistanceIsMiles'] ? ' mph' : ' km/h');
+
 //    echo(' Reasons ');
 //    print_r($reasons);
 //    echo('<br>');
@@ -827,6 +834,24 @@ function updateCatcounts($bonus,$catcounts) {
     return $catcounts;
 }
 
+function formatRestMinutes($minutes) {
+
+    if ($minutes < 1)
+        return '0';
+    $h = intdiv($minutes ,60);
+    $m = $minutes % 60;
+    
+    if ($h > 1 && $m == 0)
+        return $h." hrs";
+    if ($h == 1 && $m == 0)
+        return '60 mins';
+    if ($h > 0)
+        return $h.'h '.$m.'m';
+    if ($m == 1)
+        return '1 min';
+    return $m.' mins';
+}
+
 
 // This recalculates a single scorecard and updates the entrant record with the results.
 //
@@ -882,6 +907,7 @@ function recalcScorecard($entrant,$intransaction) {
     //echo('<br>');
 
     $bonusPoints = 0;
+    $restMinutes = 0;
     $multipliers = 0;
     $numBonusesTicked = 0;
     $bonusesScored = [];    // Keeps track of ordinary, special and combo bonuses successfully claimed
@@ -933,8 +959,11 @@ function recalcScorecard($entrant,$intransaction) {
         $basicBonusPoints = $points;
         $bonusesScored[] = $bon;
         $numBonusesTicked++;
-        $rd['RestMinutes'] += $minutes;
+        $restMinutes += $minutes;
         $pointsDesc = "";
+        if ($minutes > 0) {
+            $pointsDesc = ' ['.formatRestMinutes($minutes).']';
+        }
         
         // Keep track of cat counts
         $catcounts = updateCatcounts($bonv,$catcounts);
@@ -965,14 +994,14 @@ function recalcScorecard($entrant,$intransaction) {
                 continue;
         
             if ($ccr->pwr == 0) {
-                $pointsDesc = "$basicBonusPoints x ".($catcount - 1);
+                $pdx = "$basicBonusPoints x ".($catcount - 1);
                 $basicBonusPoints = $basicBonusPoints * ($catcount - 1);
             } else {
-                $pointsDesc = "$basicBonusPoints x $ccr->pwr^".($catcount - 1);
+                $pdx = "$basicBonusPoints x $ccr->pwr^".($catcount - 1);
                 $basicBonusPoints = $basicBonusPoints * (pow($ccr->pwr,($catcount - 1)));
             }
-            if ($pointsDesc != "")
-                $pointsDesc = " ( $pointsDesc )";
+            if ($pdx != "")
+                $pointsDesc = $pointsDesc." ( $pdx )";
 
             //echo(" BonusMod $catcount = $basicBonusPoints<br>");
 
@@ -1219,7 +1248,8 @@ function recalcScorecard($entrant,$intransaction) {
         } else {
             $y = ''.str_replace('T',' ',substr($tp[3],0,16)).' >= '.str_replace('T',' ',$tp[2]);
         }
-        $sx->desc = getSetting('RPT_TPenalty',$KONSTANTS['RPT_TPenalty']).$y;
+        $sx->id = getSetting('RPT_TPenalty',$KONSTANTS['RPT_TPenalty']);
+        $sx->desc = $y;
         if ($tpM != 0) {
             $sx->points = "$tpM x";
         } else {
@@ -1242,8 +1272,8 @@ function recalcScorecard($entrant,$intransaction) {
             $bdu = $TAGS['OdoKmsK'][0];
         else
             $bdu = $TAGS['OdoKmsM'][0];
-
-        $sx->desc = getSetting('RPT_MPenalty',$KONSTANTS['RPT_MPenalty']).$tp[3]." $bdu > ".$tp[2];
+        $sx->id = getSetting('RPT_MPenalty',$KONSTANTS['RPT_MPenalty']);
+        $sx->desc = $tp[3]." $bdu > ".$tp[2];
         if ($tpM != 0) {
             $sx->points = "$tpM x";
         } else {
@@ -1253,12 +1283,17 @@ function recalcScorecard($entrant,$intransaction) {
         $scorex[] = $sx;
     }
 
+    $rd['RestMinutes'] = $restMinutes;
+    $rd['AvgSpeed'] = calcAvgSpeed($rd);
+
+
     $spp = calcSpeedPenalty(false,$rd['AvgSpeed']);
-    if ($spp != 0) {
-        $bonusPoints += $spp;
+    if ($spp[0] != 0) {
+        $bonusPoints += $spp[0];
         $sx = new SCOREXLINE();
-        $sx->desc = getSetting('RPT_SPenalty',$KONSTANTS['RPT_SPenalty']);
-        $sx->points = $spp;
+        $sx->id = getSetting('RPT_SPenalty',$KONSTANTS['RPT_SPenalty']);
+        $sx->desc = $rd['AvgSpeed'].$RP['speedLabel'].' > '.$spp[1];
+        $sx->points = $spp[0];
         $sx->totalPoints = $bonusPoints;
         $scorex[] = $sx;
     }
@@ -1283,7 +1318,6 @@ function recalcScorecard($entrant,$intransaction) {
     //echo(' TP='.$bonusPoints.' '.$rd['EntrantStatus']);
     //echo(' ok<br>');
 
-    $rd['AvgSpeed'] = calcAvgSpeed($rd);
 
     $rd['ScoreX'] = '<table class="sxtable">';
     $rd['ScoreX'] .= '<caption>';

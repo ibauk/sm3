@@ -42,10 +42,10 @@ const RPT_Tooltip	= "Click for explanation\rdoubleclick to print";
 const RPT_Bonuses	= "Bonuses ticked";
 const RPT_Specials	= "Specials";
 const RPT_Combos	= "Combos";
-const RPT_MPenalty	= "Excess distance penalty";
-const RPT_TPenalty	= "&#x23F0;Late arrival penalty";
+const RPT_MPenalty	= "!! ";
+const RPT_TPenalty	= "&#x23F0;";
 const RPT_Total 	= "TOTAL";
-const RPT_SPenalty	= "Excess speed penalty";
+const RPT_SPenalty	= "!! ";
 
 const EBC_Flag2     = "Team rules";
 const EBC_FlagA     = "Read the notes!";

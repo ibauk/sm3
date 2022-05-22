@@ -77,10 +77,10 @@ $KONSTANTS['RPT_Tooltip']	= "Click for explanation\rdoubleclick to print";
 $KONSTANTS['RPT_Bonuses']	= "Bonuses ticked";
 $KONSTANTS['RPT_Specials']	= "Specials";
 $KONSTANTS['RPT_Combos']	= "Combos";
-$KONSTANTS['RPT_MPenalty']	= "Excess distance penalty";
-$KONSTANTS['RPT_TPenalty']	= "&#x23F0;Late arrival penalty";
+$KONSTANTS['RPT_MPenalty']	= "!! ";
+$KONSTANTS['RPT_TPenalty']	= "&#x23F0;";
 $KONSTANTS['RPT_Total'] 	= "TOTAL";
-$KONSTANTS['RPT_SPenalty']	= "Excess speed penalty";
+$KONSTANTS['RPT_SPenalty']	= "!! ";
 
 $KONSTANTS['CLAIM_REJECTED'] = "Claim rejected";
 

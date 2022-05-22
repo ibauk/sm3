@@ -266,12 +266,12 @@ function calcAvgSpeed()
 	let dtStart = new Date(isoStart);
 	let dtFinish = new Date(isoFinish);
 	let minsDuration = Math.abs(dtFinish - dtStart) / msecsPerMinute;
-	//console.log('cas: mins='+minsDuration);
+	console.log('cas: mins='+minsDuration);
 	/* Now add up rest minutes and store the result for posting to Entrant record */
 	let specials = document.querySelectorAll('input[data-mins]');
-	//console.log('cas: '+JSON.stringify(specials));
+	console.log('cas: '+JSON.stringify(specials));
 	let restMins = document.querySelector('#RestMinutes');
-	
+	console.log('cas: restMins='+restMins.value);
 	minsDuration -= restMins.value;
 
 	if (minsDuration < 1)
@@ -283,12 +283,12 @@ function calcAvgSpeed()
 	let odoDistance = parseInt(document.querySelector('#CorrectedMiles').value);
 
 	
-	//console.log('cas: distance='+odoDistance);
+	console.log('cas: distance='+odoDistance);
 	
 	let hoursDuration = minsDuration / 60.0;
 	let speed = odoDistance / hoursDuration;
 	
-	//console.log('Hrs='+hoursDuration+' Avg='+speed);
+	console.log('Hrs='+hoursDuration+' Avg='+speed);
 	
 	
 
@@ -339,27 +339,27 @@ function calcSpeedPenalty(dnf)
 	let SP = document.getElementsByName('SpeedPenalty[]');
 	let tmp = document.getElementById('AvgSpeed');
 	if (tmp == null)
-		return (dnf ? false : 0);
+		return (dnf ? [false,0,0] : [0,0,0]);
 	let speed = parseFloat(tmp.value);
 	console.log('Checking '+speed+' against '+SP.length+' speed penalty records');
-	for (let i =0; i < SP.length; i++)
-		if (speed >= parseFloat(SP[i].getAttribute('data-MinSpeed')))
-		{
-			console.log('Matched '+speed+' to '+SP[i].getAttribute('data-MinSpeed'));
-			if (parseInt(SP[i].getAttribute('data-PenaltyType'))==1)
-			{
+	for (let i =0; i < SP.length; i++) {
+		let testSpeed = SP[i].getAttribute('data-MinSpeed');
+		if (speed >= parseFloat(testSpeed)) {
+			console.log('Matched '+speed+' to '+testSpeed);
+			if (parseInt(SP[i].getAttribute('data-PenaltyType'))==1) {
 				if (dnf)
-					return true;
+					return [true,testSpeed,tmp.value]
 				else
-					return 0; /* Penalty points */
+					return [0,testSpeed,tmp.value]; /* Penalty points */
 			}
 			if (dnf)
-				return false;
+				return [false,testSpeed,tmp.value]
 			else
-				return 0 - parseInt(SP[i].value);
+				return [0 - parseInt(SP[i].value),testSpeed,tmp.value];
 			
 		}
-		return 0;
+	}
+	return [0,0,tmp.value];
 }
 
 function calcTimePenalty()
