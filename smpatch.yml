@@ -40,6 +40,8 @@ files:
   - sm/score.js
   - sm/recalc.php
   - sm/scorecard.php
+  - sm/help/dnf.hlp
+  - sm/help/penalties.hlp
   
 folders:
 

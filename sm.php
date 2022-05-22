@@ -1190,6 +1190,22 @@ function switcha(show) {
 function settitle(sel) {
 	sel.title = sel.options[sel.selectedIndex].getAttribute('data-title');
 }
+function json_ok(txt) {
+	let lbl = document.getElementById(txt.id+'Label');
+	try {
+		if (lbl) {
+			lbl.innerHTML = '';
+			lbl.classList.remove('yellow');
+		}
+		JSON.parse(txt.value)
+	} catch(ex) {
+		console.log('JSON error! '+ex.message);
+		if (lbl) {
+			lbl.innerHTML = ex.message;
+			lbl.classList.add('yellow');
+		}
+	}
+}
 </script>
 <?php	
 	echo('<span class="vlabel" title="'.$TAGS['vr_RallyType'][1].'"><label for="isvirtual">'.$TAGS['vr_RallyType'][0].'</label> ');
@@ -1220,8 +1236,8 @@ function settitle(sel) {
 	echo(' <input title="Help!" type="button" value=" ? " onclick="showHelp('."'emailsetup'".');">');
 	echo('</p>');
 	
-	echo('<span class="vlabel"><label for="EmailParams"> </label> '); // Label merely to maintain spacing
-	echo('<textarea id="EmailParams" name="EmailParams" cols="160" rows="20" oninput="enableSaveButton();">');
+	echo('<span class="vlabel"><label id="EmailParamsLabel" for="EmailParams"> </label> '); // Label merely to maintain spacing
+	echo('<textarea id="EmailParams" name="EmailParams" cols="160" rows="20" oninput="json_ok(this);enableSaveButton();">');
 	//echo($rd['EmailParams']);
 	if ($email)
 		echo(json_encode($email,JSON_PRETTY_PRINT));  // Make sure it's legible
@@ -1239,8 +1255,8 @@ function settitle(sel) {
 		echo(' <input title="Help!" type="button" value=" ? " onclick="showHelp('."'rpsettings'".');">');
 		echo('</p>');
 	
-		echo('<span class="vlabel"><label for="settings"> </label> '); // Label merely to maintain spacing
-		echo('<textarea id="settings" name="settings" cols="160" rows="20" oninput="enableSaveButton();">');
+		echo('<span class="vlabel"><label id="settingsLabel" for="settings"> </label> '); // Label merely to maintain spacing
+		echo('<textarea id="settings" name="settings" cols="160" rows="20" oninput="json_ok(this);enableSaveButton();">');
 	
 		if ($settings)
 			echo(json_encode($settings,JSON_PRETTY_PRINT));  // Make sure it's legible

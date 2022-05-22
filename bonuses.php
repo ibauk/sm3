@@ -398,11 +398,12 @@ function showdelete(tr)
 }
 function showsave(obj)
 {
-	let tr = obj.parentNode.parentNode;
+	let tr = obj.parentNode.parentNode.parentNode;
 	swapdelsave(tr,true);
 }
 function swapdelsave(tr,showsave)
 {
+	console.log('tr is '+tr.tagName);
 	let ix = tr.cells.length - 1;
 	if (!tr.cells[ix].classList.contains('buttons'))
 		ix--;

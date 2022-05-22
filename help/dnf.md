@@ -1,8 +1,7 @@
 ## DNF - **D**id **N**ot **F**inish
 
 Any entrant actually starting the rally will be classified as either Finisher or ‘Did Not Finish’. DNF status is applied automatically in a variety of circumstances.
-### Excessive speed
-Each rally may employ a range of measures designed to deter/punish excessive use of speed. In particular the software provides a mechanism to monitor and sanction overall average speeds. One possible sanction is DNF for those exceeding a specified threshold.
+
 ### Finished too late
 Each rally specifies a start time, a finish time and a number of hours. The start time is the earliest possible start time for any entrant. The finish time is the latest possible finish time, anyone whose check-in time is later than this is DNF. The number of hours is added to the entrant’s start time to give that entrant’s individual cutoff time, anyone whose check-in time is later than this is DNF.
 
@@ -15,3 +14,6 @@ Each rally specifies a minimum number of points, which might be zero or even neg
 It is possible to flag any ordinary, special or combination bonus as being compulsory. Anyone failing to score any such bonus is DNF. It is also possible to flag special bonuses as ‘must not’. Anyone triggering such a bonus would be DNF.
 ### Category rule
 Bonus category rules may also be used to establish a DNF condition. Simple conditions such as “must score at least one in each of seven categories” are easily specified.
+
+### Excessive speed
+Each rally may employ a range of measures designed to deter/punish excessive use of speed. In particular the software provides a mechanism to monitor and sanction overall average speeds. One possible sanction is DNF for those exceeding a specified threshold.
