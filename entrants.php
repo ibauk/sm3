@@ -1285,7 +1285,8 @@ function showEntrantRecord($rd)
 	echo('<input type="hidden" name="tab" id="tab2show" value="'.$tab2show.'">');
 
 	echo('<input type="hidden" name="c" value="entrants">');
-	echo('<span class="vlabel"  style="font-weight: bold;" title="'.$TAGS['EntrantID'][1].'"><label for="EntrantID">'.$TAGS['EntrantID'][0].' </label> ');
+	echo('<span class="vlabel"  style="font-weight: bold;" title="'.$TAGS['EntrantID'][1].'">');
+	echo('<label for="EntrantID" class="short">'.$TAGS['EntrantID'][0].' </label> ');
 	if ($is_new_record)
 	{
 		$ro = '';
@@ -1294,7 +1295,7 @@ function showEntrantRecord($rd)
 	else
 		$ro = ' readonly ';
 	echo('<input type="text" onchange="enableSaveButton();"  class="number"  '.$ro.' name="EntrantID" id="EntrantID" value="'.$rd['EntrantID'].'">');
-	echo(' <label>'.htmlspecialchars($rd['RiderName']).'</label> ');
+	echo(' <label class="wide">'.htmlspecialchars($rd['RiderName']).'</label> ');
 	if (!$is_new_record)
 	{
 		echo('<input type="hidden" name="updaterecord" value="'.$rd['EntrantID'].'">');

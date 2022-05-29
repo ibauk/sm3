@@ -1237,7 +1237,7 @@ function json_ok(txt) {
 	echo('</p>');
 	
 	echo('<span class="vlabel"><label id="EmailParamsLabel" for="EmailParams"> </label> '); // Label merely to maintain spacing
-	echo('<textarea id="EmailParams" name="EmailParams" cols="160" rows="20" oninput="json_ok(this);enableSaveButton();">');
+	echo('<textarea id="EmailParams" class="config" name="EmailParams" oninput="json_ok(this);enableSaveButton();">');
 	//echo($rd['EmailParams']);
 	if ($email)
 		echo(json_encode($email,JSON_PRETTY_PRINT));  // Make sure it's legible
@@ -1256,7 +1256,7 @@ function json_ok(txt) {
 		echo('</p>');
 	
 		echo('<span class="vlabel"><label id="settingsLabel" for="settings"> </label> '); // Label merely to maintain spacing
-		echo('<textarea id="settings" name="settings" cols="160" rows="20" oninput="json_ok(this);enableSaveButton();">');
+		echo('<textarea id="settings" class="config" name="settings" oninput="json_ok(this);enableSaveButton();">');
 	
 		if ($settings)
 			echo(json_encode($settings,JSON_PRETTY_PRINT));  // Make sure it's legible
@@ -1276,7 +1276,7 @@ function json_ok(txt) {
 		echo('</p>');
 	
 		echo('<span class="vlabel"><label for="ebcsettings"> </label> '); // Label merely to maintain spacing
-		echo('<textarea id="ebcsettings" name="ebcsettings" cols="160" rows="20" oninput="enableSaveButton();">');
+		echo('<textarea id="ebcsettings" class="config" name="ebcsettings" oninput="enableSaveButton();">');
 	
 		echo($ebcsettings);
 		echo('</textarea></span>');

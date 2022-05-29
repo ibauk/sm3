@@ -500,9 +500,9 @@ function recalcScorecard() {
             sx.desc += ' ';
         let pi = parseInt(points);
         if ((isNaN(pi) || pi <= 0) && lastmin != '')
-            sx.desc += '&lt; '+lastmin;
+            sx.desc += ' &lt; '+lastmin;
         else
-            sx.desc += '&gt;= '+ccr_min;
+            sx.desc += ' &#8805; '+ccr_min;
         //$sx->desc .= $ccr->min;
         sx.pointsDesc = "";
         sx.points = bpx+points;
@@ -592,9 +592,9 @@ function recalcScorecard() {
         console.log('bp='+basicPoints+' lm="'+lastmin+'" i(bp)='+parseInt(basicPoints));
         let pi = parseInt(basicPoints);
         if ((isNaN(pi) || pi <= 0) && lastmin != '')
-            sx.desc += '&lt; '+lastmin;
+            sx.desc += ' &lt; '+lastmin;
         else
-            sx.desc += '&gt;= '+ccr_min;
+            sx.desc += ' &#8805; '+ccr_min;
         //$sx->desc .= $ccr->min;
         sx.pointsDesc = "";
         sx.points = bpx+basicPoints;
@@ -620,9 +620,9 @@ function recalcScorecard() {
         }
         sx.id = tpx;
         if (tp[2].length > 1 && (tp[2].substring(0,10) == tp[3].substring(0,10))) {
-            sx.desc = tp[3].substring(11,16)+' >= '+tp[2].substring(11,16);
+            sx.desc = tp[3].substring(11,16)+' &#8805; '+tp[2].substring(11,16);
         } else {
-            sx.desc = tp[3].replace('T',' ')+' >= '+tp[2].replace('T',' ').substring(0,16);
+            sx.desc = tp[3].replace('T',' ')+' &#8805; '+tp[2].replace('T',' ').substring(0,16);
         }
         if (tpM != 0) {
             sx.points = ''+tpM+' x';
@@ -870,6 +870,31 @@ function SFSx(status,x)
     }
 }
 
+function ccTestFail(ccr) {
+
+    let msg = ''; 
+    let axis = ccr.getAttribute('data-axis');
+    msg += document.getElementById('axisLabel'+axis).value+': ';
+    let cat = ccr.getAttribute('data-cat');
+    let catx = cat;
+    msg += ' n';
+    if (cat == '0')
+        catx = '' 
+    else {
+        let catd = document.getElementById('cat'+axis+'_'+cat);
+        console.log('cat'+axis+'_'+cat+' == '+catd.tagName);
+        catx = '['+catd.parentElement.firstChild.innerText+']';
+    }
+    msg += catx;
+    if (ccr.getAttribute('data-triggered')!=RULE_TRIGGERED)
+        msg += ' &lt; '
+    else
+        msg += ' &#8805; ';
+    msg += ccr.getAttribute('data-min');
+
+    return msg;
+}
+
 function setFinisherStatusx()
 /*
  *
@@ -912,10 +937,11 @@ function setFinisherStatusx()
     console.log('Checking '+BL.length+' bonuses');
 	for (var i = 0 ; i < BL.length; i++ ) {
 
-		if (BL[i].getAttribute('data-reqd')==COMPULSORYBONUS && !bonusScoredOk(BL[i]))
-			return SFSx(EntrantDNF,DNF_MISSEDCOMPULSORY+' [ '+BL[i].getAttribute('id')+' ]');
-        else if (BL[i].getAttribute('data-reqd')==MUSTNOTMATCH && bonusScoredOk(BL[i]))
+		if (BL[i].getAttribute('data-reqd')==COMPULSORYBONUS && !bonusScoredOk(BL[i])) {
+			return SFSx(EntrantDNF,DNF_MISSEDCOMPULSORY+BL[i].getAttribute('data-desc')+' [ '+BL[i].getAttribute('id')+' ]');
+        } else if (BL[i].getAttribute('data-reqd')==MUSTNOTMATCH && bonusScoredOk(BL[i])) {
 			return SFSx(EntrantDNF,DNF_HITMUSTNOT+' [ '+BL[i].getAttribute('id')+' ]');
+        }
     }
 	
 	
@@ -930,16 +956,23 @@ function setFinisherStatusx()
     console.log('Testing '+BL.length+' rules');
 	for (var i = 0 ; i < BL.length; i++ ) {
         console.log('ix='+i+' rt='+BL[i].getAttribute('data-ruletype')+' tr='+BL[i].getAttribute('data-triggered'));
-		if (BL[i].getAttribute('data-ruletype')==CC_UNTRIGDNF && BL[i].getAttribute('data-triggered')!=RULE_TRIGGERED)
-			return SFSx(EntrantDNF,DNF_COMPOUNDRULE);
-		else if (BL[i].getAttribute('data-ruletype')==CC_IFTRIGDNF && BL[i].getAttribute('data-triggered')==RULE_TRIGGERED)
-			return SFSx(EntrantDNF,DNF_COMPOUNDRULE);
+		if (BL[i].getAttribute('data-ruletype')==CC_UNTRIGDNF && BL[i].getAttribute('data-triggered')!=RULE_TRIGGERED) {
+            let dnf = ccTestFail(BL[i]);
+			return SFSx(EntrantDNF,dnf);
+        } else if (BL[i].getAttribute('data-ruletype')==CC_IFTRIGDNF && BL[i].getAttribute('data-triggered')==RULE_TRIGGERED) {
+            let dnf = ccTestFail(BL[i]);
+			return SFSx(EntrantDNF,dnf);
+        }
     }
 	
 	var TS = parseInt(document.getElementById('TotalPoints').value);
 	var MP = parseInt(document.getElementById('MinPoints').value);
-	if (TS < MP) /* Admin manual specifies this */
-		return SFSx(EntrantDNF,DNF_TOOFEWPOINTS);
+	if (TS < MP)  { /* Admin manual specifies this */
+        let tfpx = DNF_TOOFEWPOINTS;
+        let tfp = document.getElementById('DNF_TOOFEWPOINTS');
+        if (tfp) tfpx = tfp.value;
+		return SFSx(EntrantDNF,tfpx+' < '+MP);
+    }
 	
 	
 	SFSx(EntrantFinisher,'');

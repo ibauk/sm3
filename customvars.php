@@ -62,15 +62,15 @@ $KONSTANTS['DefaultLocale'] = 'en-GB';
 $KONSTANTS['DefaultScorer'] = 'Bob';
 
 // Used for offline score recalculations - check with custom.js
- 
-$KONSTANTS['DNF_TOOFEWPOINTS'] = "Not enough points";
-$KONSTANTS['DNF_TOOFEWMILES'] = "Not enough distance";
-$KONSTANTS['DNF_TOOMANYMILES'] = "Too much distance";
-$KONSTANTS['DNF_FINISHEDTOOLATE'] = "Finished too late";
-$KONSTANTS['DNF_MISSEDCOMPULSORY'] = "Missed a compulsory bonus";
-$KONSTANTS['DNF_HITMUSTNOT'] = "Breached a rule";
+// Modified for i8 
+$KONSTANTS['DNF_TOOFEWPOINTS'] = "points";
+$KONSTANTS['DNF_TOOFEWMILES'] = "distance"; // not used - i8
+$KONSTANTS['DNF_TOOMANYMILES'] = "distance"; // not used - i8
+$KONSTANTS['DNF_FINISHEDTOOLATE'] = "Finished too late"; // not used - i8
+$KONSTANTS['DNF_MISSEDCOMPULSORY'] = "&#8265; ";
+$KONSTANTS['DNF_HITMUSTNOT'] = "&#8264; ";
 $KONSTANTS['DNF_COMPOUNDRULE'] = "Failed to meet a category rule";
-$KONSTANTS['DNF_SPEEDING'] = "Excessive speed";
+$KONSTANTS['DNF_SPEEDING'] = "Excessive speed"; // not used - i8
 
 // Elements of Score explanation, include trailing space, etc - check with custom.js
 $KONSTANTS['RPT_Tooltip']	= "Click for explanation\rdoubleclick to print";
@@ -82,7 +82,7 @@ $KONSTANTS['RPT_TPenalty']	= "&#x23F0;";
 $KONSTANTS['RPT_Total'] 	= "TOTAL";
 $KONSTANTS['RPT_SPenalty']	= "!! ";
 
-$KONSTANTS['CLAIM_REJECTED'] = "Claim rejected";
+$KONSTANTS['CLAIM_REJECTED'] = "!! ";
 
 // This array specifies labels and tooltips for each onscreen field to avoid the need for 'literals in the procedure division'.
 // This is in alphabetic order by key. It doesn't need to be but it makes your life easier, doesn't it?
@@ -209,7 +209,7 @@ $TAGS = array(
 	'Cat1Label'			=> array('Axis 1 is','What do values on this axis represent?'),
 	'Cat2Label'			=> array('Axis 2 is','What do values on this axis represent?'),	
 	'Cat3Label'			=> array('Axis 3 is','What do values on this axis represent?'),
-	'Cat4Label'			=> array('Axis 4 is','What do values on this axis represent?'),
+	'Cat4Label'			=> array('Axis 4 is','What do values on this axis repres;ent?'),
 	'Cat5Label'			=> array('Axis 5 is','What do values on this axis represent?'),
 	'Cat6Label'			=> array('Axis 6 is','What do values on this axis represent?'),
 	'Cat7Label'			=> array('Axis 7 is','What do values on this axis represent?'),
@@ -223,7 +223,7 @@ $TAGS = array(
 	'CatEntryCC'		=> array('Which category','Which cat(s) does this rule apply to'),
 	'CatExplainer'		=> array('CatExplainer','You can amend the description of categories or delete them entirely. New entries must have a category number which is unique within the axis.'),
 	'CatNotUsed'		=> array('(not used)',''),
-	'ccApplyToAll'		=> array('all cats','applies to all cats'),
+	'ccApplyToAll'		=> array('&#8721;cats','applies to all cats'),
 	'ccRuletype'		=> array('Rule type','What is the effect of this rule if triggered'),
 	'ccRuletype0'		=> array('Scoring','Ordinary scoring rule'),
 	'ccRuletype1'		=> array('Untrig=DNF','DNF unless this rule triggered'),

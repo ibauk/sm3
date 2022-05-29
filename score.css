@@ -360,6 +360,8 @@ table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align
 
 textarea		{ font-size: 0.6em; background-color: white; color: black;}
 .textarea		{ font-size: 0.8em; background-color: white; color: black;}
+textarea.config	{ width: 100%; height: 20em;}
+
 ::placeholder	{ font-weight: lighter; }
 
 .rowcol			{ padding-right: .5em; }

@@ -42,6 +42,8 @@ files:
   - sm/scorecard.php
   - sm/help/dnf.hlp
   - sm/help/penalties.hlp
+  - sm/entrants.php
+  - sm/score.css
   
 folders:
 

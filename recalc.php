@@ -227,6 +227,33 @@ function calcAvgSpeed($rd) {
 
 }
 
+
+function ccTestFail($ccr) {
+
+    global $RP, $KONSTANTS, $catlabels;
+
+    $msg = ''; 
+    $axis = $ccr->axis;
+    $msg .= $RP['Cat'.$axis.'Label'].': ';
+    $cat = $ccr->cat;
+    $catx = $cat;
+    $msg .= ' n';
+    if ($cat == 0)
+        $catx = '' ;
+    else {
+        $catx = '['.$catlabels[$ccr->axis][$ccr->cat].']';
+    }
+    $msg .= $catx;
+    if ($ccr->triggered != $KONSTANTS['COMPULSORYBONUS'])
+        $msg .= ' &lt; ';
+    else
+        $msg .= ' &#8805; ';
+    $msg .= $ccr->min;
+
+    return $msg;
+}
+
+
 // This checks the various constraints on 'Finisher' status and applies the appropriate
 // status (Finisher / DNF) according to the rules of the rally.
 function calcEntrantStatus($rd) {
@@ -276,11 +303,11 @@ function calcEntrantStatus($rd) {
 
     foreach ($bonusValues as $b) {
         if ($b->compulsory == $KONSTANTS['COMPULSORYBONUS']  && !$b->scored) {
-            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].' [ '.$b->bid.' ]';
+            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].$b->desc.' [ '.$b->bid.' ]';
             $scorex[] = $sx;
             return $KONSTANTS['EntrantDNF'];
         } else if ($b->compulsory == $KONSTANTS['MUSTNOTMATCH']  && $b->scored) {
-            $sx->desc = $KONSTANTS['DNF_HITMUSTNOT'].' [ '.$b->bid.' ]';
+            $sx->desc = $KONSTANTS['DNF_HITMUSTNOT'].$b->desc.' [ '.$b->bid.' ]';
             $scorex[] = $sx;
             return $KONSTANTS['EntrantDNF'];
         }
@@ -288,7 +315,7 @@ function calcEntrantStatus($rd) {
 
     foreach ($specialValues as $b) {
         if ($b->compulsory && !$b->scored) {
-            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].' [ '.$b->bid.' ]';
+            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].$b->desc.' [ '.$b->bid.' ]';
             $scorex[] = $sx;
             return $KONSTANTS['EntrantDNF'];
         }
@@ -296,7 +323,7 @@ function calcEntrantStatus($rd) {
 
     foreach ($comboValues as $b) {
         if ($b->compulsory && !$b->scored) {
-            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].' [ '.$b->cid.' ]';
+            $sx->desc = $KONSTANTS['DNF_MISSEDCOMPULSORY'].$b->desc.' [ '.$b->cid.' ]';
             $scorex[] = $sx;
             return $KONSTANTS['EntrantDNF'];
         }
@@ -304,18 +331,18 @@ function calcEntrantStatus($rd) {
 
     foreach ($catCompoundRules as $ccr) {
         if ($ccr->rtype == $KONSTANTS['COMPULSORYBONUS'] && !$ccr->triggered) {
-            $sx->desc = $KONSTANTS['DNF_COMPOUNDRULE'];
+            $sx->desc = ccTestFail($ccr);
             $scorex[] = $sx;
             return $KONSTANTS['EntrantDNF'];
         }
         if ($ccr->rtype == $KONSTANTS['MUSTNOTMATCH'] && $ccr->triggered) {
-            $sx->desc = $KONSTANTS['DNF_HITMUSTNOT'];
+            $sx->desc = ccTestFail($ccr);
             $scorex[] = $sx;
             return $KONSTANTS['EntrantDNF'];
         }
     }
     if ($rd['TotalPoints'] < $RP['MinPoints']) {
-        $sx->desc = $KONSTANTS['DNF_TOOFEWPOINTS'];
+        $sx->desc = getSetting('DNF_TOOFEWPOINTS',$KONSTANTS['DNF_TOOFEWPOINTS']).' < '.$RP['MinPoints'];
         $scorex[] = $sx;
         return $KONSTANTS['EntrantDNF'];
     }
@@ -1223,7 +1250,7 @@ function recalcScorecard($entrant,$intransaction) {
         if ($basicPoints <= 0 && $lastmin != '')
             $sx->desc .= '&lt; '.$lastmin;
         else
-            $sx->desc .= '&gt;= '.$ccr->min;
+            $sx->desc .= '&#8805; '.$ccr->min;
         //$sx->desc .= $ccr->min;
         $sx->pointsDesc = "";
         $sx->points = $pbx.$basicPoints;
@@ -1244,9 +1271,9 @@ function recalcScorecard($entrant,$intransaction) {
         $bonusPoints += $tpP;
         $sx = new SCOREXLINE();
         if (substr($tp[2],0,10) == substr($tp[3],0,10) && substr($tp[3],11,5) >= substr($tp[2],11,5)) {
-            $y = ''.substr($tp[3],11,5).' >= '.substr($tp[2],11,5);
+            $y = ''.substr($tp[3],11,5).' &#8805; '.substr($tp[2],11,5);
         } else {
-            $y = ''.str_replace('T',' ',substr($tp[3],0,16)).' >= '.str_replace('T',' ',$tp[2]);
+            $y = ''.str_replace('T',' ',substr($tp[3],0,16)).' &#8805; '.str_replace('T',' ',$tp[2]);
         }
         $sx->id = getSetting('RPT_TPenalty',$KONSTANTS['RPT_TPenalty']);
         $sx->desc = $y;

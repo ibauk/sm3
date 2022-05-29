@@ -40,7 +40,7 @@ function entrantClaimsLog($entrant) {
     $R = $DB->query($sql);
     $res = '<div class="claimslog">';
     $res .= '<style>* {font-size: calc(14pt + 1vmin);} td {padding-right: 1em;}.spacert { padding-right: 3em; } s{background-color: lightgray;}</style>';
-    $res .= '<h2>'.$TAGS['clg_Header'][0].'</h2>';
+    $res .= '<h2>'.getSetting('clgHeader',$TAGS['clg_Header'][0]).'</h2>';
     $res .= '<p>#'.$entrant.' '.$rname.'</p>';
     $res .= '<table>';
     $res .= '<tbody>';
@@ -71,9 +71,9 @@ function entrantClaimsLog($entrant) {
         $res .= '</tr>';
     }
     $res .= '</tbody></table>';
-    $res .= '<p>'.$TAGS['clg_NumberOfClaims'][0].': <strong>'.$nclaims.'</strong></p>';
+    $res .= '<p>'.getSetting('clgClaimsCount',$TAGS['clg_NumberOfClaims'][0]).': <strong>'.$nclaims.'</strong></p>';
     if ($nclaims != $nbonuses)
-        $res .= '<p>'.$TAGS['clg_NumberOfClaims'][1].': <strong>'.$nbonuses.'</strong></p>';
+        $res .= '<p>'.getSetting('clgBonusCount',$TAGS['clg_NumberOfClaims'][1]).': <strong>'.$nbonuses.'</strong></p>';
     $res .= '</div>';
 
     return $res;

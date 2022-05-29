@@ -27,14 +27,14 @@
 "use strict";
 
  
-const DNF_TOOFEWPOINTS = "Not enough points";
-const DNF_TOOFEWMILES = "Not enough distance";
-const DNF_TOOMANYMILES = "Too much distance";
-const DNF_FINISHEDTOOLATE = "Finished too late";
-const DNF_MISSEDCOMPULSORY = "Missed a compulsory bonus";
-const DNF_HITMUSTNOT = "Breached a rule";
-const DNF_COMPOUNDRULE = "Failed to meet a category rule";
-const DNF_SPEEDING = "Excessive speed";
+const DNF_TOOFEWPOINTS = "points";
+const DNF_TOOFEWMILES = "Not enough distance"; // not used i8
+const DNF_TOOMANYMILES = "Too much distance"; // not used i8
+const DNF_FINISHEDTOOLATE = "Finished too late"; // not used i8
+const DNF_MISSEDCOMPULSORY = "&#8265; ";
+const DNF_HITMUSTNOT = "&#8264; ";
+const DNF_COMPOUNDRULE = "&#8853; ";
+const DNF_SPEEDING = "Excessive speed"; // not used i8
 const EntrantStatusDNF = "DNF";
 
 // Elements of Score explanation, include trailing space, etc
@@ -61,7 +61,7 @@ const CFGERR_NotBonuses = "Error: compoundCalcRuleType {0} not applicable to bon
 const ASK_MINUTES = "Please enter the number of rest minutes for ";
 const ASK_POINTS = "Please enter the points for";
 const LOOKUP_ENTRANT = "Find entrant record matching what?";
-const CLAIM_REJECTED = "Claim rejected";
+const CLAIM_REJECTED = "!! ";
 const FINISHERS_EXPORTED = "Finishers Exported!";
 const ENTRANTS_EXPORTED = "Full entrant details exported!"
 
