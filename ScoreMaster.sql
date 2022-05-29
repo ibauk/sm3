@@ -113,9 +113,9 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"autoAdjustBonusWidth": "true",
 	"useBonusQuestions": "false",
 	"valBonusQuestions": "50",
-	"RPT_TPenalty": "&#x23F0;Late arrival penalty",
-	"RPT_MPenalty": "Excess distance penalty",
-	"RPT_SPenalty": "Excess speed penalty"
+	"clgHeader": "Schedule of claims received", 
+	"clgClaimsCount": "Number of claims received", 
+	"clgBonusCount": "Number of bonuses claimed"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com

@@ -4,7 +4,7 @@
 
 
 ## The id of this patch, displayed at run time
-id: Bug fixes since v3.1
+id: Upgrade to v3.1.4
 
 ## Only apply this patch to installations with at least this DBVersion
 mindb: 9
@@ -20,9 +20,11 @@ minapp: 3.1
 maxapp: 
 
 sql:
-  - UPDATE entrants SET ScoreX=Replace(ScoreX,'&checkmark;','&#x2713;');
-  - UPDATE rallyparams SET EmailParams=Replace(EmailParams,'"SetFrom',Printf('"Encoding"%c "quoted-printable", "CharSet"%c "UTF-8", "SetFrom',':',':'));
-  - UPDATE rallyparams SET settings=Replace(settings,'}',Printf(',"RPT_TPenalty"%c "&#x23F0;Late arrival penalty","RPT_MPenalty"%c "Excess distance penalty",	"RPT_SPenalty"%c "Excess speed penalty"}',':',':',':'));
+  - UPDATE rallyparams SET settings=Replace(settings,'}',Printf(',"clgHeader"%c "Schedule of claims received","clgClaimsCount"%c "Number of claims received",	"clgBonusCount"%c "Number of bonuses claimed"}',':',':',':'));
+
+#  - UPDATE entrants SET ScoreX=Replace(ScoreX,'&checkmark;','&#x2713;');
+#  - UPDATE rallyparams SET EmailParams=Replace(EmailParams,'"SetFrom',Printf('"Encoding"%c "quoted-printable", "CharSet"%c "UTF-8", "SetFrom',':',':'));
+#  - UPDATE rallyparams SET settings=Replace(settings,'}',Printf(',"RPT_TPenalty"%c "&#x23F0;Late arrival penalty","RPT_MPenalty"%c "Excess distance penalty",	"RPT_SPenalty"%c "Excess speed penalty"}',':',':',':'));
 
 files:
   - sm/bonuses.php
