@@ -774,7 +774,7 @@ function initRallyVariables() {
         $timePenalties[] = $timp;
     }
 
-    debugTimePenalties();
+    //debugTimePenalties();
 
 // Speed penalties
 

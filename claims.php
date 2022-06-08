@@ -641,7 +641,6 @@ echo("</script>\n");
 		echo('>');
 	echo('</span>');
 	echo('</span>');
-	
 	echo('<span class="vlabel" title="'.$TAGS['BonusIDLit'][1].'"><label for="BonusID">'.$TAGS['BonusIDLit'][0].'</label> ');
 	echo('<input type="text" name="BonusID" id="BonusID" tabindex="2" oninput="showBonus(this);checkEnableSave();" onchange="showBonus(this);"');
 	echo(' value="'.($claimid> 0 ? $rd['BonusID'] : '').'"> ');
@@ -653,6 +652,13 @@ echo("</script>\n");
 		echo('>');
 	echo('</span>');
 	echo('</span>');
+
+	if ($rd['Photo'] > '') {
+		echo('<script>function cisz(img) {let szs = ["512px","100%"];let sz=parseInt(img.getAttribute("data-size"))+1;');
+		echo('if (sz >= szs.length) sz = 0;img.style.width=szs[sz];img.setAttribute("data-size",sz);}</script>');
+		echo('<img onclick="cisz(this);" data-size="0" src="'.$rd['Photo'].'" alt="**" style="width:512px;"/>');
+	}
+	
 	
 	echo('<span class="vlabel" title="'.$TAGS['OdoReadingLit'][1].'"><label for="OdoReading">'.$TAGS['OdoReadingLit'][0].'</label> ');
 	echo('<input type="number" class="bignumber" min="0" name="OdoReading" onkeypress="digitonly();" oninput="checkEnableSave();" id="OdoReading"');
@@ -969,9 +975,15 @@ function applyClaimsForm()
 {
 	global $TAGS;
 	
+	$reprocess = (isset($_REQUEST['reprocess']) && $_REQUEST['reprocess'] > '0');
 	startHtml($TAGS['cl_ClaimsTitle'][0]);
-	echo('<h3>'.$TAGS['cl_ApplyHdr'][0].'</h3>');
-	echo('<p>'.$TAGS['cl_ApplyHdr'][1].'</p>');
+	if ($reprocess) {
+		echo('<h3>'.$TAGS['cl_ReprocessHdr'][0].'</h3>');
+		echo('<p>'.$TAGS['cl_ReprocessHdr'][1].'</p>');	
+	} else {
+		echo('<h3>'.$TAGS['cl_ApplyHdr'][0].'</h3>');
+		echo('<p>'.$TAGS['cl_ApplyHdr'][1].'</p>');
+	}
 	echo('<form action="claims.php" method="post">');
 	echo('<input type="hidden" name="c" value="applyclaims">');
 	$lodate = date("Y-m-d");
@@ -980,22 +992,39 @@ function applyClaimsForm()
 	$hidate = date("Y-m-d");
 	if ($hidate < $lodate)
 		$hidate = $lodate;
-	if (strtolower(getSetting('claimsAutopostAll','true'))=='true')
+
+	$vlabelClass = "vlabel";
+
+	if ($reprocess) {
+		$vlabelClass = "hide";
+		echo('<script>function rpx(sel) {document.getElementById("reprocessText").innerHTML=sel.options[sel.selectedIndex].getAttribute("title");}</script>');
+		echo('<span class="vlabel" title="'.$TAGS['cl_ReprocessOpt'][1].'">');
+		echo('<label for="reprocess">'.$TAGS['cl_ReprocessOpt'][0].'</label> ');
+		echo('<select id="reprocess" name="reprocess" onchange="rpx(this);">');
+		echo('<option value="2" selected title="'.$TAGS['cl_ReprocessZap'][1].'">'.$TAGS['cl_ReprocessZap'][0].'</option>');
+		echo('<option value="1" title="'.$TAGS['cl_ReprocessYes'][1].'">'.$TAGS['cl_ReprocessYes'][0].'</option>');
+		echo('<option value="0" title="'.$TAGS['cl_ReprocessNo'][1].'">'.$TAGS['cl_ReprocessNo'][0].'</option>');
+		echo('</select>');
+
+		echo('<p id="reprocessText">'.$TAGS['cl_ReprocessZap'][1].'</p>');
+	}
+
+	if (strtolower(getSetting('claimsAutopostAll','true'))=='true' || $reprocess)
 		$chooseline = 2;
 	else
 		$chooseline = 1;
 
-	echo('<span class="vlabel" title="'.$TAGS['cl_DecisionsIncluded'][1].'">');
+	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_DecisionsIncluded'][1].'">');
 	echo('<label for="decisions">'.$TAGS['cl_DecisionsIncluded'][0].'</label> ');
 	echo('<select id="decisions" name="decisions"> ');
 	echo('<option value="0" '.($chooseline==1 ? 'selected' : '').' >'.$TAGS['cl_DecIncGoodOnly'][0].'</option>');
 	echo('<option value="0,1,2,3,4,5,6,7,8,9" '.($chooseline==2 ? 'selected' : '').' >'.$TAGS['cl_DecIncDecided'][0].'</option>');
 	echo('</select></span>');
 
-	echo('<span class="vlabel" title="'.$TAGS['cl_DateFrom'][1].'"><label for="lodate">'.$TAGS['cl_DateFrom'][0].'</label> <input type="date" id="lodate" name="lodate" value="'.$lodate.'"></span>');
-	echo('<span class="vlabel" title="'.$TAGS['cl_DateTo'][1].'"><label for="hidate">'.$TAGS['cl_DateTo'][0].'</label> <input type="date" id="hidate" name="hidate" value="'.$hidate.'"></span>');
-	echo('<span class="vlabel" title="'.$TAGS['cl_TimeFrom'][1].'"><label for="lotime">'.$TAGS['cl_TimeFrom'][0].'</label> <input type="time" id="lotime" name="lotime" value="00:00"></span>');
-	echo('<span class="vlabel" title="'.$TAGS['cl_TimeTo'][1].'"><label for="hitime">'.$TAGS['cl_TimeTo'][0].'</label> <input type="time" id="hitime" name="hitime" value="23:59"></span>');
+	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_DateFrom'][1].'"><label for="lodate">'.$TAGS['cl_DateFrom'][0].'</label> <input type="date" id="lodate" name="lodate" value="'.$lodate.'"></span>');
+	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_DateTo'][1].'"><label for="hidate">'.$TAGS['cl_DateTo'][0].'</label> <input type="date" id="hidate" name="hidate" value="'.$hidate.'"></span>');
+	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_TimeFrom'][1].'"><label for="lotime">'.$TAGS['cl_TimeFrom'][0].'</label> <input type="time" id="lotime" name="lotime" value="00:00"></span>');
+	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_TimeTo'][1].'"><label for="hitime">'.$TAGS['cl_TimeTo'][0].'</label> <input type="time" id="hitime" name="hitime" value="23:59"></span>');
 	//echo('<input type="hidden" name="decisions" value="0">'); // Only process good claims
 	echo('<span class="vlabel"><label for="gobutton"></label> <input id="gobutton" type="submit" value="'.$TAGS['cl_Go'][0].'"></span>');
 	echo('</form>');
@@ -1006,6 +1035,7 @@ function applyClaims()
 // and again May 2020
 // and properly in Jorvik 2020
 // copes with non-variable specials after BBR21
+// copes with variable specials as well
 {
 	global $DB,$TAGS,$KONSTANTS;
 
@@ -1046,7 +1076,11 @@ function applyClaims()
 	$loclaimtime = joinDateTime($_REQUEST['lodate'],$_REQUEST['lotime']);
 	$hiclaimtime = joinDateTime($_REQUEST['hidate'],$_REQUEST['hitime']);
 	
-	$sqlW = "Applied=0";		// Not already applied
+	if (isset($_REQUEST['reprocess']) && $_REQUEST['reprocess'] > '0') {
+		$sqlW = "TRUE";
+	} else {
+		$sqlW = "Applied=0";		// Not already applied
+	}
 	
 	$sqlW .= " AND ClaimTime>='".$loclaimtime."'";
 	$sqlW .= " AND ClaimTime<='".$hiclaimtime."'";
@@ -1084,6 +1118,9 @@ function applyClaims()
 	$scorecardsTouched = 0;
 	foreach($claims as $entrant => $eclaims) {
 		
+		if (isset($_REQUEST['reprocess']) && $_REQUEST['reprocess'] > '1')
+			zapScorecard($entrant);
+
 		foreach($eclaims as $claimid => $bonusid) {
 			applyClaim($claimid,true);
 		}
@@ -1205,6 +1242,22 @@ function triggerNewRow(obj) {
 	//showFooter();
 	
 }
+
+
+
+function zapScorecard($entrant) {
+
+	global $DB, $KONSTANTS;
+
+	$sql = "UPDATE entrants SET BonusesVisited='',CombosTicked='',TotalPoints=0,FinishPosition=0";
+	$sql .= ",EntrantStatus=".$KONSTANTS['EntrantOK'];
+	$sql .= ",RejectedClaims='',RestMinutes=0";
+	$sql .= " WHERE EntrantID=$entrant";
+	error_log($sql);
+	$DB->exec($sql);
+
+}
+
 
 if (isset($_REQUEST['deleteclaim']) && isset($_REQUEST['claimid']) && $_REQUEST['claimid']>0) {
 	deleteClaim();
