@@ -133,6 +133,7 @@ $KONSTANTS['CAT_OrdinaryScoringRule'] = 0;
 $KONSTANTS['CAT_DNF_Unless_Triggered'] = 1;
 $KONSTANTS['CAT_DNF_If_Triggered'] = 2;
 $KONSTANTS['CAT_PlaceholderRule'] = 3;
+$KONSTANTS['CAT_OrdinaryScoringSequence'] = 4;
 $KONSTANTS['CAT_ResultPoints'] = 0;
 $KONSTANTS['CAT_ResultMults'] = 1;
 $KONSTANTS['CAT_ModifyAxisScore'] = 0;

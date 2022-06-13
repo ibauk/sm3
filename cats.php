@@ -322,7 +322,7 @@ function showCompoundCalc($ruleid)
 	echo('<span class="vlabel" title="'.$TAGS['ccRuletype'][1].'">');
 	echo('<label class="wide" for="ccRuletype">'.$TAGS['ccRuletype'][0].'</label> ');
 	echo('<select name="Ruletype" onchange="ccChangeRuletype(this.value);">');
-	for ($i=0;$i<=3;$i++)
+	for ($i=0;$i<=4;$i++)
 	{
 		echo("<option value=\"$i\"");
 		if ($i==$rd['Ruletype'])

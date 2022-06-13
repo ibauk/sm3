@@ -797,7 +797,13 @@ function initScorecardVariables() {
     $scorex = [];
 
     for ($i = 0; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
-        $catcounts[$i] = [];
+        
+        $catcounts[$i] = new StdClass();
+        $catcounts[$i]->catcounts = [];
+        $catcounts[$i]->samecount = 0;
+        $catcounts[$i]->samepoints = 0;
+        $catcounts[$i]->lastcat = -1;
+
     }
 
     foreach($catCompoundRules as $c)
@@ -838,25 +844,35 @@ function parseBonusClaim($claim,&$bonusid,&$points,&$minutes) {
 
 }
 
-function updateCatcounts($bonus,$catcounts) {
+function updateCatcounts($bonus,$catcounts,$points) {
 
     global $KONSTANTS;
 
     // Keep track of cat counts
     for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
         $cat = $bonus->cat[$i];
+
+        if ($cat == $catcounts[$i]->lastcat) {
+            $catcounts[$i]->samecount++;
+            $catcounts[$i]->samepoints += $points;
+        } else {
+            $catcounts[$i]->samecount = 1;
+            $catcounts[$i]->samepoints = $points;
+            $catcounts[$i]->lastcat = $cat;
+        }
+
         if ($cat < 1) 
             continue;
             
-        if (!isset($catcounts[$i][$cat]))
-            $catcounts[$i][$cat] = 1;
+        if (!isset($catcounts[$i]->catcounts[$cat]))
+            $catcounts[$i]->catcounts[$cat] = 1;
         else
-            $catcounts[$i][$cat]++;
+            $catcounts[$i]->catcounts[$cat]++;
         // and overall figures
-        if (!isset($catcounts[0][$cat]))
-            $catcounts[0][$cat] = 1;
+        if (!isset($catcounts[0]->catcounts[$cat]))
+            $catcounts[0]->catcounts[$cat] = 1;
         else
-            $catcounts[0][$cat]++;
+            $catcounts[0]->catcounts[$cat]++;
     }
     return $catcounts;
 }
@@ -992,8 +1008,6 @@ function recalcScorecard($entrant,$intransaction) {
             $pointsDesc = ' ['.formatRestMinutes($minutes).']';
         }
         
-        // Keep track of cat counts
-        $catcounts = updateCatcounts($bonv,$catcounts);
 
         // Look for and apply cat mods to basic points
         foreach($catCompoundRules as $ccr) {
@@ -1012,10 +1026,10 @@ function recalcScorecard($entrant,$intransaction) {
                     
             $catcount = 0;
             if ($ccr->cat == 0)
-                foreach($catcounts[$ccr->axis] as $cc)
+                foreach($catcounts[$ccr->axis]->catcounts as $cc)
                     $catcount += $cc;
-            elseif (isset($catcounts[$ccr->axis][$ccr->cat]))
-                $catcount = $catcounts[$ccr->axis][$ccr->cat];
+            elseif (isset($catcounts[$ccr->axis]->catcounts[$ccr->cat]))
+                $catcount = $catcounts[$ccr->axis]->catcounts[$ccr->cat];
         
             if ($catcount < $ccr->min)
                 continue;
@@ -1036,6 +1050,9 @@ function recalcScorecard($entrant,$intransaction) {
             
         }
 
+        // Keep track of cat counts
+        $catcounts = updateCatcounts($bonv,$catcounts,$basicBonusPoints);
+
         // basicBonusPoints is now the live figure
         $bonusPoints += $basicBonusPoints;    
 
@@ -1047,6 +1064,61 @@ function recalcScorecard($entrant,$intransaction) {
         $sx->totalPoints = $bonusPoints;
 
         $scorex[] = $sx;
+
+
+        // Look for and apply sequence mods
+        foreach($catCompoundRules as $ccr) {
+            if ($ccr->rtype != $KONSTANTS['CAT_OrdinaryScoringSequence'])
+                continue;
+
+            if ($ccr->target != $KONSTANTS['CAT_ModifyBonusScore'])
+                continue;   // Only interested in rules affecting basic bonus
+
+            if ($ccr->pm != $KONSTANTS['CAT_ResultPoints']) // Multipliers not allowed at this level
+                continue;
+
+            error_log("Testing CCR sequence BC=".$bonv->cat[$ccr->axis].' LC='.$catcounts[$ccr->axis]->lastcat.' SC='.$catcounts[$ccr->axis]->samecount.' Min='.$ccr->min);
+
+           if ($catcounts[$ccr->axis]->samecount < $ccr->min) {
+                continue;
+            }
+                // Now trigger sequential bonus
+
+        
+            $mult = $ccr->pwr - 1;
+            if ($mult < 1) {
+                $mult = 1;
+            }
+            //'&#x2713; == checkmark
+            $bonusDesc = '&#x2713; '.$catlabels[$ccr->axis][$ccr->cat]. " x ".$ccr->min;
+            $basicBonusPoints = $catcounts[$ccr->axis]->samepoints * $mult;
+            $pointsDesc = '';
+            if ($mult > 1 ) {
+                $pointsDesc = " (".$catcounts[$ccr->axis]->samepoints;            
+                $pointsDesc .= " x ".$mult. ")";
+            }
+
+            $bonusPoints += $basicBonusPoints;
+
+            $sx = new SCOREXLINE();
+            $sx->desc = $bonusDesc;
+            $sx->pointsDesc = $pointsDesc;
+            $sx->points = $basicBonusPoints;
+            $sx->totalPoints = $bonusPoints;
+    
+            $scorex[] = $sx;
+    
+    
+
+            break;  // Only apply the first matching rule
+
+            
+        }
+
+
+
+
+
 
     } // Ordinary bonus loop
 
@@ -1087,8 +1159,8 @@ function recalcScorecard($entrant,$intransaction) {
         $bonusesScored[] = $c->cid;
         $combosScored[] = $c->cid;
 
-        // Keep track of cat counts
-        $catcounts = updateCatcounts($c,$catcounts);
+        // Keep track of cat counts. Don't accrue same points for combos
+        $catcounts = updateCatcounts($c,$catcounts,0);
 
 
         $bonusPoints += $basicBonusPoints;
@@ -1120,7 +1192,7 @@ function recalcScorecard($entrant,$intransaction) {
 
     $nzAxisCounts = [];
     for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) 
-        $nzAxisCounts[$i] = countNZ($catcounts[$i]);
+        $nzAxisCounts[$i] = countNZ($catcounts[$i]->catcounts);
 
 
     // First rules for number of non-zero cats
@@ -1202,10 +1274,10 @@ function recalcScorecard($entrant,$intransaction) {
 
         $catcount = 0;
         if ($ccr->cat == 0)
-            foreach($catcounts[$ccr->axis] as $cc)
+            foreach($catcounts[$ccr->axis]->catcounts as $cc)
                 $catcount += $cc;
-        elseif (isset($catcounts[$ccr->axis][$ccr->cat]))
-            $catcount = $catcounts[$ccr->axis][$ccr->cat];
+        elseif (isset($catcounts[$ccr->axis]->catcounts[$ccr->cat]))
+            $catcount = $catcounts[$ccr->axis]->catcounts[$ccr->cat];
 
         if ($catcount < $ccr->min) {
             $lastmin = $ccr->min;
@@ -1222,7 +1294,7 @@ function recalcScorecard($entrant,$intransaction) {
 
         $pbx = '';
         if ($ccr->rtype == $KONSTANTS['CAT_DNF_Unless_Triggered']) { // DNF type condition
-            $basicPoints = '&checkmark;';
+            $basicPoints = '&#x2713;'; //checkmark
         } elseif ($ccr->rtype == $KONSTANTS['CAT_DNF_If_Triggered']) {
             $basicPoints = $TAGS['EntrantDNF'][0];
         } elseif ($ccr->rtype == $KONSTANTS['CAT_PlaceholderRule'] ) {
