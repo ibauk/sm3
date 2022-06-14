@@ -126,6 +126,10 @@ function initScorecardVariables() {
     let catcounts = [];
     for (let i = 0; i <= CALC_AXIS_COUNT; i++) {
         catcounts[i] = [];
+        catcounts[i]['catcounts'] = [];
+        catcounts[i]['samecount'] = 0;
+        catcounts[i]['samepoints'] = 0;
+        catcounts[i]['lastcat'] = -1;
     }
 
     zapCats();
@@ -250,9 +254,6 @@ function recalcScorecard() {
             pointsDesc = pointsDesc+' ['+formatRestMinutes(obj.minutes)+'] ';
         }
 
-        // Keep track of cat counts
-        catcounts = updateCatcounts(bonv,catcounts);
-
         // Look for and apply cat mods to basic points
         for(let ccr of document.getElementsByName('catCompoundRules')) {
             if (ccr.getAttribute('data-ruletype') != CC_ORDINARYSCORE)
@@ -276,14 +277,14 @@ function recalcScorecard() {
             console.log("Applying rule ccr_cat="+ccr_cat);
             let catcount = 0;
             if (ccr_cat == 0) {
-                for(let cc of catcounts[ccr_axis]) {
+                for(let cc of catcounts[ccr_axis]['catcounts']) {
                     console.log('testing cc = '+cc);
                     if (typeof cc !== 'undefined')
                         catcount += cc;
                 }
             }
-            else if (typeof(catcounts[ccr_axis][ccr_cat]) !== 'undefined')
-                catcount = catcounts[ccr_axis][ccr_cat];
+            else if (typeof(catcounts[ccr_axis]['catcounts'][ccr_cat]) !== 'undefined')
+                catcount = catcounts[ccr_axis]['catcounts'][ccr_cat];
             console.log("Catcount="+catcount+' Min='+ccr_min);
             if (catcount < ccr_min)
                 continue;
@@ -305,6 +306,9 @@ function recalcScorecard() {
             
         }
 
+        // Keep track of cat counts
+        catcounts = updateCatcounts(bonv,catcounts,basicBonusPoints);
+
 
         // basicBonusPoints is now the live figure
         bonusPoints += parseInt(basicBonusPoints);    
@@ -320,6 +324,67 @@ function recalcScorecard() {
         console.log('Processing bonus '+obj.bon+'  +'+basicBonusPoints+' = '+bonusPoints+' '+sx.asHTML());
 
         scorex.push(sx);
+
+
+        // Look for and apply sequence mods
+        for(let ccr of document.getElementsByName('catCompoundRules')) {
+            if (ccr.getAttribute('data-ruletype') != CC_SEQUENCERULE)
+                continue;
+
+            if (ccr.getAttribute('data-target') != CAT_ModifyBonusScore)
+                continue;   // Only interested in rules affecting basic bonus
+
+            if (ccr.getAttribute('data-pm') != CAT_ResultPoints) // Multipliers not allowed at this level
+                continue;
+
+            let ccr_cat = parseInt(ccr.getAttribute('data-cat'));
+            let ccr_axis = parseInt(ccr.getAttribute('data-axis'));
+            let ccr_min = parseInt(ccr.getAttribute('data-min'));
+            let ccr_pwr = parseInt(ccr.getAttribute('data-pwr'));
+    
+//            error_log("Testing CCR sequence BC=".$bonv->cat[$ccr->axis].' LC='.$catcounts[$ccr->axis]->lastcat.' SC='.$catcounts[$ccr->axis]->samecount.' Min='.$ccr->min);
+
+           if (catcounts[ccr_axis]['samecount'] < ccr_min) {
+                continue;
+            }
+                // Now trigger sequential bonus
+
+        
+            let cdesc = '[###]';
+            let clbl = document.getElementById('cat'+ccr_axis+'_'+ccr_cat);
+            if (clbl !== null)
+                cdesc = clbl.parentElement.firstChild.innerText;
+    
+
+            console.log('SP='+parseInt(catcounts[ccr_axis]['samepoints'])+' Pwr='+parseInt(ccr_pwr));
+            //'&#x2713; == checkmark
+            let bonusDesc = '&#x2713; '+cdesc+ " x "+ccr_min;
+            basicBonusPoints = catcounts[ccr_axis]['samepoints'] * ccr_pwr;
+            let pointsDesc = '';
+            if (ccr_pwr != 1 && ccr_pwr != 0) {
+                pointsDesc = " ("+catcounts[ccr_axis]['samepoints'];            
+                pointsDesc += " x "+ccr_pwr+ ")";
+            }
+
+            bonusPoints += basicBonusPoints;
+
+            let sx = new SCOREXLINE();
+            sx.desc = bonusDesc;
+            sx.pointsDesc = pointsDesc;
+            sx.points = basicBonusPoints;
+            sx.totalPoints = bonusPoints;
+    
+            scorex.push(sx);
+    
+    
+
+            break;  // Only apply the first matching rule
+
+            
+        }
+
+
+
 
     } // Ordinary bonus loop
 
@@ -379,7 +444,7 @@ function recalcScorecard() {
         combosScored[c.value] = c.value;
 
         // Keep track of cat counts
-        catcounts = updateCatcounts(c,catcounts);
+        catcounts = updateCatcounts(c,catcounts,basicBonusPoints);
 
 
         bonusPoints += parseInt(basicBonusPoints);
@@ -426,7 +491,7 @@ function recalcScorecard() {
 
     let nzAxisCounts = [];
     for (let i = 1; i <= CALC_AXIS_COUNT; i++) 
-        nzAxisCounts[i] = countNZ(catcounts[i]);
+        nzAxisCounts[i] = countNZ(catcounts[i]['catcounts']);
 
 
     // First rules for number of non-zero cats
@@ -534,10 +599,10 @@ function recalcScorecard() {
 
         let catcount = 0;
         if (ccr_cat === 0)
-            for(let cc of catcounts[ccr_axis])
+            for(let cc of catcounts[ccr_axis]['catcounts'])
                 catcount += cc;
-        else if (typeof(catcounts[ccr_axis][ccr_cat]) !== 'undefined')
-            catcount = catcounts[ccr_axis][ccr_cat];
+        else if (typeof(catcounts[ccr_axis]['catcounts'][ccr_cat]) !== 'undefined')
+            catcount = catcounts[ccr_axis]['catcounts'][ccr_cat];
 
         if (catcount < ccr_min) {
             lastmin = ccr_min;
@@ -794,25 +859,41 @@ function tickBonus(obj) {
     recalcScorecard();
 }
 
-function updateCatcounts(bonus,catcounts) {
+function updateCatcounts(bonus,catcounts,points) {
 
     console.log('updateCatCounts called');
     // Keep track of cat counts
     for (let i = 1; i <= CALC_AXIS_COUNT; i++) {
         let cat = parseInt(bonus.getAttribute('data-cat'+i));
-        console.log('checking cat '+cat);
+        console.log('checking cat '+cat+' with points='+points);
+
+
+        if (cat == 0) {
+            catcounts[i]['samecount'] = 0;
+            catcounts[i]['samepoints'] = 0;
+            catcounts[i]['lastcat'] = cat;
+        } else if (cat == catcounts[i]['lastcat']) {
+            catcounts[i]['samecount']++;
+            catcounts[i]['samepoints'] = parseInt(catcounts[i]['samepoints']) + parseInt(points);
+        } else {
+            catcounts[i]['samecount'] = 1;
+            catcounts[i]['samepoints'] = points;
+            catcounts[i]['lastcat'] = cat;
+        }
+
+
         if (cat < 1) 
             continue;
             
-        if (typeof(catcounts[i][cat]) === 'undefined')
-            catcounts[i][cat] = 1;
+        if (typeof(catcounts[i]['catcounts'][cat]) === 'undefined')
+            catcounts[i]['catcounts'][cat] = 1;
         else
-            catcounts[i][cat]++;
+            catcounts[i]['catcounts'][cat]++;
         // and overall figures
-        if (typeof(catcounts[0][cat]) === 'undefined')
-            catcounts[0][cat] = 1;
+        if (typeof(catcounts[0]['catcounts'][cat]) === 'undefined')
+            catcounts[0]['catcounts'][cat] = 1;
         else
-            catcounts[0][cat]++;
+            catcounts[0]['catcounts'][cat]++;
     }
     return catcounts;
 }
@@ -995,10 +1076,10 @@ function setManualStatus() {
 function showCats(catcounts) {
 
     for (let i = 1; i <= CALC_AXIS_COUNT; i++) 
-        for (let j = 0; j < catcounts[i].length; j++) {
+        for (let j = 0; j < catcounts[i]['catcounts'].length; j++) {
             let X = '';
-            if (typeof(catcounts[i][j]) !== 'undefined')
-                X = catcounts[i][j];
+            if (typeof(catcounts[i]['catcounts'][j]) !== 'undefined')
+                X = catcounts[i]['catcounts'][j];
         let cn = document.getElementById('cat'+i+'_'+j);
         if (cn) 
             cn.innerText = X;

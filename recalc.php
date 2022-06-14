@@ -96,6 +96,10 @@ function applyClaim($claimid,$intransaction) {
 	$R = $DB->query($sql);
 	$rd = $R->fetchArray();
 
+    if ($rd['FinishTime'] == 'T') {
+        $rd['FinishTime'] = '2020-01-01';
+    }
+
 	$fo = $rd['OdoRallyFinish'];
 	$cm = $rd['CorrectedMiles'];
 	
@@ -852,7 +856,11 @@ function updateCatcounts($bonus,$catcounts,$points) {
     for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
         $cat = $bonus->cat[$i];
 
-        if ($cat == $catcounts[$i]->lastcat) {
+        if ($cat == 0) {
+            $catcounts[$i]->samecount = 0;
+            $catcounts[$i]->samepoints = 0;
+            $catcounts[$i]->lastcat = $cat;
+        } else if ($cat == $catcounts[$i]->lastcat) {
             $catcounts[$i]->samecount++;
             $catcounts[$i]->samepoints += $points;
         } else {
@@ -1085,17 +1093,14 @@ function recalcScorecard($entrant,$intransaction) {
                 // Now trigger sequential bonus
 
         
-            $mult = $ccr->pwr - 1;
-            if ($mult < 1) {
-                $mult = 1;
-            }
+            
             //'&#x2713; == checkmark
             $bonusDesc = '&#x2713; '.$catlabels[$ccr->axis][$ccr->cat]. " x ".$ccr->min;
-            $basicBonusPoints = $catcounts[$ccr->axis]->samepoints * $mult;
+            $basicBonusPoints = $catcounts[$ccr->axis]->samepoints * $ccr->pwr;
             $pointsDesc = '';
-            if ($mult > 1 ) {
+            if ($ccr->pwr != 1 && $ccr->pwr != 0) {
                 $pointsDesc = " (".$catcounts[$ccr->axis]->samepoints;            
-                $pointsDesc .= " x ".$mult. ")";
+                $pointsDesc .= " x ".$ccr->pwr. ")";
             }
 
             $bonusPoints += $basicBonusPoints;

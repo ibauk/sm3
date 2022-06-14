@@ -142,6 +142,8 @@ $TAGS = array(
 	'AdmPrintScoreX'	=> array('Score explanations','Print score explanations for everyone not DNS'),
 	'AdmRallyParams'	=> array('Rally parameters','View/edit current rally parameters'),
 	'AdmRankEntries'	=> array('Rank finishers','Calculate and apply the rank of each finisher'),
+	'AdmRebuildScorecards'
+						=> array('Rebuild scorecards','Reprocess all bonus claims'),
 	'AdmRPHideAdv'		=> array('Hide advanced','Hide advanced rally parameters'),
 	'AdmRPShowAdv'		=> array('Show advanced','Show advanced rally parameters'),
 	'AdmSelectTag'		=> array('Search by keyword','Choose a tag to list relevant functions'),
@@ -522,6 +524,7 @@ $TAGS = array(
 	'nowlit'			=> array('Now','Record the current date/time'),
 	'NPowerLit'			=> array('Power',"If bonus rule &amp; this is 0, R=bonuspoints(N-1)\n".
 											"If bonus rule &amp; this > 0, R=bonuspoints(this^(N-1))\n".
+											"If sequence rule, this is the multiplier\n".
 											"If axis rule &amp; this is 0, R=N\n".
 											"If axis rule &amp; this <> 0, R=this value"),
 											

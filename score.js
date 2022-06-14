@@ -59,6 +59,7 @@ const CC_ORDINARYSCORE = 0;
 const CC_UNTRIGDNF = 1;
 const CC_IFTRIGDNF = 2;
 const CC_PLACEHOLDER = 3;
+const CC_SEQUENCERULE = 4;
 const CC_ScorePoints = 0;
 const CC_ScoreMults = 1;
 
