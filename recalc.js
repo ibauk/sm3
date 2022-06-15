@@ -153,6 +153,16 @@ function initScorecardVariables() {
 function parseBonusClaim(bonus,obj) {
     // Format is bonus[=[points][;minutes]]
     console.log("Parsing BC "+JSON.stringify(bonus));
+    let m = /([a-zA-z0-9]+)=?(\d+)?(X|)?;?(\d+)?/.exec(bonus);
+    console.log("Parsed m = "+JSON.stringify(m));
+    obj.bon = m[1];
+    obj.points = m[2];
+    obj.xp = m[3] == 'X';
+    obj.minutes = m[4];
+
+    
+
+/**    
     obj.points = '';
     obj.minutes = '';
     let e = bonus.indexOf('=');
@@ -169,7 +179,9 @@ function parseBonusClaim(bonus,obj) {
     }
     obj.points = pm.substring(0,e);
     obj.minutes = pm.substring(e + 1);
+**/    
     console.log("Object is "+JSON.stringify(obj));
+    
 }
 
 
@@ -210,13 +222,18 @@ function recalcScorecard() {
         if (bonus === '')
             continue;
 
-        let obj = {bon: '', points: '', minutes: ''};
+        let obj = {bon: '', points: '', minutes: '', xp: false};
         parseBonusClaim(bonus,obj);
         
         let bonv = '';
         for(let bv of document.getElementsByName('BonusID[]')) {
             if (bv.value === obj.bon) {
                 bv.setAttribute('data-scored',true);
+                let xpx = '';
+                if (obj.xp) {
+                    xpx = 'true';
+                }
+                bv.setAttribute('data-xp',xpx);
                 bonv = bv;
                 break;
             }
@@ -230,6 +247,7 @@ function recalcScorecard() {
             obj.points = bonv.getAttribute('data-points');
         if (obj.minutes === '')
             obj.minutes = bonv.getAttribute('data-minutes');
+            
 
         if (obj.bon === '' || rejectedClaims.hasOwnProperty(obj.bon)) { // is it a rejected claim?
             let sx = new SCOREXLINE();
@@ -304,6 +322,10 @@ function recalcScorecard() {
 
             break;  // Only apply the first matching rule
             
+        }
+
+        if (bonv.getAttribute('data-xp')=='true') {
+            pointsDesc += ' &#8224;';
         }
 
         // Keep track of cat counts
@@ -778,6 +800,7 @@ function tickBonus(obj) {
     let b = {};
     let bix = [];
     for (let t of ticks) {
+
         let e = t.indexOf('=');
         if (e < 0) {
             b[t] = t;
@@ -851,7 +874,11 @@ function tickBonus(obj) {
     
             console.log("tb: Getting bonus "+x);
             let B = document.getElementById(x);
-            bv.value += x+'='+B.getAttribute('data-points')+';'+B.getAttribute('data-minutes');
+            let xp = '';
+            if (B.getAttribute('data-xp')) {
+                xp = 'X';
+            }
+            bv.value += x+'='+B.getAttribute('data-points')+xp+';'+B.getAttribute('data-minutes');
         }            
     }
     

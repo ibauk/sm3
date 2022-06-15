@@ -364,6 +364,33 @@ function logtime($stamp)
 	return '<span title="'.$stamp.'">'.$dtf.'</span>';
 }
 
+function parseBonusClaim($claim,&$bonusid,&$points,&$minutes,&$xp) {
+
+    $m = [];
+    preg_match('/([a-zA-z0-9]+)=?(\d+)?(X|)?;?(\d+)?/',$claim,$m);
+    if (isset($m[1])) {
+        $bonusid = $m[1];
+        if (isset($m[2]))
+            $points = $m[2];
+        else
+            $points = '';
+        if (isset($m[3]))
+            $xp = $m[3]=='X';
+        else 
+            $xp = false;
+        if (isset($m[4]))
+            $minutes = $m[4];
+        else
+            $minutes = '';
+    } else {
+        $bonusid = $claim;
+        $points = 0;
+        $minutes = 0;
+        $xp = false;
+    }
+
+}
+
 
 function properName($enteredName)
 // Used to fix names entered online; not everyone knows about shift keys

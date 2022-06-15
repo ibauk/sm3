@@ -325,8 +325,16 @@ function showScorecard($entrant) {
     $tmp = explode(',',$rd['BonusesVisited']);
     //echo('<input type="hidden" id="BonusesVisited" value="'.$rd['BonusesVisited'].'">');
     $bonusesScored = [];
+    $bc = [];
+    $bc['Bonus'] = '';
+    $bc['Points'] = '';
+    $bc['Mins'] = '';
+    $bc['XP'] = false;
     foreach ($tmp as $b) {
         // Format is (code)=?(points)?,?(minutes)
+        parseBonusClaim($b,$bc['Bonus'],$bc['Points'],$bc['Mins'],$bc['XP']);
+        $bonusesScored[$bc['Bonus']] = $bc;
+        /**
         $e = strpos($b,'=');
         if ($e === false) {
             $bonusesScored[$b] = [];
@@ -341,6 +349,7 @@ function showScorecard($entrant) {
             else
                 $bonusesScored[$bc] = [intval(substr($pm,0,$c)),intval(substr($pm,$c + 1))];
         }
+        **/
     }
 
 
@@ -405,11 +414,22 @@ function showScorecard($entrant) {
         if ($checked) {
             echo(' checked ');
             $bs = $bonusesScored[$rb['BonusID']];
+            if (isset($bs['Points'])) { $pts = $bs['Points']; }
+            if (isset($bs['Mins'])) { $mins = $bs['Mins']; }
+            if (isset($bs['XP'])) { 
+                $xp = 'data-xp="';
+                if ($bs['XP']) { $xp .= 'true'; }
+                $xp .= '" '; 
+            }
+            /** 
             if (count($bs) > 0) {
                 $pts = $bs[0];
                 if (count($bs) > 1)
                     $mins = $bs[1];
             }
+            **/
+            echo($xp);
+
         }
         echo('data-points="'.$pts.'" data-askpoints="'.$rb['AskPoints'].'" ');
         echo('data-minutes="'.$mins.'" data-askminutes="'.$rb['AskMinutes'].'" ');
