@@ -63,10 +63,13 @@ function fetchShowEntrant()
 	$entrant = intval($_REQUEST['id']);
 	$rel = '=';
 	$ord = '';
-	if (isset($_REQUEST['next'])) 
-		$rel = '>';
-	elseif (isset($_REQUEST['prev']))
-		$rel = '<';
+	$pnok = substr($_REQUEST['ord'],0,9)=='EntrantID';
+	if (!isset($_REQUEST['ord']) || $pnok) {
+		if (isset($_REQUEST['next'])) 
+			$rel = '>';
+		elseif (isset($_REQUEST['prev']))
+			$rel = '<';
+	}
 	if (isset($_REQUEST['ord'])) {
 		$ord = $_REQUEST['ord'];
 		if ($rel == '<') {
@@ -78,7 +81,11 @@ function fetchShowEntrant()
 		}
 	}
 	while(true) {
-		$sql = "SELECT * FROM entrants WHERE EntrantID";
+		$sql = "SELECT *,substr(RiderName,1,RiderPos-1) As RiderFirst";
+		$sql .= ",substr(RiderName,RiderPos+1) As RiderLast";
+		$sql .= " FROM (SELECT *,instr(RiderName,' ') As RiderPos FROM entrants) ";
+	
+		$sql .= " WHERE EntrantID";
 		$sql .= $rel;
 		$sql .= intval($_REQUEST['id']);
 		if ($ord != '')
@@ -97,7 +104,7 @@ function fetchShowEntrant()
 	}
 
 		if (!isset($_REQUEST['mode']) || $_REQUEST['mode']!='check')
-			showEntrantRecord($rd);
+			showEntrantRecord($rd,$pnok);
 		else
 			showEntrantChecks($rd);
 }
@@ -1243,7 +1250,7 @@ function showEntrantExtraData($xd)
 }
 
 
-function showEntrantRecord($rd)
+function showEntrantRecord($rd,$showPN)
 {
 	global $DB, $TAGS, $KONSTANTS, $DBVERSION;
 //var_dump($rd);
@@ -1298,6 +1305,16 @@ function showEntrantRecord($rd)
 	echo(' <label class="wide">'.htmlspecialchars($rd['RiderName']).'</label> ');
 	if (!$is_new_record)
 	{
+		if ($showPN) {
+			$lnk = '<a class="link navLink" style="text-decoration:none;" title="*" href="entrants.php?c=entrant&amp;id='.$rd['EntrantID'];
+			if (isset($_REQUEST['ord']))
+				$lnk .= '&amp;ord='.$_REQUEST['ord'];
+			if (isset($_REQUEST['tab']))
+				$lnk .= '&amp;tab='.$_REQUEST['tab'];
+			echo('  '.$lnk.'&amp;prev">&Ll;</a> ');
+			echo($lnk.'&amp;next">&Gg;</a> ');
+		}
+
 		echo('<input type="hidden" name="updaterecord" value="'.$rd['EntrantID'].'">');
 		echo('<input title="'.$TAGS['ScoreNow'][1].'" id="ScoreNowButton" type="button" value="'.$TAGS['ScoreNow'][0].'"');
 		echo(' onclick="window.open('."'scorecard.php?c=score&amp;EntrantID=".$rd['EntrantID']."','score'".')" >');
@@ -1318,13 +1335,6 @@ function showEntrantRecord($rd)
 		echo(' <input title="'.$TAGS['Print1ClaimLog'][1].'" id="PrintCLButton" type="button" value="'.$TAGS['Print1ClaimLog'][0].'" ');
 		echo(' onclick="window.open('."'claimslog.php?entrant=".$rd['EntrantID']."','cert'".')" >');
 
-		$lnk = '<a class="link navLink" style="text-decoration:none;" title="*" href="entrants.php?c=entrant&amp;id='.$rd['EntrantID'];
-		if (isset($_REQUEST['ord']))
-			$lnk .= '&amp;ord='.$_REQUEST['ord'];
-		if (isset($_REQUEST['tab']))
-			$lnk .= '&amp;tab='.$_REQUEST['tab'];
-		echo('  '.$lnk.'&amp;prev">&Ll;</a> ');
-		echo($lnk.'&amp;next">&Gg;</a> ');
 	}
 echo('</span> ');
 	
