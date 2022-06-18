@@ -364,22 +364,26 @@ function logtime($stamp)
 	return '<span title="'.$stamp.'">'.$dtf.'</span>';
 }
 
-function parseBonusClaim($claim,&$bonusid,&$points,&$minutes,&$xp) {
+function parseBonusClaim($claim,&$bonusid,&$points,&$minutes,&$xp,&$pp) {
 
     $m = [];
-    preg_match('/([a-zA-z0-9]+)=?(\d+)?(X|)?;?(\d+)?/',$claim,$m);
+    preg_match('/([a-zA-z0-9]+)=?(\d+)?(X|)?(P|)?;?(\d+)?/',$claim,$m);
     if (isset($m[1])) {
         $bonusid = $m[1];
         if (isset($m[2]))
             $points = $m[2];
         else
             $points = '';
-        if (isset($m[3]))
+			if (isset($m[3]))
             $xp = $m[3]=='X';
         else 
             $xp = false;
-        if (isset($m[4]))
-            $minutes = $m[4];
+		if (isset($m[4]))
+            $pp = $m[4]=='P';
+        else 
+            $pp = false;
+        if (isset($m[5]))
+            $minutes = $m[5];
         else
             $minutes = '';
     } else {
@@ -387,6 +391,7 @@ function parseBonusClaim($claim,&$bonusid,&$points,&$minutes,&$xp) {
         $points = 0;
         $minutes = 0;
         $xp = false;
+		$pp = false;
     }
 
 }

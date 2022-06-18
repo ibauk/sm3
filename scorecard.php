@@ -330,9 +330,10 @@ function showScorecard($entrant) {
     $bc['Points'] = '';
     $bc['Mins'] = '';
     $bc['XP'] = false;
+    $bc['PP'] = false;
     foreach ($tmp as $b) {
         // Format is (code)=?(points)?,?(minutes)
-        parseBonusClaim($b,$bc['Bonus'],$bc['Points'],$bc['Mins'],$bc['XP']);
+        parseBonusClaim($b,$bc['Bonus'],$bc['Points'],$bc['Mins'],$bc['XP'],$bc['PP']);
         $bonusesScored[$bc['Bonus']] = $bc;
         /**
         $e = strpos($b,'=');
@@ -421,6 +422,11 @@ function showScorecard($entrant) {
                 if ($bs['XP']) { $xp .= 'true'; }
                 $xp .= '" '; 
             }
+            if (isset($bs['PP'])) { 
+                $pp = 'data-pp="';
+                if ($bs['PP']) { $pp .= 'true'; }
+                $pp .= '" '; 
+            }
             /** 
             if (count($bs) > 0) {
                 $pts = $bs[0];
@@ -428,7 +434,7 @@ function showScorecard($entrant) {
                     $mins = $bs[1];
             }
             **/
-            echo($xp);
+            echo($xp.$pp);
 
         }
         echo('data-points="'.$pts.'" data-askpoints="'.$rb['AskPoints'].'" ');

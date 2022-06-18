@@ -123,14 +123,16 @@ function applyClaim($claimid,$intransaction) {
     $points = 0;
     $minutes = 0;
     $xp = false;
+    $pp = false;
     $appendclaim = true;
     
     foreach($bv as $ix => $bonusclaim) {
-        parseBonusClaim($bonusclaim,$bonusid,$points,$minutes,$xp);
+        parseBonusClaim($bonusclaim,$bonusid,$points,$minutes,$xp,$pp);
         error_log('bv check rc[bonusid]=="'.$rc['BonusID'].'" bonusid="'.$bonusid.'"');
         if ($rc['BonusID'] == $bonusid) {
             $bonusclaim = $bonusid.'='.$rc['Points'];
             $bonusclaim .= ($rc['QuestionAnswered']==1 ? 'X' : '');
+            $bonusclaim .= ($rc['MagicPenalty']==1 ? 'P' : '');
             $bonusclaim .= ';'.$rc['RestMinutes'];
             $bv[$ix] = $bonusclaim;
             $appendclaim = false;
@@ -957,8 +959,8 @@ function recalcScorecard($entrant,$intransaction) {
         if ($bonus == '')
             continue;
 
-        $bon = ''; $points = ''; $minutes = ''; $xp = false;
-        parseBonusClaim($bonus,$bon,$points,$minutes,$xp);
+        $bon = ''; $points = ''; $minutes = ''; $xp = false; $pp = false;
+        parseBonusClaim($bonus,$bon,$points,$minutes,$xp,$pp);
 //        echo('<br>'.$bonus.': '.$bon.', '.$points.', '.$minutes);
 
         $bonv = '';
@@ -1044,6 +1046,8 @@ function recalcScorecard($entrant,$intransaction) {
 
         if ($xp) 
             $pointsDesc .= ' &#8224;';
+        if ($pp)
+            $pointsDesc .= ' &#10016;';
 
         // Keep track of cat counts
         $catcounts = updateCatcounts($bonv,$catcounts,$basicBonusPoints);

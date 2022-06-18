@@ -598,7 +598,8 @@ function showClaim($claimid = 0)
 		$R  = $DB->query("SELECT * FROM claims WHERE rowid=".$claimid);
 		if (!$rd = $R->fetchArray())
 			$claimid =0;
-	}
+	} else
+		$rd = defaultRecord('claims');
 
 echo("<script>\n");
 include 'claimsphp.js';
@@ -689,11 +690,13 @@ echo("</script>\n");
 		echo('<input type="hidden" name="QuestionAsked" id="QuestionAsked" value="'.($claimid> 0 ? $rd['QuestionAsked'] : '0').'"> ');
 		echo('<input type="hidden" id="valBonusQuestions" value="');
 		echo(intval(getSetting('valBonusQuestions','0')).'">');
+		echo('<input type="hidden" id="valMagicPenalty" value="');
+		echo(intval(getSetting('valMagicPenalty','0')).'">');
 		$disp = ($claimid> 0 && $rd['QuestionAsked'] ? 'inline': 'none');
 		echo('<span id="BonusAnswerSpan" class="vlabel" style="display:'.$disp.';" title="'.$TAGS['BonusAnswer'][1].'">');
 		echo('<label for="AnswerSupplied">'.$TAGS['BonusAnswer'][0].'</label> ');
 		echo('<input type="text" tabindex="5" oninput="checkEnableSave();" name="AnswerSupplied" id="AnswerSupplied" value="'.($claimid> 0 ? $rd['AnswerSupplied'] : '').'"> ');
-		echo('<input type="checkbox" tabindex="6" name="QuestionAnswered" onchange="answerQuestion(this);"');
+		echo('<input type="checkbox" tabindex="6" id="QuestionAnswered" name="QuestionAnswered" onchange="answerQuestion(this);"');
 		if ($claimid > 0 && $rd['QuestionAnswered'] != 0) {
 			echo(' checked');
 		}
@@ -750,7 +753,16 @@ echo("</script>\n");
 		if ($rtt[0]!='')
 			echo("\r\n".'<option value="'.$rtt[0].'" '.($dnum==$rtt[0] ? 'selected' : '').'>'.$rtt[1].'</option>');
 	}
-	echo('</select></span>');
+	echo('</select>');
+
+	if (getSetting('useMagicPenalty','false')=='true') {
+		$chk = '';
+		if ($rd['MagicPenalty']==1)
+			$chk = ' checked ';
+		echo(' <label for="MagicPenalty">Penalty</label> ');
+		echo('<input tabindex="9" '.$chk.'type="checkbox" id="MagicPenalty" name="MagicPenalty" onchange="applyMagicPenalty(this);">');
+	}
+	echo('</span>');
 
 	echo('</div>'); // frmContent
 
@@ -1086,7 +1098,7 @@ function applyClaims()
 	$sqlW .= " AND ClaimTime<='".$hiclaimtime."'";
 	$sqlW .= " AND Decision IN (".$_REQUEST['decisions'].") ";
 	
-	$sqlW .= " AND SpeedPenalty=0 AND FuelPenalty=0 AND MagicPenalty=0"; // Penalties applied by hand
+	$sqlW .= " AND SpeedPenalty=0 AND FuelPenalty=0 ; // AND MagicPenalty=0"; // Penalties applied by hand
 	
 	if (isset($_REQUEST['entrants']))
 		$sqlW .= " AND EntrantID IN (".$_REQUEST['entrants'].")";

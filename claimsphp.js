@@ -17,6 +17,27 @@ function answerQuestion(obj) {
 	console.log('answerQuestion enabling save');
 	enableSaveButton();
 }
+
+function applyMagicPenalty(obj) {
+
+	let pts = document.getElementById('PointsValue');
+	let pv = parseInt(pts.value);
+	let qv = parseInt(document.getElementById('valMagicPenalty').value);
+	// qv now holds the percentage 
+	let points2deduct = (qv / 100) * pv;
+	let points2return = (pv * 100) / (100 - qv);
+	console.log('Applying magic penalty: pv='+pv+' qv='+qv+' -='+points2deduct+' += '+points2return+' checked='+obj.checked);
+	// 100 - 10% = 90, (90 * 100)  / (100 - 10)
+	if (obj.checked)
+		pv -= points2deduct;
+	else
+		pv = points2return;
+	pts.value = pv;
+	let qa = document.getElementById('MagicPenalty');
+	qa.value = 1;
+	console.log('applying magic enabling save; new value is '+pv);
+	enableSaveButton();
+}
 function checkMagicWord() {
 	let lmw = '';
 	let lmwtime = '';

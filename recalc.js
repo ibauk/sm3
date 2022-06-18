@@ -153,12 +153,13 @@ function initScorecardVariables() {
 function parseBonusClaim(bonus,obj) {
     // Format is bonus[=[points][;minutes]]
     console.log("Parsing BC "+JSON.stringify(bonus));
-    let m = /([a-zA-z0-9]+)=?(\d+)?(X|)?;?(\d+)?/.exec(bonus);
+    let m = /([a-zA-z0-9]+)=?(\d+)?(X|)?(P|)?;?(\d+)?/.exec(bonus);
     console.log("Parsed m = "+JSON.stringify(m));
     obj.bon = m[1];
     obj.points = m[2];
     obj.xp = m[3] == 'X';
-    obj.minutes = m[4];
+    obj.pp = m[4] == 'P';
+    obj.minutes = m[5];
 
     
 
@@ -222,7 +223,7 @@ function recalcScorecard() {
         if (bonus === '')
             continue;
 
-        let obj = {bon: '', points: '', minutes: '', xp: false};
+        let obj = {bon: '', points: '', minutes: '', xp: false, pp: false};
         parseBonusClaim(bonus,obj);
         
         let bonv = '';
@@ -234,6 +235,11 @@ function recalcScorecard() {
                     xpx = 'true';
                 }
                 bv.setAttribute('data-xp',xpx);
+                let ppx = '';
+                if (obj.pp) {
+                    ppx = 'true';
+                }
+                bv.setAttribute('data-pp',ppx);
                 bonv = bv;
                 break;
             }
@@ -326,6 +332,9 @@ function recalcScorecard() {
 
         if (bonv.getAttribute('data-xp')=='true') {
             pointsDesc += ' &#8224;';
+        }
+        if (bonv.getAttribute('data-pp')=='true') {
+            pointsDesc += ' &#10016;';
         }
 
         // Keep track of cat counts
@@ -878,7 +887,11 @@ function tickBonus(obj) {
             if (B.getAttribute('data-xp')) {
                 xp = 'X';
             }
-            bv.value += x+'='+B.getAttribute('data-points')+xp+';'+B.getAttribute('data-minutes');
+            let pp = '';
+            if (B.getAttribute('data-pp')) {
+                pp = 'P';
+            }
+            bv.value += x+'='+B.getAttribute('data-points')+xp+pp+';'+B.getAttribute('data-minutes');
         }            
     }
     
