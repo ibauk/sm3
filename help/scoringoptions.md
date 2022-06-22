@@ -2,9 +2,9 @@
 
 This is aimed at Rallymasters & administrators configuring the system to score a particular rally.
 
-### Compound rules by axis/category
+### Compound rules by set/category
 
-Axis rules are applied once basic bonus scoring is complete and provide for more complex scoring strategies.
+Set rules are applied once basic bonus scoring is complete and provide for more complex scoring strategies.
 
 A rule of type *DNF unless triggered* will appear on score explanations with a tick if it is triggered but will not appear on score explanations at all if it's not triggered, even though that condition will result in DNF. Mostly it would be better to use a *placeholder* and a *DNF if triggered* pair as that will give more satisfying results on score explanations.
 
@@ -12,11 +12,11 @@ A rule of type *DNF unless triggered* will appear on score explanations with a t
 
 The following gives examples of how to configure a ruleset to achieve certain specific scoring goals.
 
-#### Award extra points for scoring *N* categories within an axis
-- One or more rules, each of type *NZ per axis*, *Ordinary scoring rule*. 
+#### Award extra points for scoring *N* categories within an set
+- One or more rules, each of type *NZ per set*, *Ordinary scoring rule*. 
 - Set *NMin* and *NPower* to the required values.
 
-#### Deduct points for scoring less than *N* categories within an axis
+#### Deduct points for scoring less than *N* categories within an set
 - Set a *placeholder* with an *NMin* value = *N*; 
 - Set an *Ordinary scoring rule* with *NMin* = 0 and *NPower* to the **negative** value.
 
