@@ -690,8 +690,6 @@ echo("</script>\n");
 		echo('<input type="hidden" name="QuestionAsked" id="QuestionAsked" value="'.($claimid> 0 ? $rd['QuestionAsked'] : '0').'"> ');
 		echo('<input type="hidden" id="valBonusQuestions" value="');
 		echo(intval(getSetting('valBonusQuestions','0')).'">');
-		echo('<input type="hidden" id="valMagicPenalty" value="');
-		echo(intval(getSetting('valMagicPenalty','0')).'">');
 		$disp = ($claimid> 0 && $rd['QuestionAsked'] ? 'inline': 'none');
 		echo('<span id="BonusAnswerSpan" class="vlabel" style="display:'.$disp.';" title="'.$TAGS['BonusAnswer'][1].'">');
 		echo('<label for="AnswerSupplied">'.$TAGS['BonusAnswer'][0].'</label> ');
@@ -756,12 +754,17 @@ echo("</script>\n");
 	echo('</select>');
 
 	if (getSetting('useMagicPenalty','false')=='true') {
+		echo('<input type="hidden" id="valMagicPenalty" value="');
+		echo(intval(getSetting('valMagicPenalty','0')).'">');
 		$chk = '';
 		if ($rd['MagicPenalty']==1)
 			$chk = ' checked ';
-		echo(' <label for="MagicPenalty">Penalty</label> ');
+		echo('<span title="'.$TAGS['cl_MagicPenalty'][1].'">');
+		echo(' <label for="MagicPenalty">'.$TAGS['cl_MagicPenalty'][0].'</label> ');
 		echo('<input tabindex="9" '.$chk.'type="checkbox" id="MagicPenalty" name="MagicPenalty" onchange="applyMagicPenalty(this);">');
+		echo('</span>');
 	}
+	
 	echo('</span>');
 
 	echo('</div>'); // frmContent
@@ -1038,6 +1041,9 @@ function applyClaimsForm()
 	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_TimeFrom'][1].'"><label for="lotime">'.$TAGS['cl_TimeFrom'][0].'</label> <input type="time" id="lotime" name="lotime" value="00:00"></span>');
 	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_TimeTo'][1].'"><label for="hitime">'.$TAGS['cl_TimeTo'][0].'</label> <input type="time" id="hitime" name="hitime" value="23:59"></span>');
 	//echo('<input type="hidden" name="decisions" value="0">'); // Only process good claims
+
+	echo('<span class="vlabel" title="'.$TAGS['cl_EntrantIDs'][1].'"><label for="entrants">'.$TAGS['cl_EntrantIDs'][0].'</label> ');
+	echo('<input id="entrants" name="entrants"></span>');
 	echo('<span class="vlabel"><label for="gobutton"></label> <input id="gobutton" type="submit" value="'.$TAGS['cl_Go'][0].'"></span>');
 	echo('</form>');
 }
@@ -1059,7 +1065,7 @@ function applyClaims()
 		exit;
 	}
 	
-
+	//print_r($_REQUEST); exit;
 	if (!$DB->exec('BEGIN IMMEDIATE TRANSACTION')) {
 		dberror();
 		exit;
@@ -1098,13 +1104,13 @@ function applyClaims()
 	$sqlW .= " AND ClaimTime<='".$hiclaimtime."'";
 	$sqlW .= " AND Decision IN (".$_REQUEST['decisions'].") ";
 	
-	$sqlW .= " AND SpeedPenalty=0 AND FuelPenalty=0 ; // AND MagicPenalty=0"; // Penalties applied by hand
+	$sqlW .= " AND SpeedPenalty=0 AND FuelPenalty=0" ; // AND MagicPenalty=0"; // Penalties applied by hand
 	
-	if (isset($_REQUEST['entrants']))
+	if (isset($_REQUEST['entrants']) && $_REQUEST['entrants'] != '')
 		$sqlW .= " AND EntrantID IN (".$_REQUEST['entrants'].")";
-	if (isset($_REQUEST['bonuses']))
+	if (isset($_REQUEST['bonuses']) && $_REQUEST['bonuses'] != '')
 		$sqlW .= " AND BonusID IN (".$_REQUEST['bonuses'].")";
-	if (isset($_REQUEST['exclude']))
+	if (isset($_REQUEST['exclude']) && $_REQUEST['exclude'] != '')
 		$sqlW .= " AND BonusID NOT IN (".$_REQUEST['exclude'].")";
 	$sql .= $sqlW;
 	$sql .= " ORDER BY ClaimTime";
@@ -1112,6 +1118,7 @@ function applyClaims()
 	// Load all claims records into memory
 	// organised as EntrantID, BonusID
 	$claims = [];
+	//echo($sql.'<hr>'); exit;
 	$R = $DB->query($sql);
 	$claimcount = 0;
 	while ($R->fetchArray())

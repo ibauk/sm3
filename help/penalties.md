@@ -1,4 +1,8 @@
 ## Penalties
+
+### Percentage penalty
+This is controlled by the *useMagicPenalty* and *valMagicPenalty* settings held in the Rally Parameters. It provides for reducing the value of a good bonus claim by a fixed percentage, typically for minorly inaccurate claims. (Not available in virtual rallies)
+
 ### Arbitrary penalties
 Penalties can be given for anything the Rallymaster deems appropriate - wrong colour socks for example. Such penalties are implemented simply using special bonuses with negative values.
 

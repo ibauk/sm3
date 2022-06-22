@@ -1680,6 +1680,7 @@ function editTeams() {
 		inp.focus();
 		if (lastnum <= defs.length) {
 			inp.value = def.getAttribute('data-basename')+' '+defs[lastnum - 1];
+			console.log('Team is '+inp.value);
 			inp.select();
 			flipSave(inp,true);
 		}
@@ -1708,6 +1709,7 @@ function editTeams() {
 		console.log('flipSave: '+enable);
 		let row = obj.parentNode.parentNode;
 		let sav = saveTeamButton(row);
+		console.log('sav is '+sav.nodeName);
 		if (sav.disabled != enable) 
 			return;
 		console.log('need to flipsave');
@@ -1718,7 +1720,7 @@ function editTeams() {
 	}
 	function saveTeamButton(row) {
 		let buttons = row.cells[row.cells.length - 1].childNodes;
-		let sav = buttons[2];
+		let sav = buttons[buttons.length-1];
 		return sav;
 	}
 	function saveTeam(obj,showCert) {
@@ -1835,7 +1837,7 @@ function deleteMember(obj) {
 		
 	
 		echo('<td class="rowcol">');
-		echo('<input type="button" disabled data-value="'.$TAGS['SaveRecord'][0].'" value="'.$TAGS['RecordSaved'][0].'" onclick="saveTeam(this,false);"> ');
+		echo('<input type="button" disabled data-value="'.$TAGS['SaveRecord'][0].'" value="'.$TAGS['RecordSaved'][0].'" onclick="saveTeam(this,false);">');
 		echo('</td>');
 	echo('</tr>');
 	

@@ -261,12 +261,14 @@ $TAGS = array(
 
 	'cl_EditHeader'		=> array('Full claim details.','New claims: can paste correctly formatted Subject line.'),
 	'cl_EntrantHdr'		=> array('Entrant',''),
+	'cl_EntrantIDs'		=> array('Entrant numbers. Leave blank for all','Comma-separated list of entrant numbers or blank=all'),
 	'cl_FilterBonus'	=> array('B#','Filter list by Bonus'),
 	'cl_FilterEntrant'	=> array('E#','Filter list by Entrant number'),
 	'cl_FilterLabel'	=> array('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List filters','Use these fields to filter this list'),
 	'cl_Go'				=> array('Go on, go for it!','Go on, go for it!'),
 	'cl_LastBonusID'	=> array('Last bonus claimed:','ID of last bonus claimed by this entrant'),
 	'cl_LoggedHdr'		=> array('Logged',''),
+	'cl_MagicPenalty'	=> array('Penalty','Special penalty (percentage)'),
 	'cl_NumClaims'		=> array('Number of claims shown','Number of claims shown'),
 	'cl_OdoHdr'			=> array('Odo',''),
 	'cl_PenaltyFuel'	=> array('&nbsp;F&nbsp;','Fuel penalty'),
@@ -719,7 +721,7 @@ $TAGS = array(
 	'TeamRankingI'		=> array('Individual placing','Rank each team member separately'),
 	'TeamRankingL'		=> array('Lowest ranked member','Rank team as lowest member'),
 	'TeamRankingText'	=> array('Teams are ranked according to',''),
-	'TeamExplain'		=> array('Team matching','This attempts to identify entrants potentially riding together, whether declared or not, by finding matching strings of ordinary bonuses. A string must contains at least <em>m</em> matching bonuses separated by no more than <em>g</em> unmatched bonuses. It might also highlight where claims have not been omitted or not correctly posted. This is not a conclusive set of matches, just something for scorers to check.'),
+	'TeamExplain'		=> array('Team matching','This attempts to identify entrants potentially riding together, whether declared or not, by finding matching strings of ordinary bonuses. A string must contains at least <em>m</em> matching bonuses separated by no more than <em>g</em> unmatched bonuses. It might also highlight where claims have been omitted or not correctly posted. This is not a conclusive set of matches, just something for scorers to check.'),
 	'TeamMaintHead'		=> array('Teams','<br>Teams<br><br>A team is made up of two or more bikes riding together. Team 0 contains all solo (non-team) entrants.'),
 	'TeamWatch'			=> array('Team watch','Inspect claims history looking for potential teams/missed claims'),
 

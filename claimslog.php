@@ -41,7 +41,9 @@ function entrantClaimsLog($entrant) {
     $res = '<div class="claimslog">';
     $res .= '<style>* {font-size: calc(14pt + 1vmin);} td {padding-right: 1em;}.spacert { padding-right: 3em; } s{background-color: lightgray;}</style>';
     $res .= '<h2>'.getSetting('clgHeader',$TAGS['clg_Header'][0]).'</h2>';
-    $res .= '<p>#'.$entrant.' '.$rname.'</p>';
+    $res .= '<form method="get" action="claimslog.php">';
+    $res .= '<p>#<input type="number" style="width:3em;" name="entrant" min="1" onchange="this.form.submit();" value="'.$entrant.'"> '.$rname.'</p>';
+    $res .= '</form>';
     $res .= '<table>';
     $res .= '<tbody>';
     $nclaims = 0; $nbonuses = 0;

@@ -40,7 +40,7 @@ function alignHits($k1,$k2,$L1,$L2,$offset1,$offset2,$maxgap)
 	
 
 	$R = alignMatches($L1,$L2);
-	for ($i=0; $i < count($R[0]), $i < count($R[1]); $i++)
+	for ($i=0; ($i < count($R[0]) && $i < count($R[1])); $i++)
 		if ($R[0][$i]==$R[1][$i])
 		{
 			$R[0][$i] = '<strong>'.$R[0][$i].'</strong>';
@@ -59,7 +59,7 @@ function alignMatches($L1,$L2)
 	if (count($L1) < 1)
 		return [$L1,$L2];
 	$filler = str_repeat('&nbsp;',strlen($L1[0]));
-	for ($i = 0, $j = 0; $i < count($L1), $j < count($L2); $i++)
+	for ($i = 0, $j = 0; ($i < count($L1) && $j < count($L2)); $i++)
 //	for ($i = 0, $j = 0; $i < count($L1); $i++)
 	{
 		$p = findMatch($L1[$i],$L2,$j);
@@ -158,8 +158,22 @@ function fetchLists()
 	$sql = "SELECT EntrantID,BonusesVisited FROM entrants ORDER BY TeamID,EntrantID";
 	$R = $DB->query($sql);
 	$res = [];
-	while ($rd = $R->fetchArray())
-		$res[$rd['EntrantID']] = explode(',',$rd['BonusesVisited']);
+	while ($rd = $R->fetchArray()) {
+		$bv = explode(',',$rd['BonusesVisited']);
+		$bvv = [];
+		for($i = 0; $i < count($bv); $i++) {
+			if ($bv[$i] != '') {
+				$p = strpos($bv[$i],"=");
+				if ($p === false) {
+					array_push($bvv,$bv[$i]);
+				} else {
+					array_push($bvv,substr($bv[$i],0,$p));
+				}
+			}
+		}
+		//echo('<br>'.implode(',',$bvv));
+		$res[$rd['EntrantID']] = $bvv;
+	}
 	
 	return $res;
 }
@@ -174,13 +188,16 @@ function detectTeamMembers()
 	global $DB, $TAGS, $KONSTANTS;
 
 	$lists = fetchLists();
-	
+	//print_r($lists);
 	$minmatch = isset($_REQUEST['m']) ? intval($_REQUEST['m']) : 3;
 	$maxgap = isset($_REQUEST['g']) ? intval($_REQUEST['g']) : 2;
 	$keys = array_keys($lists);
 	
-	
-	echo('<h4>'.$TAGS['ttTeams'][1].' - <em>m</em>='.$minmatch.' <em>g</em>='.$maxgap.'</h4>');
+	echo('<form method="get" action="teams.php">');
+	echo('<h4>'.$TAGS['ttTeams'][1].' - ');
+	echo('<em>m</em>=<input class="smallnumber" type="number" name="m" min="2" onchange="this.form.submit();" value="'.$minmatch.'">');
+	echo(' <em>g</em>=<input class="smallnumber" type="number" name="g" min="0" onchange="this.form.submit();" value="'.$maxgap.'"></h4>');
+	echo('</form>');
 	echo('<p>'.$TAGS['TeamExplain'][1].'</p>');
 	echo('<table class="teamslist">');
 	

@@ -115,7 +115,12 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"valBonusQuestions": "50",
 	"clgHeader": "Schedule of claims received", 
 	"clgClaimsCount": "Number of claims received", 
-	"clgBonusCount": "Number of bonuses claimed"
+	"clgBonusCount": "Number of bonuses claimed",
+	"RPT_TPenalty": "&#x23F0;Late arrival penalty",
+	"RPT_MPenalty": "Excess distance penalty",	
+	"RPT_SPenalty": "Excess speed penalty",
+	"useMagicPenalty": "false",
+	"valMagicPenalty": "10"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com
@@ -529,7 +534,7 @@ INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('admin','AdmMenuHeader','
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('setup','AdmSetupHeader','16,17,18,19,20,42');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('entrant','AdmEntrantsHeader','11,41,47,48,15');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('bonus','AdmBonusHeader','7,10,9,39,49');
-INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('util','AdmUtilHeader','29,28,27,32,13,33,35,38,40,45,50');
+INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('util','AdmUtilHeader','29,28,27,32,13,33,35,40,45,50');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('advanced','AdmAdvancedHeader','21,22,44,34,23,30');
 
 
