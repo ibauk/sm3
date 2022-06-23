@@ -185,6 +185,74 @@ function parseBonusClaim(bonus,obj) {
     
 }
 
+function checkApplySequences(bonv,catcounts,bonusPoints) {
+
+    let extraBonusPoints = 0;
+
+    for(let ccr of document.getElementsByName('catCompoundRules')) {
+        if (ccr.getAttribute('data-ruletype') != CC_SEQUENCERULE)
+            continue;
+    
+        // I don't care whether this was specified as bonus level or axis level
+        
+        let ccr_cat = parseInt(ccr.getAttribute('data-cat'));
+        let ccr_axis = parseInt(ccr.getAttribute('data-axis'));
+        let ccr_min = parseInt(ccr.getAttribute('data-min'));
+        let ccr_pwr = parseInt(ccr.getAttribute('data-pwr'));
+        
+    
+        if (bonv != '') { // is there a current bonus or are we done.
+            if (catcounts[ccr_axis]['lastcat'] == bonv.getAttribute('data-cat'+ccr_axis)) {
+                continue; // still building sequence. wait until it's built.
+            }
+        }
+        if (catcounts[ccr_axis]['samecount'] < ccr_min) {
+            continue;
+        }
+        // Now trigger sequential bonus
+    
+            
+        let cdesc = '[###]';
+        let clbl = document.getElementById('cat'+ccr_axis+'_'+ccr_cat);
+        if (clbl !== null)
+            cdesc = clbl.parentElement.firstChild.innerText;
+        
+    
+        console.log('SP='+parseInt(catcounts[ccr_axis]['samepoints'])+' Pwr='+parseInt(ccr_pwr));
+        //'&#x2713; == checkmark
+        let bonusDesc = '&#x2713; '+cdesc+ " x "+ccr_min;
+        if (catcounts[ccr_axis]['samecount'] > ccr_min) {
+            bonusDesc += '+';
+        }
+        let pointsDesc = '';
+        if (ccr.getAttribute('data-pm') == CAT_ResultPoints) {
+            extraBonusPoints = ccr_pwr;
+        } else { 
+            extraBonusPoints = catcounts[ccr_axis]['samepoints'] * ccr_pwr;
+            if (ccr_pwr != 1 && ccr_pwr != 0) {
+                pointsDesc = " ("+catcounts[ccr_axis]['samepoints'];            
+                pointsDesc += " x "+ccr_pwr+ ")";
+            }
+        }
+    
+        bonusPoints += extraBonusPoints;
+    
+        let sx = new SCOREXLINE();
+        sx.desc = bonusDesc;
+        sx.pointsDesc = pointsDesc;
+        sx.points = extraBonusPoints;
+        sx.totalPoints = bonusPoints;
+        
+        scorex.push(sx);
+        
+        
+    
+        break;  // Only apply the first matching rule
+    
+                
+    }
+    return extraBonusPoints;
+}
 
 function recalcScorecard() {
 
@@ -255,7 +323,21 @@ function recalcScorecard() {
             obj.minutes = bonv.getAttribute('data-minutes');
             
 
+        let basicBonusPoints = obj.points;
+
+        bonusPoints += checkApplySequences(bonv,catcounts,bonusPoints);
+
+
         if (obj.bon === '' || rejectedClaims.hasOwnProperty(obj.bon)) { // is it a rejected claim?
+
+            // Zap the sequence then
+            for (let i = 1; i <= CALC_AXIS_COUNT; i++) {
+                catcounts[i]['samecount'] = 0;
+                catcounts[i]['samepoints'] = 0;
+                catcounts[i]['lastcat'] = -1;
+            }
+
+
             let sx = new SCOREXLINE();
             sx.id = bonv.value;
             sx.desc = bonv.getAttribute('data-desc')+'<br>'+CLAIM_REJECTED+' - '+reasons[rejectedClaims[obj.bon]];
@@ -268,7 +350,6 @@ function recalcScorecard() {
         }
         
 
-        let basicBonusPoints = obj.points;
         bonusesScored[obj.bon] = obj.bon;
         numBonusesTicked++;
         restMinutes += parseInt(obj.minutes);
@@ -337,8 +418,6 @@ function recalcScorecard() {
             pointsDesc += ' &#10016;';
         }
 
-        // Keep track of cat counts
-        catcounts = updateCatcounts(bonv,catcounts,basicBonusPoints);
 
 
         // basicBonusPoints is now the live figure
@@ -357,68 +436,15 @@ function recalcScorecard() {
         scorex.push(sx);
 
 
-        // Look for and apply sequence mods
-        for(let ccr of document.getElementsByName('catCompoundRules')) {
-            if (ccr.getAttribute('data-ruletype') != CC_SEQUENCERULE)
-                continue;
 
-            if (ccr.getAttribute('data-target') != CAT_ModifyBonusScore)
-                continue;   // Only interested in rules affecting basic bonus
-
-            if (ccr.getAttribute('data-pm') != CAT_ResultPoints) // Multipliers not allowed at this level
-                continue;
-
-            let ccr_cat = parseInt(ccr.getAttribute('data-cat'));
-            let ccr_axis = parseInt(ccr.getAttribute('data-axis'));
-            let ccr_min = parseInt(ccr.getAttribute('data-min'));
-            let ccr_pwr = parseInt(ccr.getAttribute('data-pwr'));
-    
-//            error_log("Testing CCR sequence BC=".$bonv->cat[$ccr->axis].' LC='.$catcounts[$ccr->axis]->lastcat.' SC='.$catcounts[$ccr->axis]->samecount.' Min='.$ccr->min);
-
-           if (catcounts[ccr_axis]['samecount'] < ccr_min) {
-                continue;
-            }
-                // Now trigger sequential bonus
-
-        
-            let cdesc = '[###]';
-            let clbl = document.getElementById('cat'+ccr_axis+'_'+ccr_cat);
-            if (clbl !== null)
-                cdesc = clbl.parentElement.firstChild.innerText;
-    
-
-            console.log('SP='+parseInt(catcounts[ccr_axis]['samepoints'])+' Pwr='+parseInt(ccr_pwr));
-            //'&#x2713; == checkmark
-            let bonusDesc = '&#x2713; '+cdesc+ " x "+ccr_min;
-            basicBonusPoints = catcounts[ccr_axis]['samepoints'] * ccr_pwr;
-            let pointsDesc = '';
-            if (ccr_pwr != 1 && ccr_pwr != 0) {
-                pointsDesc = " ("+catcounts[ccr_axis]['samepoints'];            
-                pointsDesc += " x "+ccr_pwr+ ")";
-            }
-
-            bonusPoints += basicBonusPoints;
-
-            let sx = new SCOREXLINE();
-            sx.desc = bonusDesc;
-            sx.pointsDesc = pointsDesc;
-            sx.points = basicBonusPoints;
-            sx.totalPoints = bonusPoints;
-    
-            scorex.push(sx);
-    
-    
-
-            break;  // Only apply the first matching rule
-
-            
-        }
-
+        // Keep track of cat counts
+        catcounts = updateCatcounts(bonv,catcounts,basicBonusPoints);
 
 
 
     } // Ordinary bonus loop
 
+    bonusPoints += checkApplySequences('',catcounts,bonusPoints);
 
     // Combos
     
@@ -531,6 +557,9 @@ function recalcScorecard() {
     let lastmin = '';
     for(let ccr of document.getElementsByName('catCompoundRules')) {
 
+        if (ccr.getAttribute('data-ruletype') == CC_SEQUENCERULE)
+            continue;
+
         console.log('Trying compound rule want method '+CAT_NumNZCatsPerAxisMethod);
         if (ccr.getAttribute('data-nmethod') != CAT_NumNZCatsPerAxisMethod || ccr.getAttribute('data-target') != CAT_ModifyAxisScore) 
             continue;
@@ -615,6 +644,10 @@ function recalcScorecard() {
     lastmin = '';
 
     for(let ccr of document.getElementsByName('catCompoundRules')) {
+
+        if (ccr.getAttribute('data-ruletype') != CC_SEQUENCERULE)
+            continue;
+
         if (ccr.getAttribute('data-nmethod') != CAT_NumBonusesPerCatMethod || ccr.getAttribute('data-target') == CAT_ModifyBonusScore)
             continue;
 

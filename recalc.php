@@ -889,6 +889,75 @@ function formatRestMinutes($minutes) {
     return $m.' mins';
 }
 
+function checkApplySequences($bonv,$catcounts,$bonusPoints) {
+
+    global $evs, $RP, $catlabels, $axisLabels, $scorex, $reasons, $bonusValues, $specialValues, $comboValues, $catCompoundRules, $DB, $KONSTANTS, $TAGS;
+
+
+    $extraBonusPoints = 0;
+
+    // Look for and apply sequence mods
+    foreach($catCompoundRules as $ccr) {
+        if ($ccr->rtype != $KONSTANTS['CAT_OrdinaryScoringSequence'])
+            continue;
+
+
+        if ($bonv != '') { // is there a current bonus or are we done.
+            error_log("Testing CCR sequence BC=".$bonv->cat[$ccr->axis].' LC='.$catcounts[$ccr->axis]->lastcat.' SC='.$catcounts[$ccr->axis]->samecount.' Min='.$ccr->min);
+            if ($catcounts[$ccr->axis]->lastcat == $bonv->cat[$ccr->axis]) {
+                continue; // still building sequence. wait until it's built.
+            }
+        }
+    
+
+
+        if ($catcounts[$ccr->axis]->samecount < $ccr->min) {
+            continue;
+        }
+        // Now trigger sequential bonus
+
+        
+            
+        //'&#x2713; == checkmark
+        $bonusDesc = '&#x2713; '.$catlabels[$ccr->axis][$ccr->cat]. " x ".$ccr->min;
+        if ($catcounts[$ccr->axis]->samecount > $ccr->min) {
+            $bonusDesc .= '+';
+        }
+        $pointsDesc = '';
+        if ($ccr->pm == $KONSTANTS['CAT_ResultPoints']) {
+            $extraBonusPoints = $ccr->pwr;
+        } else {
+            $extraBonusPoints = $catcounts[$ccr->axis]->samepoints * $ccr->pwr;
+            if ($ccr->pwr != 1 && $ccr->pwr != 0) {
+                $pointsDesc = " (".$catcounts[$ccr->axis]->samepoints;            
+                $pointsDesc .= " x ".$ccr->pwr. ")";
+            }
+        }
+
+        $bonusPoints += $extraBonusPoints;
+
+        $sx = new SCOREXLINE();
+        $sx->desc = $bonusDesc;
+        $sx->pointsDesc = $pointsDesc;
+        $sx->points = $extraBonusPoints;
+        $sx->totalPoints = $bonusPoints;
+    
+        $scorex[] = $sx;
+    
+    
+
+        break;  // Only apply the first matching rule
+
+            
+    }
+
+    return $extraBonusPoints;
+
+
+}
+
+
+
 
 // This recalculates a single scorecard and updates the entrant record with the results.
 //
@@ -979,7 +1048,17 @@ function recalcScorecard($entrant,$intransaction) {
         if ($minutes == '')
             $minutes = $bonv->mins;
 
+        $bonusPoints += checkApplySequences($bonv,$catcounts,$bonusPoints);
+
         if ($bon == '' || array_key_exists($bon,$rejectedClaims)) { // is it a rejected claim?
+
+            // Zap the sequence then
+            for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
+                $catcounts[$i]->samecount = 0;
+                $catcounts[$i]->samepoints = 0;
+                $catcounts[$i]->lastcat = -1;
+            }
+
             //echo($TAGS['cl_Rejecting'][0].' '.$bon.' ');
             $sx = new SCOREXLINE();
             $sx->id = $bonv->bid;
@@ -1049,8 +1128,6 @@ function recalcScorecard($entrant,$intransaction) {
         if ($pp)
             $pointsDesc .= ' &#10016;';
 
-        // Keep track of cat counts
-        $catcounts = updateCatcounts($bonv,$catcounts,$basicBonusPoints);
 
         // basicBonusPoints is now the live figure
         $bonusPoints += $basicBonusPoints;    
@@ -1065,58 +1142,15 @@ function recalcScorecard($entrant,$intransaction) {
         $scorex[] = $sx;
 
 
-        // Look for and apply sequence mods
-        foreach($catCompoundRules as $ccr) {
-            if ($ccr->rtype != $KONSTANTS['CAT_OrdinaryScoringSequence'])
-                continue;
 
-            if ($ccr->target != $KONSTANTS['CAT_ModifyBonusScore'])
-                continue;   // Only interested in rules affecting basic bonus
-
-            if ($ccr->pm != $KONSTANTS['CAT_ResultPoints']) // Multipliers not allowed at this level
-                continue;
-
-            error_log("Testing CCR sequence BC=".$bonv->cat[$ccr->axis].' LC='.$catcounts[$ccr->axis]->lastcat.' SC='.$catcounts[$ccr->axis]->samecount.' Min='.$ccr->min);
-
-           if ($catcounts[$ccr->axis]->samecount < $ccr->min) {
-                continue;
-            }
-                // Now trigger sequential bonus
-
-        
-            
-            //'&#x2713; == checkmark
-            $bonusDesc = '&#x2713; '.$catlabels[$ccr->axis][$ccr->cat]. " x ".$ccr->min;
-            $basicBonusPoints = $catcounts[$ccr->axis]->samepoints * $ccr->pwr;
-            $pointsDesc = '';
-            if ($ccr->pwr != 1 && $ccr->pwr != 0) {
-                $pointsDesc = " (".$catcounts[$ccr->axis]->samepoints;            
-                $pointsDesc .= " x ".$ccr->pwr. ")";
-            }
-
-            $bonusPoints += $basicBonusPoints;
-
-            $sx = new SCOREXLINE();
-            $sx->desc = $bonusDesc;
-            $sx->pointsDesc = $pointsDesc;
-            $sx->points = $basicBonusPoints;
-            $sx->totalPoints = $bonusPoints;
-    
-            $scorex[] = $sx;
-    
-    
-
-            break;  // Only apply the first matching rule
-
-            
-        }
-
-
-
-
+        // Keep track of cat counts
+        $catcounts = updateCatcounts($bonv,$catcounts,$basicBonusPoints);
 
 
     } // Ordinary bonus loop
+
+
+    $bonusPoints += checkApplySequences('',$catcounts,$bonusPoints);
 
 
     // Combos
@@ -1197,6 +1231,9 @@ function recalcScorecard($entrant,$intransaction) {
     $lastmin = '';
     foreach($catCompoundRules as $ccr) {
 
+        if ($ccr->rtype == $KONSTANTS['CAT_OrdinaryScoringSequence'])
+            continue;
+
         if ($ccr->method != $KONSTANTS['CAT_NumNZCatsPerAxisMethod'] || $ccr->target == $KONSTANTS['CAT_ModifyBonusScore']) 
             continue;
 
@@ -1263,6 +1300,10 @@ function recalcScorecard($entrant,$intransaction) {
     $lastmin = '';
 
     foreach($catCompoundRules as $ccr) {
+
+        if ($ccr->rtype == $KONSTANTS['CAT_OrdinaryScoringSequence'])
+            continue;
+
         if ($ccr->method != $KONSTANTS['CAT_NumBonusesPerCatMethod'] || $ccr->target == $KONSTANTS['CAT_ModifyBonusScore'])
             continue;
         if ($ccr->axis <= $lastaxis && $ccr->cat <= $lastcat)
