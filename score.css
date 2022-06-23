@@ -486,12 +486,13 @@ input[name="RallySlogan"]	{ width: 20em; }
 
 /* Help system */
 .currenttopic	{ 
-	font-size: .5em; 
+	font-size: .7em; 
 	max-width: 80em;
 	padding: .5em 1em .5em 1em;
 	margin: 1em auto 1em auto;
 	background-color: white;
 	color: black;
+	font-family:'Times New Roman', Times, serif;
 }
 
 .currenttopic p { text-align: justify; margin-top: 0; }
