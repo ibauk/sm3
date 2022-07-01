@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.1.4",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.2-RC1",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -82,6 +82,7 @@ $PROGRAM = array("version" => "3.1.4",	"title"	=> "ScoreMaster");
  *  3.1.2		Remove references to retraceBreadcrumb, clear rejected status of bonus
  *  3.1.3		Email character set clearups
  *  3.1.4		Time/distance/speed penalties
+ *  3.2			Sequences ready for BBL22
  */
 
 $MIT = <<<'EOT'
@@ -191,7 +192,25 @@ function showAbout()
 	echo('</dl>');
 	echo('<p id="mit" class="hide">'.$MIT.'</p>');
 	echo("</div> <!-- helpabout -->\n");
-	
+?>
+<script>
+const newspaperSpinning = [
+  { transform: 'rotate(0) scale(1)' },
+  { transform: 'rotate(360deg) scale(0)' }
+];
+
+const newspaperTiming = {
+  duration: 2000,
+  iterations: 1,
+}
+
+const newspaper = document.querySelector("#helpabout");
+
+newspaper.addEventListener('click', () => {
+  newspaper.animate(newspaperSpinning, newspaperTiming);
+});	
+</script>
+<?php	
 	if (isset($_REQUEST['?']))
 		echo '<pre>' . var_export($_SERVER, true) . '</pre>';
 }

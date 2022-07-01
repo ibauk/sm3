@@ -657,7 +657,16 @@ echo("</script>\n");
 	if ($rd['Photo'] > '') {
 		echo('<script>function cisz(img) {let szs = ["512px","100%"];let sz=parseInt(img.getAttribute("data-size"))+1;');
 		echo('if (sz >= szs.length) sz = 0;img.style.width=szs[sz];img.setAttribute("data-size",sz);}</script>');
+		echo('<div id="imgdiv" style="text-align: center; float: left; cursor: se-resize; border: solid;" title="'.$TAGS['ebc_JudgeThis'][1].'">');
 		echo('<img onclick="cisz(this);" data-size="0" src="'.$rd['Photo'].'" alt="**" style="width:512px;"/>');
+		echo('</div>');
+		$bphoto = getValueFromDB("SELECT IfNull(Image,'') As Image FROM bonuses WHERE BonusID='".$rd['BonusID']."'",'Image','');
+		if ($bphoto != '') {
+			echo('<div id="bimgdiv" style="text-align: center; float:right;" title="'.$TAGS['ebc_RallyPhoto'][1].'">');
+			echo(' <img onclick="cisz(this);" data-size="0" src="images/bonuses/'.$bphoto.'" style="width:512px;"/>');
+			echo('</div>');
+		}
+		echo('<div style="clear:both;"></div>');
 	}
 	
 	
