@@ -1,6 +1,13 @@
 ## Complex scoring options
 
-This is aimed at Rallymasters & administrators configuring the system to score a particular rally.
+Set rules can be applied at three levels during scoring: those affecting individual bonus scores; those generating a score in respect of a sequence of bonuses; those generating a score in respect of set membership.
+
+## Individual bonus modification
+The points value of an individual bonus can be varied depending on the number of bonuses scored in its set or category. The trigger value *T* can be either the number of categories scored within a set or the number of bonuses scored within a single category of a set.
+
+If the number of bonuses scored so far, including the current one is equal or greater than *T*, the value of the current bonus will either by multiplied by the specified value or be increased by the specified number of points.
+
+Several layers of *T* can be specified with only the most significant achieved being applied.
 
 ### Compound rules by set/category
 
@@ -13,7 +20,7 @@ A rule of type *DNF unless triggered* will appear on score explanations with a t
 The following gives examples of how to configure a ruleset to achieve certain specific scoring goals.
 
 #### Award extra points for scoring *N* categories within an set
-- One or more rules, each of type *NZ per set*, *Ordinary scoring rule*. 
+- One or more rules, each of type *NZ per set*, *Affects compound set score*, *Ordinary scoring rule*. 
 - Set *NMin* and *NPower* to the required values.
 
 #### Deduct points for scoring less than *N* categories within an set
@@ -21,7 +28,7 @@ The following gives examples of how to configure a ruleset to achieve certain sp
 - Set an *Ordinary scoring rule* with *NMin* = 0 and *NPower* to the **negative** value.
 
 #### Award extra points for scoring *N* bonuses within a category
-- One or more rules, each of type *Bonuses per cat*, *Ordinary scoring rule*. 
+- One or more rules, each of type *Bonuses per cat*, *Affects compound set score*, *Ordinary scoring rule*. 
 - Set *NMin* and *NPower* to the required values.
 
 #### Award DNF if not enough categories scored

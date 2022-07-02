@@ -1631,7 +1631,7 @@ function showNewEntrant()
 	$rd = defaultNewEntrant();
 	
 	
-	showEntrantRecord($rd);
+	showEntrantRecord($rd,false);
 }
 
 

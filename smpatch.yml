@@ -4,10 +4,10 @@
 
 
 ## The id of this patch, displayed at run time
-id: Upgrade to v3.1.4
+id: Upgrade to v3.2-RC1
 
 ## Only apply this patch to installations with at least this DBVersion
-mindb: 9
+mindb: 10
 
 ## Only apply this patch to installations with at most this DBVersion
 maxdb: 10
@@ -20,12 +20,9 @@ minapp: 3.1
 maxapp: 
 
 sql:
-  - UPDATE rallyparams SET settings=Replace(settings,'}',Printf(',"clgHeader"%c "Schedule of claims received","clgClaimsCount"%c "Number of claims received",	"clgBonusCount"%c "Number of bonuses claimed"}',':',':',':'));
-
-#  - UPDATE entrants SET ScoreX=Replace(ScoreX,'&checkmark;','&#x2713;');
-#  - UPDATE rallyparams SET EmailParams=Replace(EmailParams,'"SetFrom',Printf('"Encoding"%c "quoted-printable", "CharSet"%c "UTF-8", "SetFrom',':',':'));
-#  - UPDATE rallyparams SET settings=Replace(settings,'}',Printf(',"RPT_TPenalty"%c "&#x23F0;Late arrival penalty","RPT_MPenalty"%c "Excess distance penalty",	"RPT_SPenalty"%c "Excess speed penalty"}',':',':',':'));
-
+  - INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('util','AdmUtilHeader','29,28,27,32,13,33,35,40,45,50');
+  - INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (50,'AdmRebuildScorecards','claims.php?c=applyclaims&reprocess=1',NULL,'claims,scorecards');
+  
 files:
   - sm/bonuses.php
   - sm/claimslog.php
@@ -42,13 +39,19 @@ files:
   - sm/score.js
   - sm/recalc.php
   - sm/scorecard.php
+  - sm/help/compound.hlp
+  - sm/help/scoringoptions.hlp
   - sm/help/dnf.hlp
   - sm/help/penalties.hlp
+  - sm/help/rpsettings.hlp
   - sm/entrants.php
   - sm/score.css
   - runsm.exe
   - caddy/ebcfetch.exe
   - sm/claims.php
+  - sm/teams.php
+  - sm/common.php
+  - sm/cats.php
   
 folders:
 

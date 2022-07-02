@@ -919,7 +919,7 @@ function checkApplySequences($bonv,$catcounts,$bonusPoints) {
         
             
         //'&#x2713; == checkmark
-        $bonusDesc = '&#x2713; '.$catlabels[$ccr->axis][$ccr->cat]. " x ".$ccr->min;
+        $bonusDesc = '&#x2713; '.$catlabels[$ccr->axis][$catcounts[$ccr->axis]->lastcat]. " x ".$ccr->min;
         if ($catcounts[$ccr->axis]->samecount > $ccr->min) {
             $bonusDesc .= '+';
         }
@@ -929,7 +929,7 @@ function checkApplySequences($bonv,$catcounts,$bonusPoints) {
         } else {
             $extraBonusPoints = $catcounts[$ccr->axis]->samepoints * $ccr->pwr;
             if ($ccr->pwr != 1 && $ccr->pwr != 0) {
-                $pointsDesc = " (".$catcounts[$ccr->axis]->samepoints;            
+                $pointsDesc = " (+".$catcounts[$ccr->axis]->samepoints;            
                 $pointsDesc .= " x ".$ccr->pwr. ")";
             }
         }
@@ -1082,6 +1082,10 @@ function recalcScorecard($entrant,$intransaction) {
         }
         
 
+
+        // Keep track of cat counts
+        $catcounts = updateCatcounts($bonv,$catcounts,$basicBonusPoints);
+
         // Look for and apply cat mods to basic points
         foreach($catCompoundRules as $ccr) {
             if ($ccr->rtype != $KONSTANTS['CAT_OrdinaryScoringRule'])
@@ -1141,10 +1145,6 @@ function recalcScorecard($entrant,$intransaction) {
 
         $scorex[] = $sx;
 
-
-
-        // Keep track of cat counts
-        $catcounts = updateCatcounts($bonv,$catcounts,$basicBonusPoints);
 
 
     } // Ordinary bonus loop

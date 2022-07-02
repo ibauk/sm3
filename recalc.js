@@ -213,7 +213,7 @@ function checkApplySequences(bonv,catcounts,bonusPoints) {
     
             
         let cdesc = '[###]';
-        let clbl = document.getElementById('cat'+ccr_axis+'_'+ccr_cat);
+        let clbl = document.getElementById('cat'+ccr_axis+'_'+catcounts[ccr_axis]['lastcat']);
         if (clbl !== null)
             cdesc = clbl.parentElement.firstChild.innerText;
         
@@ -230,7 +230,7 @@ function checkApplySequences(bonv,catcounts,bonusPoints) {
         } else { 
             extraBonusPoints = catcounts[ccr_axis]['samepoints'] * ccr_pwr;
             if (ccr_pwr != 1 && ccr_pwr != 0) {
-                pointsDesc = " ("+catcounts[ccr_axis]['samepoints'];            
+                pointsDesc = " (+"+catcounts[ccr_axis]['samepoints'];            
                 pointsDesc += " x "+ccr_pwr+ ")";
             }
         }
@@ -359,22 +359,26 @@ function recalcScorecard() {
             pointsDesc = pointsDesc+' ['+formatRestMinutes(obj.minutes)+'] ';
         }
 
+
+        // Keep track of cat counts
+        catcounts = updateCatcounts(bonv,catcounts,basicBonusPoints);
+
         // Look for and apply cat mods to basic points
         for(let ccr of document.getElementsByName('catCompoundRules')) {
             if (ccr.getAttribute('data-ruletype') != CC_ORDINARYSCORE)
                 continue;
-
+            console.log('ccr-1');
             if (ccr.getAttribute('data-target') != CAT_ModifyBonusScore)
                 continue;   // Only interested in rules affecting basic bonus
-
+            console.log('ccr-2');
             if (ccr.getAttribute('data-pm') != CAT_ResultPoints) // Multipliers not allowed at this level
                 continue;
-
+            console.log('ccr-3');
             let ccr_cat = parseInt(ccr.getAttribute('data-cat'));
             let ccr_axis = parseInt(ccr.getAttribute('data-axis'));
             let ccr_min = parseInt(ccr.getAttribute('data-min'));
             let ccr_pwr = parseInt(ccr.getAttribute('data-pwr'));
-
+            console.log("Checking rule ccr-dat"+ccr_cat);
             if (ccr_cat > 0)
                 if (bonv.getAttribute('data-cat'+ccr_axis) != ccr_cat)
                     continue;
@@ -437,8 +441,6 @@ function recalcScorecard() {
 
 
 
-        // Keep track of cat counts
-        catcounts = updateCatcounts(bonv,catcounts,basicBonusPoints);
 
 
 
