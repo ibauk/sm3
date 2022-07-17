@@ -628,6 +628,34 @@ function uploadFile(obj) {
 	obj.form.method = 'post';
 	obj.form.submit();
 }
+
+function autoMapFields() {
+
+	let hdrcount = document.querySelector('#hdrs').value;
+	if (hdrcount < 1) return;
+	let maps = document.querySelector('#previewrows').rows[0];
+	let hdrs = document.querySelector('#previewrows').rows[1];
+	for (let col = 0; col < maps.cells.length; col++) {
+		let sel = maps.cells[col].firstChild;
+		for (let itm = 0; itm < sel.options.length; itm++) {
+			if (sel.options[itm].text.toLowerCase() == hdrs.cells[col].innerText.toLowerCase()) {
+				sel.selectedIndex = itm;
+				break;
+			}
+		}
+	}
+
+}
+
+function resetMapFields() {
+
+	let maps = document.querySelector('#previewrows').rows[0];
+	for (let col = 0; col < maps.cells.length; col++) {
+		let sel = maps.cells[col].firstChild;
+		sel.selectedIndex = sel.options.length - 1;
+	}
+}
+
 </script>
 
 <?php
@@ -701,7 +729,7 @@ function uploadFile(obj) {
 	previewSpreadsheet();
 	echo('</form>');
 		
-	
+	echo('<script>autoMapFields();</script>');
 }
 
 function defaultSpecfile($datatype)

@@ -770,7 +770,9 @@ echo("</script>\n");
 			$chk = ' checked ';
 		echo('<span title="'.$TAGS['cl_MagicPenalty'][1].'">');
 		echo(' <label for="MagicPenalty">'.$TAGS['cl_MagicPenalty'][0].'</label> ');
-		echo('<input tabindex="9" '.$chk.'type="checkbox" id="MagicPenalty" name="MagicPenalty" onchange="applyMagicPenalty(this);">');
+		echo('<input tabindex="9" '.$chk.'type="checkbox" id="MagicPenalty" name="MagicPenalty"');
+		echo(' value="'.$rd['MagicPenalty'].'"');
+		echo(' onchange="applyMagicPenalty(this);">');
 		echo('</span>');
 	}
 	

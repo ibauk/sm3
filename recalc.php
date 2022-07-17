@@ -142,6 +142,7 @@ function applyClaim($claimid,$intransaction) {
         error_log('Appending new claim for '.$rc['BonusID']);
         $newclaim = $rc['BonusID'].'='.$rc['Points'];
         $newclaim .= ($rc['QuestionAnswered']==1 ? 'X' : '');
+        $newclaim .= ($rc['MagicPenalty']==1 ? 'P' : '');
         $newclaim .= ';'.$rc['RestMinutes'];
         array_push($bv,$newclaim);
     }

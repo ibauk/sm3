@@ -261,8 +261,8 @@ function deleteRow(obj)
 {
 	let tr = obj.parentNode.parentNode.parentNode.parentNode;
 	console.log('tr is '+tr.tagName);
-	let B = tr.cells[0].firstChild.value;
-
+	let B = tr.cells[0].firstChild.firstChild.value;
+	console.log('Deleting '+B);
 	let xhttp;
  
 	xhttp = new XMLHttpRequest();
@@ -650,6 +650,7 @@ function callbackDeleteBonus($b)
 	global $DB;
 	
 	$sql = "DELETE FROM bonuses WHERE BonusID='".$DB->escapeString(strtoupper($b))."'";
+	error_log($sql);
 	$DB->exec($sql);
 	if ($DB->lastErrorCode()<>0) 
 		return dberror();
@@ -716,7 +717,12 @@ startHtml($TAGS['ttSetup'][0]);
 //print_r($_REQUEST);
 
 if (isset($_REQUEST['savesinglebonus'])) {
-	saveSingleBonus();
+	//print_r($_REQUEST); exit;
+	if (isset($_REQUEST['deletebonus'])) {
+		callbackDeleteBonus($_REQUEST['BonusID']);
+	} else {
+		saveSingleBonus();
+	}
 	$get = "bonuses.php?c=bonuses";
 	header("Location: ".$get);
 	exit;

@@ -1464,7 +1464,7 @@ echo('</span> ');
 	echo('<input type="tel"  onchange="enableSaveButton();" name="Phone" id="Phone" value="'.$rd['Phone'].'"> </span>');
 	
 	echo('<span class="vlabel" title="'.$TAGS['EntrantEmail'][1].'"><label for="Email">'.$TAGS['EntrantEmail'][0].' </label> ');
-	echo('<input type="email"  onchange="enableSaveButton();" name="Email" id="Email" value="'.$rd['Email'].'"> </span>');
+	echo('<input type="text"  class="email" onchange="enableSaveButton();" name="Email" id="Email" value="'.$rd['Email'].'"> </span>');
 	
 	echo('<span class="vlabel" title="'.$TAGS['NoKName'][1].'"><label for="NoKName">'.$TAGS['NoKName'][0].' </label> ');
 	echo('<input type="text"  onchange="enableSaveButton();" name="NoKName" id="NoKName" value="'.$rd['NoKName'].'"> </span>');
@@ -1648,6 +1648,19 @@ function prgListEntrants()
 		$get .= '&ord='.$_REQUEST['ord'];
 	if (isset($_REQUEST['tab']))
 		$get .= '&tab='.$_REQUEST['tab'];
+	header("Location: ".$get);
+	exit;
+}
+
+function prgShowDelete()
+/*
+ * prg = post/redirect/get
+ *
+ * Called to get browser to ask for listing after a post
+ *
+ */
+{
+	$get = "entrants.php?c=delentrant";
 	header("Location: ".$get);
 	exit;
 }
@@ -2052,7 +2065,7 @@ if (isset($_REQUEST['savedata']))
 if (isset($_POST['c']) && $_POST['c']=='kill')
 {
 	deleteEntrant();
-	prgListEntrants();
+	prgShowDelete();
 }
 else if (isset($_POST['c']) && $_POST['c']=='rae')
 {

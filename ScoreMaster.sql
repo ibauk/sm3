@@ -304,7 +304,7 @@ CREATE TABLE IF NOT EXISTS "entrants" (
 	"OdoScaleFactor"	NUMERIC DEFAULT 1,
 	"OdoRallyStart"	NUMERIC,
 	"OdoRallyFinish"	NUMERIC,
-	"CorrectedMiles"	NUMERIC,
+	"CorrectedMiles"	NUMERIC DEFAULT 0,
 	"FinishTime"	TEXT,
 	"BonusesVisited"	TEXT,
 	"CombosTicked"	TEXT,
@@ -551,170 +551,19 @@ INSERT INTO `certificates` (EntrantID,css,html,options,image,Class,Title) VALUES
 
 INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES(' unknown','unknown format',0,'// Following lists use zero-based column numbers
 $IMPORTSPEC[''default''][''BCMethod'']       = 1;
-');
-
-INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('zzBBL','old Brit Butt Light',0,'// Following lists use zero-based column numbers
-$IMPORTSPEC[''cols''][''Country''] = 19;
-// cols represent fields in the ScoreMaster.entrants table
-$IMPORTSPEC[''cols''][''EntrantID'']	= 0;
-$IMPORTSPEC[''cols''][''RiderLast'']	= 9;
-$IMPORTSPEC[''cols''][''RiderFirst'']	= 8;
-$IMPORTSPEC[''cols''][''RiderIBA'']		= 10;
-$IMPORTSPEC[''cols''][''PillionLast'']	= 13;
-$IMPORTSPEC[''cols''][''PillionFirst'']	= 12;
-$IMPORTSPEC[''cols''][''Bike''] 		= 22;
-$IMPORTSPEC[''cols''][''BikeReg''] 		= 23;
-$IMPORTSPEC[''cols''][''Email'']		= 21;
-$IMPORTSPEC[''cols''][''Phone'']		= 20;
-$IMPORTSPEC[''cols''][''NoKName'']		= 24;
-$IMPORTSPEC[''cols''][''NoKPhone'']		= 25;
-$IMPORTSPEC[''cols''][''NoKRelation'']	= 26;
-$IMPORTSPEC[''default''][''BCMethod'']       = 0;
-$IMPORTSPEC[''setif''][''BCMethod''][1]	= [27,''/Electronic/''];
-$IMPORTSPEC[''setif''][''BCMethod''][2]	= [27,''/Paper/''];
-
-// data collects lines to be stored as ExtraData
-$IMPORTSPEC[''data''][''Postcode'']		= 18;
-$IMPORTSPEC[''data''][''Country'']		= 19;
-$IMPORTSPEC[''data''][''Postal_Address'']		= ''14:15:16:17:18:19'';
-
-// If the content of the indexed column matches the RE, reject (don''t load) the entry
-$IMPORTSPEC[''reject''][211]	= ''/Unpaid|refunded/'';
+$IMPORTSPEC[''default''][''CorrectedMiles'']       = 0;
+$IMPORTSPEC[''default''][''EntrantStatus'']	= 1; // Default to OK
 
 ');
 
-INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('zzBBR','old Brit Butt Rally',0,'// Following list uses zero-based column numbers
-$IMPORTSPEC[''cols''][''EntrantID'']	= 0;
-$IMPORTSPEC[''cols''][''RiderLast'']	= 9;
-$IMPORTSPEC[''cols''][''RiderFirst'']	= 8;
-$IMPORTSPEC[''cols''][''PillionLast'']	= 12;
-$IMPORTSPEC[''cols''][''PillionFirst'']	= 11;
-$IMPORTSPEC[''cols''][''Bike''] 		= 21;
-$IMPORTSPEC[''cols''][''BikeReg'']		= 22;
-$IMPORTSPEC[''cols''][''Email'']		= 20;
-$IMPORTSPEC[''cols''][''Phone'']		= 19;
-$IMPORTSPEC[''cols''][''Country'']		= 18;
-$IMPORTSPEC[''cols''][''NoKName'']		= 30;
-$IMPORTSPEC[''cols''][''NoKPhone'']		= 31;
-$IMPORTSPEC[''cols''][''NoKRelation'']	= 32;
-
-$IMPORTSPEC[''default''][''BCMethod'']	= 1;
-$IMPORTSPEC[''default''][''OdoKms'']	= 0;
-$IMPORTSPEC[''setif''][''OdoKms''][1]	= [23,''/Kilometres/''];
-
-// data collects lines to be stored as ExtraData
-$IMPORTSPEC[''data''][''Postal_Address'']		= ''13:14:15:16'';
-$IMPORTSPEC[''data''][''Postcode'']		= 17;
-$IMPORTSPEC[''data''][''Country'']		= 18;
-$IMPORTSPEC[''data''][''Rally veteran'']	= 24;
-$IMPORTSPEC[''data''][''Rider T-shirt'']	= 26;
-$IMPORTSPEC[''data''][''Pillion T-shirt'']	= 27;
-$IMPORTSPEC[''data''][''Extra T-shirt'']	= 28;
-$IMPORTSPEC[''data''][''Extra T-shirt size'']	= 29;
-
-// If the content of the indexed column matches the RE, reject (don''t load) the entry
-
-
-
-');
-
-INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('zzRBLR','old RBLR1000',0,'// Following list uses zero-based column numbers
-$IMPORTSPEC[''cols''][''EntrantID'']	= 0;
-$IMPORTSPEC[''cols''][''RiderFirst'']	= 8;
-$IMPORTSPEC[''cols''][''RiderLast'']	= 9;
-$IMPORTSPEC[''cols''][''RiderIBA'']		= 10;
-$IMPORTSPEC[''cols''][''PillionFirst'']	= 12;
-$IMPORTSPEC[''cols''][''PillionLast'']	= 13;
-$IMPORTSPEC[''cols''][''PillionIBA'']	= 15;
-$IMPORTSPEC[''cols''][''Bike''] 		= 27;
-$IMPORTSPEC[''cols''][''Country'']		= 21;
-$IMPORTSPEC[''cols''][''ScoredBy'']		= 9; 	// RiderLast for surname sorting (cheat)
-
-$IMPORTSPEC[''cols''][''Email'']		= 25;
-$IMPORTSPEC[''cols''][''Phone'']		= 24;
-$IMPORTSPEC[''cols''][''NoKName'']		= ''30:31'';
-$IMPORTSPEC[''cols''][''NoKPhone'']		= 38;
-$IMPORTSPEC[''cols''][''NoKRelation'']	= 39;
-
-
-$IMPORTSPEC[''cols''][''FinishPosition''] = 0; /* Same as EntrantID to preserve order */
-
-// Now choose only rows matching the regex below; multiple rows = and
-//$IMPORTSPEC[''select''][21]			= ''/North Anti Clock Wise/'';
-
-
-/* Set the field after ''setif'' to the following value if the column matches the regex */
-$IMPORTSPEC[''default''][''EntrantStatus'']	= 8; 	// Finisher so certificate can be printed straight away
-$IMPORTSPEC[''default''][''FinishPosition''] = 1;	// So certificates can be printed straight away
-
-$IMPORTSPEC[''default''][''Class'']		= 0;
-$IMPORTSPEC[''setif''][''Class''][1]	= array(28,''/North Anti Clock Wise/'');
-$IMPORTSPEC[''setif''][''Class''][2]	= array(28,''/North Clock Wise/'');
-$IMPORTSPEC[''setif''][''Class''][3]	= array(28,''/South Anti Clock Wise/'');
-$IMPORTSPEC[''setif''][''Class''][4]	= array(28,''/South Clock Wise/'');
-$IMPORTSPEC[''setif''][''Class''][5]	= array(28,''/BBG 1500/'');
-$IMPORTSPEC[''setif''][''Class''][6]	= array(28,''/500 Clock Wise/'');
-$IMPORTSPEC[''setif''][''Class''][7]	= array(28,''/500 Anti Clock Wise/'');
-
-$IMPORTSPEC[''default''][''CorrectedMiles'']		= 0;
-$IMPORTSPEC[''setif''][''CorrectedMiles''][1006]	= array(28,''/North Anti Clock Wise/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][1006]	= array(28,''/North Clock Wise/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][1004]	= array(28,''/South Anti Clock Wise/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][1004]	= array(28,''/South Clock Wise/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][1527]	= array(28,''/BBG 1500/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][504]	= array(28,''/500 Clock Wise/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][504]	= array(28,''/500 Anti Clock Wise/'');
-
-
-// Copy extra fields to be passed through to any further data transfer
-$IMPORTSPEC[''data''][''Postal_Address'']		= ''17:18:19:20'';
-$IMPORTSPEC[''data''][''Postcode'']		= 20;
-$IMPORTSPEC[''data''][''Distance2Squires'']		= 22;
-$IMPORTSPEC[''data''][''FreeCamping'']		= 29;
-$IMPORTSPEC[''data''][''AltPhone'']		= 23;
-$IMPORTSPEC[''data''][''NokPostalAddress''] = ''32:33:34:35:36'';
-$IMPORTSPEC[''data''][''T-shirt'']		= 40;
-$IMPORTSPEC[''data''][''T-shirt2'']		= 41;
-
-
-
-');
-
-INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('zzJorvik','old Jorvik rally',0,'// Following lists use zero-based column numbers
-
-// cols represent fields in the ScoreMaster.entrants table
-$IMPORTSPEC[''cols''][''EntrantID'']	= 0;
-$IMPORTSPEC[''cols''][''RiderLast'']	= 9;
-$IMPORTSPEC[''cols''][''RiderFirst'']	= 8;
-$IMPORTSPEC[''cols''][''PillionLast'']	= 11;
-$IMPORTSPEC[''cols''][''PillionFirst'']	= 10;
-$IMPORTSPEC[''cols''][''Bike''] 		= 20;
-$IMPORTSPEC[''cols''][''BikeReg''] 		= 21;
-$IMPORTSPEC[''cols''][''Email'']		= 19;
-$IMPORTSPEC[''cols''][''Phone'']		= 18;
-$IMPORTSPEC[''cols''][''NoKName'']		= 22;
-$IMPORTSPEC[''cols''][''NoKPhone'']		= 23;
-$IMPORTSPEC[''cols''][''NoKRelation'']	= 24;
-$IMPORTSPEC[''cols''][''Country''] =17;
-// data collects lines to be stored as ExtraData
-$IMPORTSPEC[''data''][''Postcode'']		= 16;
-$IMPORTSPEC[''data''][''Country'']		= 17;
-$IMPORTSPEC[''data''][''Postal_Address'']		= ''12:13:14:15:16:17'';
-
-// If the content of the indexed column matches the RE, reject (don''t load) the entry
-//$IMPORTSPEC[''reject''][18]	= ''/Unpaid/'';
-
-$IMPORTSPEC[''default''][''BCMethod'']       = 0;
-$IMPORTSPEC[''setif''][''BCMethod''][1]	= [25,''/Electronic/''];
-$IMPORTSPEC[''setif''][''BCMethod''][2]	= [25,''/Paper|Delayed/''];
-
-
-');
 
 INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('Rally','IBAUK rally',0,'// Following lists use zero-based column numbers
 
 // cols represent fields in the ScoreMaster.entrants table
+$IMPORTSPEC[''default''][''BCMethod'']       = 1;
+$IMPORTSPEC[''default''][''CorrectedMiles'']       = 0;
 $IMPORTSPEC[''default''][''EntrantStatus'']	= 1; // Default to OK
+
 $IMPORTSPEC[''cols''][''EntrantID'']	= 0;
 $IMPORTSPEC[''cols''][''RiderLast'']	= 9;
 $IMPORTSPEC[''cols''][''RiderFirst'']	= 8;
@@ -758,7 +607,10 @@ $IMPORTSPEC[''setif''][''BCMethod''][2]	= [31,''/Paper|Delayed/''];
 
 INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('Rallyx','IBAUK rally-reglist',0,'// Following lists use zero-based column numbers
 
+$IMPORTSPEC[''default''][''BCMethod'']       = 1;
+$IMPORTSPEC[''default''][''CorrectedMiles'']       = 0;
 $IMPORTSPEC[''default''][''EntrantStatus'']	= 1; // Default to OK
+
 // If this flag exists and is set true then names and bikes won''t be reformatted
 $IMPORTSPEC[''options''][''sourceisclean''] = true;
 
@@ -769,38 +621,38 @@ $IMPORTSPEC[''cols''][''RiderFirst'']	= 1;
 $IMPORTSPEC[''cols''][''RiderIBA'']		= 3;
 
 // Import pillion details regardless of has_pillion
-$IMPORTSPEC[''cols''][''PillionLast'']	= 6;
-$IMPORTSPEC[''cols''][''PillionFirst'']	= 5;
-$IMPORTSPEC[''cols''][''PillionIBA'']	= 7;
-$IMPORTSPEC[''cols''][''Bike''] 		= 9;
-$IMPORTSPEC[''cols''][''BikeReg''] 		= 12;
+$IMPORTSPEC[''cols''][''PillionLast'']	= 7;
+$IMPORTSPEC[''cols''][''PillionFirst'']	= 6;
+$IMPORTSPEC[''cols''][''PillionIBA'']	= 8;
+$IMPORTSPEC[''cols''][''Bike''] 		= 11;
+$IMPORTSPEC[''cols''][''BikeReg''] 		= 14;
 
 $IMPORTSPEC[''default''][''OdoKms'']    = 0;
-$IMPORTSPEC[''setif''][''OdoKms''][0]	= [13,''/Miles/''];
-$IMPORTSPEC[''setif''][''OdoKms''][1]	= [13,''/Kilometres/''];
+$IMPORTSPEC[''setif''][''OdoKms'']['M']	= [15,''/Miles/''];
+$IMPORTSPEC[''setif''][''OdoKms'']['K']	= [15,''/Kilometres/''];
 
 
-$IMPORTSPEC[''cols''][''Email'']		= 14;
-$IMPORTSPEC[''cols''][''Phone'']		= 15;
-$IMPORTSPEC[''cols''][''NoKName'']		= 22;
-$IMPORTSPEC[''cols''][''NoKPhone'']		= 23;
-$IMPORTSPEC[''cols''][''NoKRelation'']	= 24;
-$IMPORTSPEC[''cols''][''Country''] 		= 21;
+$IMPORTSPEC[''cols''][''Email'']		= 16;
+$IMPORTSPEC[''cols''][''Phone'']		= 17;
+$IMPORTSPEC[''cols''][''NoKName'']		= 24;
+$IMPORTSPEC[''cols''][''NoKPhone'']		= 25;
+$IMPORTSPEC[''cols''][''NoKRelation'']	= 26;
+$IMPORTSPEC[''cols''][''Country''] 		= 23;
 
 // data collects lines to be stored as ExtraData
-$IMPORTSPEC[''data''][''Postcode'']		= 20;							// Export to rides database
-$IMPORTSPEC[''data''][''Country'']		= 21;							// Export to rides database
-$IMPORTSPEC[''data''][''Postal_Address'']		= ''16:17:18:19:20:21'';// Export to rides database
+$IMPORTSPEC[''data''][''Postcode'']		= 22;							// Export to rides database
+$IMPORTSPEC[''data''][''Country'']		= 23;							// Export to rides database
+$IMPORTSPEC[''data''][''Postal_Address'']		= ''18:19:20:21:22:23'';// Export to rides database
 																		// Duplications deliberate
-$IMPORTSPEC[''data''][''NoviceRider'']	= 4;
-$IMPORTSPEC[''data''][''NovicePillion'']= 8;
+$IMPORTSPEC[''data''][''NoviceRider'']	= 5;
+$IMPORTSPEC[''data''][''NovicePillion'']= 9;
 
 // If the content of the indexed column matches the RE, reject (don''t load) the entry
-// $IMPORTSPEC[''reject''][35]	= ''/Withdrawn/'';
+// $IMPORTSPEC[''reject''][37]	= ''/Withdrawn/'';
 
 $IMPORTSPEC[''default''][''BCMethod'']       = 1;
-$IMPORTSPEC[''setif''][''BCMethod''][1]	= [25,''/Electronic/''];
-$IMPORTSPEC[''setif''][''BCMethod''][2]	= [25,''/Paper|Delayed/''];
+$IMPORTSPEC[''setif''][''BCMethod''][1]	= [27,''/Electronic/''];
+$IMPORTSPEC[''setif''][''BCMethod''][2]	= [27,''/Paper|Delayed/''];
 
 
 ');
