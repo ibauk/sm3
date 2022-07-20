@@ -930,8 +930,8 @@ function checkApplySequences($bonv,$catcounts,$bonusPoints) {
         } else {
             $extraBonusPoints = $catcounts[$ccr->axis]->samepoints * $ccr->pwr;
             if ($ccr->pwr != 1 && $ccr->pwr != 0) {
-                $pointsDesc = " (+".$catcounts[$ccr->axis]->samepoints;            
-                $pointsDesc .= " x ".$ccr->pwr. ")";
+                $pointsDesc = " (+ ".$catcounts[$ccr->axis]->samepoints;            
+                $pointsDesc .= "x".$ccr->pwr. ")";
             }
         }
 

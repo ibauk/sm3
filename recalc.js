@@ -230,8 +230,8 @@ function checkApplySequences(bonv,catcounts,bonusPoints) {
         } else { 
             extraBonusPoints = catcounts[ccr_axis]['samepoints'] * ccr_pwr;
             if (ccr_pwr != 1 && ccr_pwr != 0) {
-                pointsDesc = " (+"+catcounts[ccr_axis]['samepoints'];            
-                pointsDesc += " x "+ccr_pwr+ ")";
+                pointsDesc = " (+ "+catcounts[ccr_axis]['samepoints'];            
+                pointsDesc += "x"+ccr_pwr+ ")";
             }
         }
     

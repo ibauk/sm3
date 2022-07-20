@@ -144,7 +144,7 @@ input[name="PillionIBA"] { width:5em !important; }
 input[name="EntrantID"]	{ width: 3em; }
 input[name="OdoCheckMiles"]	{ width:3em; }
 input[type="email"], .email	{ width:25em; }
-input.bignumber			{ width: 5em;}
+input.bignumber			{ width: 6em;}
 input.smallnumber		{ width: 3em; }
 
 .link:hover				{ cursor: pointer; background-color: var(--hover-background);}

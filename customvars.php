@@ -541,6 +541,7 @@ $TAGS = array(
 	'Odometer'			=> array('Odo&nbsp;readings',''),																		// Miles/Kms
 	'OdoRallyStart'		=> array('Odo @ start','The reading at the start of the rally'),									// Miles/Kms
 	'OdoRallyFinish'	=> array('Odo @ end','The odometer reading at the end of the rally'),							// Miles/Kms
+	'OdoReadingHdr'		=> array('Odo readings','Odo readings'),
 	'OdoReadingLit'		=> array('Odo','Odo reading'),
 	'OdoScaleFactor'	=> array('Correction factor','The number to multiply odo readings to get true distance'),			// Miles/Kms
 	
