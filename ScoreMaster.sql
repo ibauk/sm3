@@ -530,9 +530,11 @@ INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (47,'AdmTea
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (48,'AdmCohortTable','cohorts.php?c=cohorts',NULL,'entrant,cohort');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (49,'AdmImportCombos','importxls.php?showupload&type=2',NULL,'bonus,combo,import');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (50,'AdmRebuildScorecards','claims.php?c=applyclaims&reprocess=1',NULL,'claims,scorecards');
+INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (51,'AdmOdoReadings','fastodos.php',NULL,'entrant,odo');
+INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (52,'AdmOdoChecks','fastodos.php?odocheck',NULL,'entrant,odo');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('admin','AdmMenuHeader','2,37,46,11,4,25,6,5');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('setup','AdmSetupHeader','16,17,18,19,20,42');
-INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('entrant','AdmEntrantsHeader','11,41,47,48,15');
+INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('entrant','AdmEntrantsHeader','11,51,41,47,48,52,15');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('bonus','AdmBonusHeader','7,10,9,39,49');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('util','AdmUtilHeader','29,28,27,32,13,33,35,40,45,50');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('advanced','AdmAdvancedHeader','21,22,44,34,23,30');

@@ -54,14 +54,18 @@ function showOdoList() {
 
     if ($isOdoCheck) {
         $checkout = "odo check/start";
-        $checkin = "odo check/finish";
+        $checkin = "ODO CHECK";
         $checkoutname = "OdoCheckStart";
         $checkinname = "OdoCheckFinish";
+        $disabledstop = '';
+        $stoptab = "0";
     } else {
         $checkout = "check-out/start";
         $checkin = "check-in/finish";
         $checkoutname = "OdoRallyStart";
         $checkinname = "OdoRallyFinish";
+        $disabledstop = ' disabled ';
+        $stoptab = "-1";
     }
 
 	startHtml($TAGS['OdoReadingHdr'][0],$TAGS['OdoReadingHdr'][1],true);
@@ -115,34 +119,41 @@ function showOdoList() {
     echo('<div id="sshdr" style="width:100%;text-align:center;"><br>');
     echo('<form>');
     $chk = "checked";
+    /*
     if ($isOdoCheck) {
         echo('<input type="radio" checked onchange="swapss(this);" name="startstop" id="ss_trip" value="trip"> ');
         echo('<label class="trip" for="ss_trip">ODO CHECK TRIP</label> ');
         echo(' &nbsp;&nbsp;&nbsp; ');    
         $chk = '';
     }
-    echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_start" value="start"> ');
-    $startlit = $chk != '' ? strtoupper($checkout) : $checkout;
-    echo('<label class="start" for="ss_start">'.$startlit.'</label> ');
-    echo(' &nbsp;&nbsp;&nbsp; ');
-    echo('<input type="radio" onchange="swapss(this);" name="startstop" id="ss_stop" value="stop"> ');
+    */
+    if (!$isOdoCheck) {
+        echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_start" value="start"> ');
+        $startlit = $chk != '' ? strtoupper($checkout) : $checkout;
+        echo('<label class="start" for="ss_start">'.$startlit.'</label> ');
+        echo(' &nbsp;&nbsp;&nbsp; ');
+        $chk = '';
+    }
+    echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_stop" value="stop"> ');
     echo('<label class="stop" for="ss_stop">'.$checkin.'</label> ');
     echo('</form>');
     echo('<br></div>');
+
+
     echo('<div id="picklistdiv">');
     echo('<form action="fastodos.php" method="post">');
     echo('<table>');
     echo('<tbody id="ssbuttons">');
-    $startlit = $chk != '' ? "" : " disabled ";
+    $startstop = $isOdoCheck ? 'stop' : 'start';
     while($rd = $R->fetchArray()) {
         echo('<tr>');
         echo('<td class="EntrantID">'.$rd['EntrantID'].'</td>');
         echo('<td>'.$rd['RiderName'].'</td>');
+        echo('<td><input type="number" placeholder="start" name="'.$checkoutname.'" min="0" tabindex="0" class="bignumber '.$startstop.'" onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkoutname].'"></td>');
+        echo('<td><input type="number" '.$disabledstop.' placeholder="finish" name="'.$checkinname.'" min="0" tabindex="'.$stoptab.'" class="bignumber stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkinname].'"></td>');
         if ($isOdoCheck) {
-            echo('<td><input type="number" name="OdoCheckTrip" min="0" tabindex="0" class="bignumber trip" onchange="oc(this);" oninput="oi(this);" value="'.$rd['OdoCheckTrip'].'"></td>');
+            echo('<td><input type="number" placeholder="trip" name="OdoCheckTrip" min="0" tabindex="0" class="stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd['OdoCheckTrip'].'"></td>');
         }
-        echo('<td><input type="number"'.$startlit.' name="'.$checkoutname.'" min="0" tabindex="0" class="bignumber start" onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkoutname].'"></td>');
-        echo('<td><input type="number" disabled name="'.$checkinname.'" min="0" tabindex="-1" class="bignumber stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkinname].'"></td>');
         echo('</tr>');
     }
     echo('</tbody>');
@@ -174,19 +185,25 @@ function recalcDistance($e) {
         $rd['OdoCheckTrip'] = 0.0;
     if ($ocm > 1) {
         $doscale = false;
-        if ($rd['OdoCheckStart']==0 && $rd['OdoCheckFinish']==0) {
+        if (intval($rd['OdoCheckStart'])==0 && intval($rd['OdoCheckFinish'])==0) {
             if ($rd['OdoCheckTrip'] > 1) {
                 $doscale = true;
             } else if ($rd['OdoCheckStart'] < $rd['OdoCheckFinish']) {
                 $rd['OdoCheckTrip'] = $rd['OdoCheckFinish'] - $rd['OdoCheckStart'];
                 $doscale = true;
             }
-        } else if ($rd['OdoCheckFinish'] > $rd['OdoCheckStart']) {
-            $rd['OdoCheckTrip'] = $rd['OdoCheckFinish'] - $rd['OdoCheckStart'];
+        } else if (intval($rd['OdoCheckFinish']) > intval($rd['OdoCheckStart'])) {
+            $rd['OdoCheckTrip'] = floatval($rd['OdoCheckFinish']) - floatval($rd['OdoCheckStart']);
             $doscale = true;
         }
         if ($doscale) {
-            $checkdistance = $rd['OdoCheckTrip'];
+            $checkdistance = floatval($rd['OdoCheckTrip']);
+
+            
+            $rd['OdoCheckFinish'] = 0;      // We'll only use trip distance from now on
+                                            // Let's not recalculate every time
+            
+
 			if ($rd['OdoKms'] > 0 && $mk != 1) // Want miles, have kms
 				$checkdistance = $checkdistance / $KONSTANTS['KmsPerMile'];
 			else if ($rd['OdoKms'] != 1 && $mk == 1) // Want kms, have miles
