@@ -512,7 +512,7 @@ INSERT INTO "functions" (functionid,menulbl,url,onclick,tags) VALUES (29,'UtlRAE
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (30,'AdmUtilHeader','admin.php?menu=util',NULL,'utilities,renumber,magic,teams,export');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (31,'UtlFindEntrant','#','return findEntrant();','entrant,find');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (32,'AdmDoBlankB4','score.php?c=blank&prf=0',NULL,'score,blank score sheet');
-INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (33,'ttTeams','teams.php?m=3&g=2',NULL,'teams,integrity');
+INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (33,'ttTeams','teams.php?m=5&g=0',NULL,'teams,integrity');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (34,'AdmSpeedPenalties','speeding.php',NULL,'speeding,penalties');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (35,'AdmThemes','admin.php?c=themes',NULL,'colours,themes');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (36,'AdmConfirm','score.php?mc=mc',NULL,'confirm,reconcile');

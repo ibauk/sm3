@@ -103,10 +103,7 @@ function fetchShowEntrant()
 			break;
 	}
 
-		if (!isset($_REQUEST['mode']) || $_REQUEST['mode']!='check')
-			showEntrantRecord($rd,$pnok);
-		else
-			showEntrantChecks($rd);
+		showEntrantRecord($rd,$pnok);
 }
 
 function fetchSpeedText($rd)
@@ -1050,143 +1047,6 @@ function showRenumberEntrant()
 
 
 
-/* Check-in/check-out stuff */
-function showEntrantChecks($rd)
-{
-	global $DB, $TAGS, $KONSTANTS;
-
-	echo('<form method="post" action="entrants.php">');
-
-	echo('<input type="hidden" name="c" value="entrants">');
-	echo('<input type="hidden" name="mode" value="check">');
-	echo('<input type="hidden" name="updaterecord" value="'.$rd['EntrantID'].'">');
-	
-	echo('<span class="vlabel"  style="font-weight: bold;" title="'.$TAGS['EntrantID'][1].'"><label for="EntrantID">'.$TAGS['EntrantID'][0].' </label> ');
-	echo('<input type="text" class="number"  readonly name="EntrantID" id="EntrantID" value="'.$rd['EntrantID'].'">'.' <label>'.htmlspecialchars($rd['RiderName']).'</label>');
-	
-	popBreadcrumb();
-	echo('<input title="'.$TAGS['FullDetails'][1].'" id="FullDetailsButton" type="button" value="'.$TAGS['FullDetails'][0].'"');
-	echo(' onclick="window.location='."'entrants.php?c=entrant&amp;id=".$rd['EntrantID']."&mode=full");
-	echo("'".'"> ');
-	
-	echo('<input type="submit" name="savedata" value="'.$TAGS['SaveEntrantRecord'][0].'">');
-	echo('</span>');
-
-	
-	
-	
-	
-	
-	
-	echo('<fieldset  id="tab_odo">');
-	
-	$odoF = $DB->query("SELECT OdoCheckMiles,StartTime FROM rallyparams");
-	$odoC = $odoF->fetchArray();
-	
-	echo('<input type="hidden" name="OdoCheckMiles" id="OdoCheckMiles" value="'.$odoC['OdoCheckMiles'].'">');
-
-	if (floatval($odoC['OdoCheckMiles']) < 1.0)
-		$hideOdoCheck = true;
-	else
-		$hideOdoCheck = false;
-	
-
-	echo('<span class="vlabel" title="'.$TAGS['OdoKms'][1].'">');
-	echo('<label for="OdoKms">'.$TAGS['OdoKms'][0].' </label> ');
-	echo('<select name="OdoKms" id="OdoKms" onchange="odoAdjust();">');
-	if ($rd['OdoKms']==$KONSTANTS['OdoCountsKilometres'])
-	{
-		echo('<option value="'.$KONSTANTS['OdoCountsMiles'].'">'.$TAGS['OdoKmsM'][0].'</option>');
-		echo('<option value="'.$KONSTANTS['OdoCountsKilometres'].'" selected >'.$TAGS['OdoKmsK'][0].'</option>');
-	}
-	else
-	{
-		echo('<option value="'.$KONSTANTS['OdoCountsMiles'].'" selected >'.$TAGS['OdoKmsM'][0].'</option>');
-		echo('<option value="'.$KONSTANTS['OdoCountsKilometres'].'" >'.$TAGS['OdoKmsK'][0].'</option>');
-	}
-	echo('</select>');
-	echo('</span>');
-
-
-
-
-	if ($hideOdoCheck)
-		echo('<div style="display:none;">');
-	echo('<span  class="xlabel" title="'.$TAGS['OdoCheckStart'][1].' "><label for="OdoCheckStart">'.$TAGS['OdoCheckStart'][0].' </label> ');
-	echo('<input  onchange="odoAdjust(false);" type="number" class="bignumber" step="any" min="0" name="OdoCheckStart" id="OdoCheckStart" value="'.$rd['OdoCheckStart'].'"> </span>');
-	
-	echo('<span  title="'.$TAGS['OdoCheckFinish'][1].' "><label for="OdoCheckFinish">'.$TAGS['OdoCheckFinish'][0].' </label> ');
-	echo('<input  onchange="odoAdjust(false);" type="number" class="bignumber" step="any" min="0" name="OdoCheckFinish" id="OdoCheckFinish" value="'.$rd['OdoCheckFinish'].'"> </span>');
-	
-	echo('<span  title="'.$TAGS['OdoCheckTrip'][1].' "><label for="OdoCheckTrip">'.$TAGS['OdoCheckTrip'][0].' </label> ');
-	echo('<input  onchange="odoAdjust(true);" type="number" step="any" min="0" name="OdoCheckTrip" id="OdoCheckTrip" value="'.$rd['OdoCheckTrip'].'"> </span>');
-	
-	echo('<span   title="'.$TAGS['OdoScaleFactor'][1].'"><label for="OdoScaleFactor">'.$TAGS['OdoScaleFactor'][0].' </label> ');
-	echo('<input type="number" step="any" class="bignumber" min="0" name="OdoScaleFactor" id="OdoScaleFactor" value="'.$rd['OdoScaleFactor'].'"> </span>');
-	
-	if ($hideOdoCheck)
-		echo('</div>');
-	
-	echo('<span  class="xlabel" title="'.$TAGS['OdoRallyStart'][1].' "><label for="OdoRallyStart">'.$TAGS['OdoRallyStart'][0].' </label> ');
-	echo('<input  onchange="odoAdjust();" type="number" step="any" min="0" name="OdoRallyStart" id="OdoRallyStart" value="'.$rd['OdoRallyStart'].'"> </span>');
-	
-	echo('<span  title="'.$TAGS['OdoRallyFinish'][1].' "><label for="OdoRallyFinish">'.$TAGS['OdoRallyFinish'][0].' </label> ');
-	echo('<input  onchange="odoAdjust();" type="number" step="any" min="0" name="OdoRallyFinish" id="OdoRallyFinish" value="'.$rd['OdoRallyFinish'].'"> </span>');
-	
-	echo('<span >');
-	echo('<label for="CorrectedMiles" >'.$TAGS['CorrectedMiles'][0].' </label>');
-	echo(' <input type="number" name="CorrectedMiles" id="CorrectedMiles" value="'.$rd['CorrectedMiles'].'" title="'.$TAGS['CorrectedMiles'][1].'"> ');
-	echo('</span>');
-	
-	echo('<hr><br>');
-	echo('<span   title="'.$TAGS['EntrantStatus'][1].'"><label for="EntrantStatus">'.$TAGS['EntrantStatus'][0].' </label>');
-	echo('<select name="EntrantStatus" id="EntrantStatus">');
-	if ($rd['EntrantStatus']=='')
-		$rd['EntrantStatus'] = $KONSTANTS['DefaultEntrantStatus'];
-	echo('<option value="'.$KONSTANTS['EntrantDNS'].'" '.($rd['EntrantStatus']==$KONSTANTS['EntrantDNS'] ? ' selected="selected" ' : '').'>'.$TAGS['EntrantDNS'][0].'</option>');
-	echo('<option value="'.$KONSTANTS['EntrantOK'].'" '.($rd['EntrantStatus']==$KONSTANTS['EntrantOK'] ? ' selected="selected" ' : '').'>'.$TAGS['EntrantOK'][0].'</option>');
-	echo('<option value="'.$KONSTANTS['EntrantFinisher'].'" '.($rd['EntrantStatus']==$KONSTANTS['EntrantFinisher'] ? ' selected="selected" ' : '').'>'.$TAGS['EntrantFinisher'][0].'</option>');
-	echo('<option value="'.$KONSTANTS['EntrantDNF'].'" '.($rd['EntrantStatus']==$KONSTANTS['EntrantDNF'] ? ' selected="selected" ' : '').'>'.$TAGS['EntrantDNF'][0].'</option>');
-	echo('</select></span>');
-	echo('<br><hr>');
-	$dt = splitDatetime($rd['StartTime']); 
-	if ($dt[0]=='')
-	{
-		$dt = splitDatetime($odoC['StartTime']); // Default to rally start time
-	}
-	echo('<span class="vlabel">');
-	echo('<label for="StartDate" class="vlabel">'.$TAGS['StartDateE'][0].' </label>');
-	echo(' <input type="date" name="StartDate" id="StartDate" value="'.$dt[0].'" title="'.$TAGS['StartDateE'][1].'"> ');
-	echo('<label for="StartTime">'.$TAGS['StartTimeE'][0].' </label>');
-	echo(' <input type="time" name="StartTime" id="StartTime" value="'.$dt[1].'" title="'.$TAGS['StartTimeE'][1].'"> ');
-	echo(' <input type="button" value="'.$TAGS['nowlit'][0].'" onclick="setSplitNow(\'Start\');">');
-	echo('</span>');
-
-	$dt = splitDatetime($rd['FinishTime']); 
-
-	echo('<span class="vlabel">');
-	echo('<label for="FinishDate" class="vlabel">'.$TAGS['FinishDateE'][0].' </label>');
-	echo(' <input type="date" name="FinishDate" id="FinishDate" value="'.$dt[0].'" title="'.$TAGS['FinishDateE'][1].'"> ');
-	echo('<label for="FinishTime">'.$TAGS['FinishTimeE'][0].' </label>');
-	echo(' <input type="time" name="FinishTime" id="FinishTime" value="'.$dt[1].'" title="'.$TAGS['FinishTimeE'][1].'"> ');
-	echo(' <input type="button" value="'.$TAGS['nowlit'][0].'" onclick="setSplitNow(\'Finish\');">');
-	echo('</span>');
-
-	
-	
-	echo('</fieldset>');
-	
-	
-	echo('</form>');
-		
-}
-
-
-
-
-
-
-
 
 
 
@@ -1483,6 +1343,8 @@ echo('</span> ');
 	$odoF = $DB->query("SELECT OdoCheckMiles FROM rallyparams");
 	$odoC = $odoF->fetchArray();
 	
+	$hasOdoCheck = floatval($odoC['OdoCheckMiles'] > 1.0);
+
 	echo('<input type="hidden" name="OdoCheckMiles" id="OdoCheckMiles" value="'.$odoC['OdoCheckMiles'].'">');
 
 
@@ -1507,7 +1369,9 @@ echo('</span> ');
 
 
 	
-
+	if (!$hasOdoCheck) {
+		echo('<div style="display:none;">');
+	}
 	echo('<span  class="xlabel" title="'.$TAGS['OdoCheckStart'][1].' "><label for="OdoCheckStart">'.$TAGS['OdoCheckStart'][0].' </label> ');
 	echo('<input onkeypress="digitonly();"  onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" min="0" name="OdoCheckStart" id="OdoCheckStart" value="'.$rd['OdoCheckStart'].'"> </span>');
 	
@@ -1520,6 +1384,10 @@ echo('</span> ');
 	echo('<span  class="xlabel" title="'.$TAGS['OdoScaleFactor'][1].'"><label for="OdoScaleFactor">'.$TAGS['OdoScaleFactor'][0].' </label> ');
 	echo('<input type="number" step="any" min="0" name="OdoScaleFactor" id="OdoScaleFactor"  class="bignumber" onchange="enableSaveButton();" value="'.$rd['OdoScaleFactor'].'"> </span>');
 	
+	if (!$hasOdoCheck) {
+		echo('</div>');
+
+	}
 	echo('<span  class="xlabel" title="'.$TAGS['OdoRallyStart'][1].' "><label for="OdoRallyStart">'.$TAGS['OdoRallyStart'][0].' </label> ');
 	echo('<input  onkeypress="digitonly();" onchange="odoAdjust();enableSaveButton();" class="bignumber" type="number" step="any" min="0" name="OdoRallyStart" id="OdoRallyStart" value="'.$rd['OdoRallyStart'].'"> </span>');
 	
