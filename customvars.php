@@ -532,6 +532,7 @@ $TAGS = array(
 											"If set rule &amp; this is 0, R=N\n".
 											"If set rule &amp; this <> 0, R=this value"),
 											
+	'OdoCaution'		=> array('Caution!','Caution, if you change these values you might need to update the scorecard as well'),
 	'OdoCheckFinish'	=> array('Odo-check finish','The odometer reading at the end of the odo check'),					// Miles/Kms
 	'OdoCheckMiles'		=> array('Odo-check distance','The length of the route used to check the accuracy of odometers'),	// Miles/Kms
 	'OdoCheckStart'		=> array('Odo-check start','The reading at the start of the odometer check'),						// Miles/Kms

@@ -630,8 +630,8 @@ $IMPORTSPEC[''cols''][''Bike''] 		= 11;
 $IMPORTSPEC[''cols''][''BikeReg''] 		= 14;
 
 $IMPORTSPEC[''default''][''OdoKms'']    = 0;
-$IMPORTSPEC[''setif''][''OdoKms'']['M']	= [15,''/Miles/''];
-$IMPORTSPEC[''setif''][''OdoKms'']['K']	= [15,''/Kilometres/''];
+$IMPORTSPEC[''setif''][''OdoKms''][''M'']	= [15,''/Miles/''];
+$IMPORTSPEC[''setif''][''OdoKms''][''K'']	= [15,''/Kilometres/''];
 
 
 $IMPORTSPEC[''cols''][''Email'']		= 16;

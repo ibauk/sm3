@@ -12,6 +12,7 @@ I am delighted to announce the release of ScoreMaster v3.2 incorporating the fol
 - Improved undeclared team detection.
 - Complex methods simplification.
 - Present side-by-side photos during claim reprocessing.
+- Enhanced EBC recognition
 
 
 ## String builder
@@ -20,7 +21,7 @@ Uninterrupted claiming of a particular category can be used to award extra point
 
 ## Odo readings
 
-These can now be conveniently and reliably captured at the start and finish of the rally without needing to dig into entrant records. If an odo check is used, those readings can also be captured using the new interface.
+These can now be conveniently and reliably captured at the start and finish of the rally without needing to dig into entrant records. If an odo check is used, those readings can also be captured using the new interface. Use [Odo readings] on the [Entrants] menu.
 
 ## Percentage points deduction
 This is typically used to punish sloppy bonus claims, 10% being the usual figure. The percentage used is defined for the rally as a whole rather than for individual or classes of bonus. It always requires the rally team to tick the box manually. Only one such provision can be defined.
@@ -31,4 +32,8 @@ A report may be run at any time to identify pairs of bikes riding, declared or n
 
 ## Scorecard rebuild
 
-This will rebuild some or all scorecards by reprocessing the entire claim queue in claimtime order.
+This will rebuild some or all scorecards by reprocessing the entire claim queue in claimtime order. This is useful in certain circumstances during a rally to correct wrongly updated scorecards.
+
+## EBC email recognition
+
+In the light of experience, the email matching requirement used to avoid cross-contamination of scorecards during rallies has been upgraded to cater for multiple registered email addresses and account-only matching. An example of the latter is that if saphena@compuserve.com is the registered address, saphena@outlook.com and saphena@gmail.com would also be considered to match. The [Entrant email] field on the entrant record now accepts multiple addresses separated by ','.

@@ -144,6 +144,7 @@ function showOdoList() {
     echo('<form action="fastodos.php" method="post">');
     echo('<table>');
     echo('<tbody id="ssbuttons">');
+    $rowspresent = false;
     $startstop = $isOdoCheck ? 'stop' : 'start';
     while($rd = $R->fetchArray()) {
         echo('<tr>');
@@ -152,13 +153,16 @@ function showOdoList() {
         echo('<td><input type="number" placeholder="start" name="'.$checkoutname.'" min="0" tabindex="0" class="bignumber '.$startstop.'" onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkoutname].'"></td>');
         echo('<td><input type="number" '.$disabledstop.' placeholder="finish" name="'.$checkinname.'" min="0" tabindex="'.$stoptab.'" class="bignumber stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkinname].'"></td>');
         if ($isOdoCheck) {
-            echo('<td><input type="number" placeholder="trip" name="OdoCheckTrip" min="0" tabindex="0" class="stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd['OdoCheckTrip'].'"></td>');
+            echo('<td><input type="number" placeholder="nn.n" name="OdoCheckTrip" min="0" tabindex="0" class="stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd['OdoCheckTrip'].'"></td>');
         }
         echo('</tr>');
+        $rowspresent = true;
     }
     echo('</tbody>');
     echo('</table>');
     echo('</form>');
+    if (!$rowspresent)
+        echo('<span style="font-size:2vw;">&#128530;</span>');
     echo('</div>');
 
     echo('</div>');

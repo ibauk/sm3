@@ -682,7 +682,7 @@ function showEntrantScorex($scorex)
     $style .= 'td.sxitempoints,';
     $style .= 'td.sxtotalpoints { text-align: right; }';
 
-	echo('<div id="scorex" title="'.$TAGS['dblclickprint'][0].'" ondblclick="sxprint();" data-style="'.$style.'" ');
+	echo('<div id="scorex" title="'.$TAGS['dblclickprint'][0].'" ondblclick="sxprint();" oncontextmenu="alert('."'".$TAGS['ROUseScore'][1]."'".');return false;" data-style="'.$style.'" ');
 	echo('data-title="'.htmlspecialchars($RallyTitle).'" ');
 
 	echo(')>');
@@ -1346,6 +1346,8 @@ echo('</span> ');
 	$hasOdoCheck = floatval($odoC['OdoCheckMiles'] > 1.0);
 
 	echo('<input type="hidden" name="OdoCheckMiles" id="OdoCheckMiles" value="'.$odoC['OdoCheckMiles'].'">');
+
+	echo('<h4>'.$TAGS['OdoCaution'][1].'</h4>');
 
 
 	echo('<span class="xlabel" title="'.$TAGS['OdoKms'][1].'">');

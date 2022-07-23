@@ -157,7 +157,7 @@ function applyClaim($claimid,$intransaction) {
     if ($rd['OdoRallyStart'] == 0)
         $rd['OdoRallyStart'] = $rc['OdoReading'];
 
-    if ($rc['OdoReading'] > $rd['OdoRallyFinish']) {
+    if (true || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
         $rd['OdoRallyFinish'] = $rc['OdoReading'];
         $rd['CorrectedMiles'] = calcCorrectedMiles($rd['OdoKms'],$rd['OdoRallyStart'],$rd['OdoRallyFinish'],$rd['OdoScaleFactor']);
     }
