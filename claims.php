@@ -663,7 +663,7 @@ echo("</script>\n");
 		$bphoto = getValueFromDB("SELECT IfNull(Image,'') As Image FROM bonuses WHERE BonusID='".$rd['BonusID']."'",'Image','');
 		if ($bphoto != '') {
 			echo('<div id="bimgdiv" style="text-align: center; float:right;" title="'.$TAGS['ebc_RallyPhoto'][1].'">');
-			echo(' <img onclick="cisz(this);" data-size="0" src="images/bonuses/'.$bphoto.'" style="width:512px;"/>');
+			echo(' <img onclick="cisz(this);" data-size="0" src="images/bonuses/'.rawurlencode($bphoto).'" style="width:512px;"/>');
 			echo('</div>');
 		}
 		echo('<div style="clear:both;"></div>');
