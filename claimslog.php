@@ -109,6 +109,8 @@ function emitDecisionFrame() {
     echo('<span id="ebc_claimtime_show" style="font-weight: bold;"></span><br>');
     echo('<span id="ebc_notes"></span> <span id="ebc_flags"></span><br>');
 
+    echo('<div id="restbonusline"></div>');
+
     if (getSetting('useBonusQuestions','false')=='true') {
         echo('<span id="ebc_question"></span><br>');
     }
@@ -181,6 +183,33 @@ function emitEBCjs() {
     echo('<script>const RELOADSECS = '.$reloadseconds.';var RELOADOK = true;</script>');
 ?>
 <script>
+    function fetchRB(rbObj) {
+        
+        console.log('rb: '+JSON.stringify(rbObj));
+        let url = "restbonuses.php?c=rb";
+        url += "&EntrantID="+rbObj.entrant;
+        url += "&BonusID="+rbObj.bonus;
+        url += "&ClaimTime="+rbObj.claimtime;
+        url += "&RestMins="+rbObj.mins;
+
+        xhttp = new XMLHttpRequest();
+    	xhttp.onreadystatechange = function() {
+	    	if (this.readyState == 4 && this.status == 200) {
+                console.log(">>"+this.responseText+"<<");
+                let res = JSON.parse(this.responseText);
+                console.log(res.result);
+                if (res.hasOwnProperty('error')) {
+                    console.log('Error is '+res.error);
+                    let rbdiv = document.querySelector('#restbonusline');
+                    rbdiv.classList.add('yellow');
+                    rbdiv.innerText = res.error;
+                }
+			}
+		};
+		xhttp.open("GET", url, true);
+	    xhttp.send();
+
+    }
     function answerQuestion(obj) {
 
         let pts = document.getElementById('ebc_points');
@@ -238,6 +267,14 @@ function emitEBCjs() {
         document.getElementById('ebc_bonus_name').innerHTML = tr.children[1].getAttribute('title');
         document.getElementById('ebc_odo').value = tr.getAttribute('data-odo');
         document.getElementById('ebc_claimtime').value = tr.getAttribute('data-claimtime');
+
+        let rbObj = {};
+        rbObj.entrant = entrant;
+        rbObj.bonus = tr.children[1].innerHTML;
+        rbObj.claimtime = tr.getAttribute('data-claimtime');
+        rbObj.mins = ebcmins.value;
+        fetchRB(rbObj);
+
         document.getElementById('ebc_claimtime_show').innerHTML = tr.getAttribute('data-odo') + ', ' + tr.getAttribute('data-claimtime-show');
         document.getElementById('ebc_notes').innerHTML = tr.getAttribute('data-notes');
         let flagsregion = document.getElementById('ebc_flags');
