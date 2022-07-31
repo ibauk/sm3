@@ -191,6 +191,7 @@ function emitEBCjs() {
         url += "&BonusID="+rbObj.bonus;
         url += "&ClaimTime="+rbObj.claimtime;
         url += "&RestMins="+rbObj.mins;
+        url += "&OdoReading="+rbObj.odo;
 
         xhttp = new XMLHttpRequest();
     	xhttp.onreadystatechange = function() {
@@ -202,7 +203,13 @@ function emitEBCjs() {
                     console.log('Error is '+res.error);
                     let rbdiv = document.querySelector('#restbonusline');
                     rbdiv.classList.add('yellow');
-                    rbdiv.innerText = res.error;
+                    rbdiv.innerHTML = res.error;
+                }
+                if (res.hasOwnProperty('info')) {
+                    console.log('info is '+res.info);
+                    let rbdiv = document.querySelector('#restbonusline');
+                    rbdiv.classList.add('green');
+                    rbdiv.innerHTML = res.info;
                 }
 			}
 		};
@@ -273,6 +280,7 @@ function emitEBCjs() {
         rbObj.bonus = tr.children[1].innerHTML;
         rbObj.claimtime = tr.getAttribute('data-claimtime');
         rbObj.mins = ebcmins.value;
+        rbObj.odo = tr.getAttribute('data-odo');
         fetchRB(rbObj);
 
         document.getElementById('ebc_claimtime_show').innerHTML = tr.getAttribute('data-odo') + ', ' + tr.getAttribute('data-claimtime-show');

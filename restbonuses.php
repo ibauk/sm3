@@ -106,25 +106,18 @@ function mins2HM($mins) {
 
 function ajaxNewRBClaim() {
 
-    global $DB, $TAGS;
+    global $DB, $TAGS, $KONSTANTS;
 
     error_log('ajaxNewClaim started');
-    if (!isset($_REQUEST['BonusID'])) {
-        echo('{"result":"error1b"}');
-        return;
+    $reqs = ['BonusID','EntrantID','RestMins','ClaimTime','OdoReading'];
+    foreach($reqs as $parm) {
+        if (!isset($_REQUEST[$parm])) {
+            error_log('missing '.$parm);
+            echo('{"result":"missing '.$parm.'"}');
+            return;
+        }
     }
-    if (!isset($_REQUEST['EntrantID'])) {
-        echo('{"result":"error1e"}');
-        return;
-    }
-    if (!isset($_REQUEST['RestMins'])) {
-        echo('{"result":"error2m"}');
-        return;
-    }
-    if (!isset($_REQUEST['ClaimTime'])) {
-        echo('{"result":"error2t"}');
-        return;
-    }
+
     $restBonusGroups = getSetting('restBonusGroups','RestBonuses');
     $restBonusCodes = bonusCodes($restBonusGroups);
     error_log('restBonusCodes=='.implode(',',$restBonusCodes).' from '.$restBonusGroups);
@@ -132,6 +125,9 @@ function ajaxNewRBClaim() {
         echo('{"result":"notrest"}');
         return;
     }
+
+    // Definitely have an attempt at claiming a rest bonus now. Start claims don't count.
+
     error_log('ajaxNewClaim continuing');
     $restBonusStartGroup = getSetting('restBonusStartGroup','RB0');
     $startBonusCodes = bonusCodes($restBonusStartGroup);
@@ -139,7 +135,9 @@ function ajaxNewRBClaim() {
         echo('{"result":"error3"}');
         return;
     }
-    $sql = "SELECT BonusID,ClaimTime FROM claims WHERE EntrantID=".$_REQUEST['EntrantID'];
+
+    // Fetch the most recent start claim
+    $sql = "SELECT BonusID,ClaimTime,OdoReading FROM claims WHERE EntrantID=".$_REQUEST['EntrantID'];
     $sql .= " AND BonusID In (".inList($startBonusCodes).")";
     $sql .= "ORDER BY ClaimTime DESC";
     error_log($sql);
@@ -149,22 +147,57 @@ function ajaxNewRBClaim() {
         return;
     }
     error_log('Found RB start '.$claimstart['BonusID']);
-    $sql = "SELECT BonusID,ClaimTime FROM claims WHERE EntrantID=".$_REQUEST['EntrantID'];
-    $sql .= " AND BonusID In (".inList($restBonusCodes).")";
-    $sql .= " AND ClaimTime > '".$claimstart['ClaimTime']."'";
+
+    $gn = getValueFromDB("SELECT IfNull(GroupName,'') As GroupName FROM bonuses WHERE BonusID='".$_REQUEST['BonusID']."'","GroupName","");
+
+    // Now fetch newer, repeat or mismatched RB claims
+    $sql = "SELECT claims.BonusID,ClaimTime,OdoReading,IfNull(GroupName,'') As GroupName FROM claims";
+    $sql .= " JOIN bonuses ON claims.BonusID=bonuses.BonusID";
+    $sql .= " WHERE EntrantID=".$_REQUEST['EntrantID'];
+    $sql .= " AND claims.BonusID In (".inList($restBonusCodes).")";
+    $sql .= " AND (";
+    $sql .= "       ClaimTime > '".$claimstart['ClaimTime']."'";
+    $sql .= "       OR";
+    $sql .= "       claims.BonusID='".$_REQUEST['BonusID']."'";
+    $sql .= "       OR";
+    $sql .= "       GroupName != '$gn'";
+    $sql .= "     )";
     error_log($sql);
+
+
     $R = $DB->query($sql);
     if ($lastclaim = $R->fetchArray()) {
-        echo('{"result":"claimed","error":"'.$claimstart['BonusID'].'=='.$lastclaim['BonusID'].' '.$lastclaim['ClaimTime'].'"}');
+
+        $lt = [];
+        preg_match('/<span[^>]*>([^<]+)/',logtime($lastclaim['ClaimTime']),$lt);
+
+        $errmsg = '☹️ '.$claimstart['BonusID'].'=='.$lastclaim['BonusID'].' '.$lt[1];
+        $errmsg .= ' @ '.$lastclaim['OdoReading'];
+        echo('{"result":"claimed","error":"'.$errmsg.'"}');
         return;
     }
+
+    // Is it being claimed too soon?
     $mins = minutesBetween($claimstart['ClaimTime'],$_REQUEST['ClaimTime']);
     error_log('mins = '.$mins);
     if ($_REQUEST['RestMins'] > $mins) {
-        echo('{"result":"tooson","error":"'.$claimstart['BonusID'].'=='.$claimstart['ClaimTime']." (".mins2HM(intval($mins)).")".'"}');
+        echo('{"result":"toosoon","error":"☹️'.$claimstart['BonusID'].'=='.$claimstart['ClaimTime']." (".mins2HM(intval($mins)).")".'"}');
         return;
     }
-    echo('{"result":"ok"}');
+
+
+    // Ok, it's all good now so let's offer some warm comforting info to the judge
+    $odokms = getValueFromDB("SELECT OdoKms FROM entrants WHERE EntrantID=".$_REQUEST['EntrantID'],"OdoKms",0);
+	$rallyUsesKms = ($KONSTANTS['BasicDistanceUnit'] != $KONSTANTS['DistanceIsMiles']);
+    $cm = calcCorrectedMiles($odokms,$claimstart['OdoReading'],$_REQUEST['OdoReading'],1);
+    if ($rallyUsesKms != 0)
+        $bdu = $TAGS['OdoKmsK'][0];
+    else
+        $bdu = $TAGS['OdoKmsM'][0];
+
+    $delta = "&#916;";
+    $info = $claimstart['BonusID'].'  '." $delta = ".mins2HM(intval($mins)).", $cm $bdu";
+    echo('{"result":"ok","info": "'.$info.'"}');
 }
 
 if (isset($_REQUEST['c']) && $_REQUEST['c']=='rb')
