@@ -9,6 +9,7 @@
 
 - [Bonuses: combinations](help:combos)
 - [Bonuses: ordinary, special](help:bonuses)
+- [Bonus groups](help:bonusgroups)
 - [Category combinations](help:categories)
 - [Certificate classes](help:classes)
 - [Claim format](help:stdclaim)
@@ -31,6 +32,7 @@
 - [Rally time](help:rallytime)
 
 - [Reasons to be cheerful](help:reasons)
+- [Rest bonuses](help:rbconfig)
 - [Scorecard reconciliation](help:recon) - building confidence in the results
 - [Score explanations](help:scorex)
 - [Complex Scoring options](help:scoringoptions)

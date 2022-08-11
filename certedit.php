@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2020 Bob Stammers
+ * Copyright (c) 2022 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -45,6 +45,11 @@ $CERT_FIELDS = array(
 	"CrewName"				=> "CrewName",
 	"DateRallyRange"		=> "DateRallyRange",
 	'FinishRank'			=> "FinishRank",
+	'NumBonusClaims'		=> "NumBonusClaims",
+	"NumFinishers"			=> "NumFinishers",
+	"NumGoodClaims"			=> "NumGoodClaims",
+	"NumRejectedClaims"		=> "NumRejectedClaims",
+	"NumStarters"			=> "NumStarters",
 	"RallyTitleSplit"		=> "RallyTitleSplit",
 	"RallyTitleShort"		=> "RallyTitleShort"
 	

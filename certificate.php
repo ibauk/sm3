@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2020 Bob Stammers
+ * Copyright (c) 2022 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -287,6 +287,7 @@ function fetchCertificateText($EntrantID)
 		$R = $DB->query($sql);
 		$rd = $R->fetchArray();
 
+		$rd = $rd + fetchExtraVariables($EntrantID);
 		$mt = [];
 		preg_match_all("/(#[\\w]*#)/",$res,$mt,PREG_SET_ORDER);
 		foreach ($mt as $fld)
@@ -305,6 +306,36 @@ function fetchCertificateText($EntrantID)
 	return ['html'=>$res,'css'=>$css];
 }
 
+/**
+ * fetchExtraVariables is called to supply certificate variables not held either in RallyParams
+ * or on the entrant record itself.
+ * 
+ * Returns an array of such values ready to be merged into the ordinary entrant array before printing.
+ * 
+ */
+function fetchExtraVariables($EntrantID) {
+
+	global $KONSTANTS;
+
+	$res = [];
+	$sql = "SELECT count(*) As Rex FROM entrants WHERE EntrantStatus NOT IN (".$KONSTANTS['EntrantDNS'].",".$KONSTANTS['EntrantOK'].")";
+	$res['NumStarters'] = getValueFromDB($sql,"Rex",0);
+	$sql = "SELECT count(*) As Rex FROM entrants WHERE EntrantStatus IN (".$KONSTANTS['EntrantFinisher'].")";
+	$res['NumFinishers'] = getValueFromDB($sql,"Rex",0);
+
+	/**
+	 * The number of claims is not a simple thing.
+	 * 
+	 * Certain bonuses might be excluded from representing "a claim" because they exist for administrative purposes.
+	 */
+	$sql = "SELECT count(DISTINCT BonusID) As Rex FROM claims WHERE EntrantID=".$EntrantID;
+	$res['NumBonusClaims'] = getValueFromDB($sql,"Rex",0);
+	$sql = "SELECT count(DISTINCT BonusID) As Rex FROM claims WHERE EntrantID=".$EntrantID. " AND Decision=0";
+	$res['NumGoodClaims'] = getValueFromDB($sql,"Rex",0);
+	$res['NumRejectedClaims'] = $res['NumBonusClaims'] - $res['NumGoodClaims'];
+	return $res;
+
+}
 
 function getStartCertificateHtml($css)
 {
