@@ -203,6 +203,7 @@ $TAGS = array(
 	'BonusScoringFlagB'	=> array('B','Bike in photo'),
 	'BonusScoringFlagD'	=> array('D','Daylight only'),
 	'BonusScoringFlagF'	=> array('F','Face in photo'),
+	'BonusScoringFlagN'	=> array('N','Night only'),
 	'BonusScoringFlagR'	=> array('R','Restricted access/hours'),
 	'BonusScoringFlagT'	=> array('T','Receipt/ticket required'),
 	'BonusWaffle'		=> array('Waffle','Comments about this bonus, info only.'),
@@ -604,7 +605,7 @@ $TAGS = array(
 	
 	'RegionalConfig'	=> array('Regional','Regional configuration'),
 	
-	
+	'RejectedClaimsList'=> array('All rejected claims','All rejected claims'),
 	// Used as 'clear' line in claim reject popup menu
 	'RejectReason0'		=> array('0=not rejected','Bonus claim is not rejected'),
 	

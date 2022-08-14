@@ -318,6 +318,11 @@ function emitEBCjs() {
                     img.setAttribute('alt','F');
                     img.setAttribute('title',EBC_FlagF);
                     break;
+                 case 'N':
+                    img.src = "images/alertnight.png";
+                    img.setAttribute('alt','N');
+                    img.setAttribute('title',EBC_FlagN);
+                    break;
                  case 'R':
                     img.src = "images/alertrestricted.png";
                     img.setAttribute('alt','R');

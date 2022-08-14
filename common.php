@@ -139,7 +139,7 @@ $KONSTANTS['CAT_ResultMults'] = 1;
 $KONSTANTS['CAT_ModifyAxisScore'] = 0;
 $KONSTANTS['CAT_ModifyBonusScore'] = 1;
 
-$KONSTANTS['BonusScoringFlags'] = "ABDFRT";
+$KONSTANTS['BonusScoringFlags'] = "ABDFNRT";
 
 // Common subroutines below here; nothing translateable below
 	

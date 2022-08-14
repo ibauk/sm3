@@ -209,6 +209,8 @@ function listclaims()
 		$sqlw .= 'Decision';
 		if ($decided==$KONSTANTS['showNot'])
 			$sqlw .=  '='.$KONSTANTS['UNDECIDED_CLAIM'];
+		elseif ($decided >= 20)
+			$sqlw .= '> 0';		// All rejected claims
 		elseif ($decided >= 10)
 			$sqlw .= '='. ($decided - 10);
 		else
@@ -289,6 +291,7 @@ function clickDefault() {
 	foreach($decisions as $di => $dx) {
 		echo('<option value="'.($di+10).'" '.($decided==$di+10 ? 'selected' : '').'>'.$dx.'</option>');
 	}
+	echo('<option value="20"'.($decided==20 ? ' selected ' : '').'>'.$TAGS['RejectedClaimsList'][0].'</option>');
 	echo('</select> ');
 	
 	echo('<select name="showa" style="font-size: small;" title="'.$TAGS['cl_showAllA'][1].'" onchange="updateFA(this);"> ');
@@ -848,6 +851,9 @@ function fetchBonusName($b,$htmlok)
 						break;
 					 case 'F':
 						$img = '<img src="images/alertface.png" alt="F" title="Face in photo" class="icon">';
+						break;
+					 case 'N':
+						$img = '<img src="images/alertnight.png" alt="N" title="Night only" class="icon">';
 						break;
 					 case 'R':
 						$img = '<img src="images/alertrestricted.png" alt="R" title="Restricted access" class="icon">';

@@ -52,6 +52,7 @@ const EBC_FlagA     = "Read the notes!";
 const EBC_FlagB     = "Bike in photo";
 const EBC_FlagD     = "Daylight only";
 const EBC_FlagF     = "Face in photo";
+const EBC_FlagN     = "Night only";
 const EBC_FlagR     = "Restricted access";
 const EBC_FlagT     = "Need a receipt (ticket)";
 

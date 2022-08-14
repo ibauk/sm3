@@ -152,6 +152,7 @@ function showBonus($bonusid) {
 			case 'B':	echo('alertbike.png'); break;
 			case 'D':	echo('alertdaylight.png'); break;
 			case 'F':	echo('alertface.png'); break;
+			case 'N':	echo('alertnight.png'); break;
 			case 'R':	echo('alertrestricted.png'); break;
 			case 'T':	echo('alertreceipt.png'); break;
 		}
