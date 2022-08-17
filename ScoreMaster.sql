@@ -578,8 +578,8 @@ $IMPORTSPEC[''cols''][''Bike''] 		= 25;
 $IMPORTSPEC[''cols''][''BikeReg''] 		= 26;
 
 $IMPORTSPEC[''default''][''OdoKms'']    = 0;
-$IMPORTSPEC[''setif''][''OdoKms''][0]	= [27,''/Miles/''];
-$IMPORTSPEC[''setif''][''OdoKms''][1]	= [27,''/Kilometres/''];
+$IMPORTSPEC[''setif''][''OdoKms''][0]	= [27,''/M/''];
+$IMPORTSPEC[''setif''][''OdoKms''][1]	= [27,''/K/''];
 
 
 $IMPORTSPEC[''cols''][''Email'']		= 24;
@@ -630,8 +630,8 @@ $IMPORTSPEC[''cols''][''Bike''] 		= 11;
 $IMPORTSPEC[''cols''][''BikeReg''] 		= 14;
 
 $IMPORTSPEC[''default''][''OdoKms'']    = 0;
-$IMPORTSPEC[''setif''][''OdoKms''][''M'']	= [15,''/Miles/''];
-$IMPORTSPEC[''setif''][''OdoKms''][''K'']	= [15,''/Kilometres/''];
+$IMPORTSPEC[''setif''][''OdoKms''][0]	= [15,''/M/''];
+$IMPORTSPEC[''setif''][''OdoKms''][1]	= [15,''/K/''];
 
 
 $IMPORTSPEC[''cols''][''Email'']		= 16;
@@ -646,8 +646,10 @@ $IMPORTSPEC[''data''][''Postcode'']		= 22;							// Export to rides database
 $IMPORTSPEC[''data''][''Country'']		= 23;							// Export to rides database
 $IMPORTSPEC[''data''][''Postal_Address'']		= ''18:19:20:21:22:23'';// Export to rides database
 																		// Duplications deliberate
+$IMPORTSPEC[''data''][''RiderRBL'']	= 4;
 $IMPORTSPEC[''data''][''NoviceRider'']	= 5;
-$IMPORTSPEC[''data''][''NovicePillion'']= 9;
+$IMPORTSPEC[''data''][''PillionRBL'']	= 9;
+$IMPORTSPEC[''data''][''NovicePillion'']= 10;
 
 // If the content of the indexed column matches the RE, reject (don''t load) the entry
 // $IMPORTSPEC[''reject''][37]	= ''/Withdrawn/'';

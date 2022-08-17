@@ -157,7 +157,13 @@ function applyClaim($claimid,$intransaction) {
     if ($rd['OdoRallyStart'] == 0)
         $rd['OdoRallyStart'] = $rc['OdoReading'];
 
-    if (true || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
+    /**
+     * Automatic updating of final odo reading below.
+     * 
+     * If the flag is false then an erroneously large odo reading will result in erroneously large CorrectedMiles.
+     * If the flag is true then recalculating after final readings are manually entered will overwrite those final readings.
+     */
+    if (false || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
         $rd['OdoRallyFinish'] = $rc['OdoReading'];
         $rd['CorrectedMiles'] = calcCorrectedMiles($rd['OdoKms'],$rd['OdoRallyStart'],$rd['OdoRallyFinish'],$rd['OdoScaleFactor']);
     }

@@ -91,6 +91,20 @@ function cleanBikename($bike)
 	return implode(' ',$words);
 }
 
+function customFilter($fld,$val) {
+
+	switch($fld) {
+		case 'OdoKms':
+			$c = strtoupper(substr($val,0,1));
+			error_log("Filtering $fld as $c");
+			if ($c == 'K' | $c == '1')
+				return 1;
+			else
+				return 0;
+	}
+	return $val;
+}
+
 function extendBonusFields() {
 
 	global $DB, $BONUS_FIELDS;
@@ -329,6 +343,7 @@ function loadSpreadsheet()
 				$fldval['RiderName'] = properName(trim($ridernames[0]));
 				$fldval['RiderFirst'] = properName(trim($ridernames[1]));
 			}
+
 		}
 		
 		if ($IMPORTSPEC['type']==$TYPE_BONUSES) {
@@ -346,10 +361,15 @@ function loadSpreadsheet()
 		if (isset($IMPORTSPEC['default']))
 			foreach($IMPORTSPEC['default'] as $fld => $defval) {
 				$fldval[$fld] = $defval;
-				if (isset($IMPORTSPEC['setif'][$fld]))
-					foreach($IMPORTSPEC['setif'][$fld] as $val => $mtch)
-						if (preg_match($mtch[1],getMergeCols($sheet,$row,$mtch[0])))
+				if (isset($IMPORTSPEC['setif'][$fld])) {
+					foreach($IMPORTSPEC['setif'][$fld] as $val => $mtch) {
+						if (preg_match($mtch[1],getMergeCols($sheet,$row,$mtch[0]))) {
 							$fldval[$fld] = $val;
+						}
+					}
+					if (!array_search($fld,$specialfields))
+						$specialfields[] = $fld;
+				}
 			}
 
 		if ($IMPORTSPEC['type']==$TYPE_ENTRANTS) {
@@ -379,9 +399,11 @@ function loadSpreadsheet()
 		}
 
 
-		foreach ($fldval as $col => $val)
-			if (isset($IMPORTSPEC['cols'][$col]) && !array_search($col,$specialfields))
-				$fldval[$col] = getMergeCols($sheet,$row,$IMPORTSPEC['cols'][$col]);
+		foreach ($fldval as $col => $val) {
+			if (isset($IMPORTSPEC['cols'][$col]) && !array_search($col,$specialfields)) {
+				$fldval[$col] = customFilter($col,getMergeCols($sheet,$row,$IMPORTSPEC['cols'][$col]));
+			}
+		}
 		
 		if ($IMPORTSPEC['type']==$TYPE_ENTRANTS) {
 			$xtraData = '';
@@ -427,7 +449,7 @@ function loadSpreadsheet()
 			
 			if ($IMPORTSPEC['type']==$TYPE_COMBOS)
 				echo($fldval["ComboID"].' : '.$fldval["BriefDesc"]."<br>");
-			
+			error_log($stmt->getSQL(true));
 			$stmt->execute();
 			$nrows++;
 			

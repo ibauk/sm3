@@ -87,6 +87,7 @@ sb.click();
 
 </script>
 <?php	
+    echo('<div style="height: 5vh;">');
     echo('<p>'.$TAGS['accessScorecards'][1].'</p>');
     echo('<h4>'.$TAGS['PickAnEntrant'][1].'</h4>');
 	echo('<div id="pickentrant">');
@@ -106,6 +107,7 @@ sb.click();
 
 	echo(' <input class="button" type="submit" id="savedata" disabled="disabled" value="'.$TAGS['ScoreThis'][0].'" > ');
 	echo('</form>');
+    echo('</div>');
 
     $R = $DB->query('SELECT * FROM entrants ORDER BY EntrantID');
 

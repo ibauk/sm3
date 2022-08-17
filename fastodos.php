@@ -88,7 +88,7 @@ function showOdoList() {
 		    if (this.readyState == 4 && this.status == 200) {
 			    console.log('{'+this.responseText+'}');
 			    if (!ok.test(this.responseText)) {
-				    obj.checked = oldval;
+				    
 				    alert(UPDATE_FAILED);
 			    } else {
                     obj.style.background = "var(--regular-background)";
@@ -116,7 +116,7 @@ function showOdoList() {
 </script>
 <?php
     echo('<div style="width:36em; margin-left:auto; margin-right: auto;">');
-    echo('<div id="sshdr" style="width:100%;text-align:center;"><br>');
+    echo('<div id="sshdr" style="width:100%;text-align:center;height:10vh;"><br>');
     echo('<form>');
     $chk = "checked";
     /*
@@ -140,7 +140,7 @@ function showOdoList() {
     echo('<br></div>');
 
 
-    echo('<div id="picklistdiv">');
+    echo('<div id="picklistdiv" style="min-height:80vh;">');
     echo('<form action="fastodos.php" method="post">');
     echo('<table>');
     echo('<tbody id="ssbuttons">');
@@ -155,6 +155,17 @@ function showOdoList() {
         if ($isOdoCheck) {
             echo('<td><input type="number" placeholder="nn.n" name="OdoCheckTrip" min="0" tabindex="0" class="stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd['OdoCheckTrip'].'"></td>');
         }
+        echo('<td>');
+        echo('<select name="OdoKms" id="OdoKms" onchange="oc(this);">');
+        if ($rd['OdoKms']==$KONSTANTS['OdoCountsKilometres']) {
+            echo('<option value="'.$KONSTANTS['OdoCountsMiles'].'">'.'M'.'</option>');
+            echo('<option value="'.$KONSTANTS['OdoCountsKilometres'].'" selected >'.'K'.'</option>');
+        } else {
+            echo('<option value="'.$KONSTANTS['OdoCountsMiles'].'" selected >'.'M'.'</option>');
+            echo('<option value="'.$KONSTANTS['OdoCountsKilometres'].'" >'.'K'.'</option>');
+        }
+        echo('</select>');        
+        echo('</td>');
         echo('</tr>');
         $rowspresent = true;
     }
@@ -183,13 +194,17 @@ function recalcDistance($e) {
     if (!$rd = $R->fetchArray()) {
         return;
     }
+    error_log("recalcD: ".$rd['OdoScaleFactor'].'; '.$rd['OdoCheckTrip'].'; '.$ocm);
     if ($rd['OdoScaleFactor'] < 0.5)
         $rd['OdoScaleFactor'] = 1.0;
     if ($rd['OdoCheckTrip']== "")
         $rd['OdoCheckTrip'] = 0.0;
     if ($ocm > 1) {
         $doscale = false;
-        if (intval($rd['OdoCheckStart'])==0 && intval($rd['OdoCheckFinish'])==0) {
+        if (intval($rd['OdoCheckTrip']) > 0) {
+            // We're good
+            $doscale = true;
+        } else if (intval($rd['OdoCheckStart'])==0 && intval($rd['OdoCheckFinish'])==0) {
             if ($rd['OdoCheckTrip'] > 1) {
                 $doscale = true;
             } else if ($rd['OdoCheckStart'] < $rd['OdoCheckFinish']) {
@@ -213,6 +228,7 @@ function recalcDistance($e) {
 			else if ($rd['OdoKms'] != 1 && $mk == 1) // Want kms, have miles
 				$checkdistance = $checkdistance * $KONSTANTS['KmsPerMile'];
 			$correctionfactor = $ocm / $checkdistance ;
+            error_log("OdoCorrect: ".$checkdistance."; ocm=".$ocm."; Rawcf=".$correctionfactor);
 			if ($correctionfactor < 0.5)	//SanityCheck
 				$correctionfactor = 1.0;
 
@@ -256,6 +272,7 @@ function updateFastOdo() {
         case 'OdoCheckStart':
         case 'OdoCheckFinish':
         case 'OdoCheckTrip':
+        case 'OdoKms':
             break;
         default:
             echo('');

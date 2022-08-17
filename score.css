@@ -142,7 +142,7 @@ input[name="RiderIBA"],
 input[name="PillionIBA"] { width:5em !important; }
 
 input[name="EntrantID"]	{ width: 3em; }
-input[name="OdoCheckMiles"]	{ width:3em; }
+input[name="OdoCheckMiles"]	{ width:4em; }
 input[type="email"], .email	{ width:25em; }
 input.bignumber			{ width: 6em;}
 input.smallnumber		{ width: 3em; }
@@ -282,7 +282,7 @@ table#entrants	td.EntrantID	{ text-align: center; }
 table#entrants	.RiderName,.PillionName,.Bike	{ text-align: left; }
 table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align: center; }
 
-#picklistdiv	{ height:21em; max-width: 30em; overflow-y:auto; }
+#picklistdiv	{ height:55vh; max-width: 30em; overflow-y:auto; }
 #picklistdiv 	td.EntrantID	{ width: 4em; text-align: center; }
 #picklistdiv	td.RiderName	{ padding-right: 1em; }
 #picklistdiv	td.EntrantStatus{ text-align: center; }
