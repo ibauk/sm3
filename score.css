@@ -239,6 +239,7 @@ span.keep		{ white-space: nowrap; display: inline-block; }
 
 h4				{ margin-top: .9em; margin-bottom: 5px; }
 .menulist		{ list-style-type: none; }
+.menulist li	{ padding-top: .3em; padding-bottom: .3em; }
 
 #sgroups		{ margin-top: 2em; }
 #sgroups td		{ padding-bottom: 2em; padding-right: 2em; }
@@ -288,6 +289,13 @@ table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align
 #picklistdiv	td.EntrantStatus{ text-align: center; }
 #picklistdiv	td.TotalPoints	{ width: 6em; text-align: right; }
 #picklistdiv	tr:hover		{ background: lightgray; cursor:pointer;}
+
+#timenow		{ cursor: grab; }
+#timenow.held	{ background-color: yellow; cursor: grabbing; }
+
+/* Fast odo readings */
+input:not([disabled]).start,
+input:not([disabled]).stop		{ background-color:white; }
 
 /* Spreadsheet import header rows */
 .xlshdr			{ background-color: var(--button-back-disabled); color: var(--button-text-disabled); }

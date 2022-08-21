@@ -243,6 +243,10 @@ function showScorecard($entrant) {
     echo('<input type="hidden" id="FinishTimeDNF" value="'.$myTimeDNF.'">');
 //    echo('<input type="hidden" id="CalculatedAvgSpeed">');
 
+    $autoFinisher = getSetting('autoFinisher',"false");
+
+    echo('<input type="hidden" id="autoFinisher" value="'.$autoFinisher.'">');
+
     foreach(['OdoScaleFactor','EntrantID','RestMinutes','BonusesVisited','CombosTicked','RejectedClaims','TeamID','AvgSpeed'] as $fld) {
         echo('<input type="hidden" id="'.$fld.'" name="'.$fld.'" value="'.$rd[$fld].'">');
     }

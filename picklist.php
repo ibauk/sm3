@@ -39,6 +39,8 @@ function showPicklist($ord)
 	$minEntrant = getValueFromDB("SELECT min(EntrantID) as MaxID FROM entrants","MaxID",1);
 	$maxEntrant = getValueFromDB("SELECT max(EntrantID) as MaxID FROM entrants","MaxID",$minEntrant);
 
+    $showCurrentStatus = getSetting('showPicklistStatus','false') == 'true';
+
 	$R = $DB->query('SELECT * FROM entrants ORDER BY '.$ord);
 	
 	$lnk = '<a href="'.$HOME_URL.'">';
@@ -123,8 +125,10 @@ sb.click();
             echo(' &amp; '.$rd['PillionName']);
         }
         echo('</td>');
-        echo('<td class="EntrantStatus">'.$evs[$rd['EntrantStatus']].'</td>');
-        echo('<td class="TotalPoints">'.$rd['TotalPoints'].'</td>');
+        if ($showCurrentStatus) {
+            echo('<td class="EntrantStatus">'.$evs[$rd['EntrantStatus']].'</td>');
+            echo('<td class="TotalPoints">'.$rd['TotalPoints'].'</td>');
+        }
         echo('</tr>');
     }
     echo('</tbody></table>');

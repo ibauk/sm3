@@ -52,20 +52,20 @@ function showOdoList() {
 	$lnk = '<a href="'.$HOME_URL.'">';
     $isOdoCheck = isset($_REQUEST['odocheck']);
 
+    $isCheckIn = !$isOdoCheck && !isset($_REQUEST['co']);
+
     if ($isOdoCheck) {
         $checkout = "odo check/start";
         $checkin = "ODO CHECK";
         $checkoutname = "OdoCheckStart";
         $checkinname = "OdoCheckFinish";
         $disabledstop = '';
-        $stoptab = "0";
     } else {
         $checkout = "check-out/start";
         $checkin = "check-in/finish";
         $checkoutname = "OdoRallyStart";
         $checkinname = "OdoRallyFinish";
         $disabledstop = ' disabled ';
-        $stoptab = "-1";
     }
 
 	startHtml($TAGS['OdoReadingHdr'][0],$TAGS['OdoReadingHdr'][1],true);
@@ -75,13 +75,32 @@ function showOdoList() {
 
 ?>
 <script>
+    var timertick;
+
+    function clickTime() {
+        let timeDisplay = document.querySelector('#timenow');
+        console.log('Clicking time');
+        clearInterval(timertick);
+        if (timeDisplay.getAttribute('data-paused') != 0) {
+            timeDisplay.setAttribute('data-paused',0);
+            timertick = setInterval(refreshTime,timeDisplay.getAttribute('data-refresh'));
+            timeDisplay.classList.remove('held');
+        } else {
+            timeDisplay.setAttribute('data-paused',1);
+            timertick = setInterval(clickTime,timeDisplay.getAttribute('data-pause'));
+            timeDisplay.classList.add('held');
+        }
+        console.log('Time clicked');
+    }
     function oi(obj) {
         obj.style.background = "var(--bright-background)";
     }
     function oc(obj) {
         let tr = obj.parentNode.parentNode;
         let ent = tr.cells[0].innerText;
-        let url = "fastodos.php?c=setodo&e="+ent+'&f='+obj.name+'&v='+obj.value
+        let timeDisplay = document.querySelector('#timenow');
+        let ts = timeDisplay.getAttribute('data-time');
+        let url = "fastodos.php?c=setodo&e="+ent+'&f='+obj.name+'&v='+obj.value+'&t='+ts;
         let xhttp = new XMLHttpRequest();
     	xhttp.onreadystatechange = function() {
 	    	let ok = new RegExp("\W*ok\W*");
@@ -113,29 +132,37 @@ function showOdoList() {
             labs[i].style.textTransform = labs[i].classList.contains(rad.value) ? "uppercase" : "lowercase";
         }
     }
+    function refreshTime() {
+        let timeDisplay = document.querySelector('#timenow');
+        let dt = new Date();
+        timeDisplay.setAttribute('data-time', dt.toISOString());
+        let dateString = dt.toLocaleString('en-GB',{weekday: "short",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+        let formattedString = dateString.replace(", ", " - ");
+        timeDisplay.innerHTML = formattedString;
+    }
 </script>
 <?php
-    echo('<div style="width:36em; margin-left:auto; margin-right: auto;">');
+    echo('<div style="width:36em; max-width: 100vw; margin-left:auto; margin-right: auto;">');
     echo('<div id="sshdr" style="width:100%;text-align:center;height:10vh;"><br>');
     echo('<form>');
-    $chk = "checked";
-    /*
-    if ($isOdoCheck) {
-        echo('<input type="radio" checked onchange="swapss(this);" name="startstop" id="ss_trip" value="trip"> ');
-        echo('<label class="trip" for="ss_trip">ODO CHECK TRIP</label> ');
-        echo(' &nbsp;&nbsp;&nbsp; ');    
-        $chk = '';
-    }
-    */
-    if (!$isOdoCheck) {
+    $chk = ($isOdoCheck || isset($_REQUEST['ci']) || isset($_REQUEST['co']) ? "checked" : '');
+
+    if (!$isOdoCheck  && !isset($_REQUEST['ci'])) {
         echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_start" value="start"> ');
-        $startlit = $chk != '' ? strtoupper($checkout) : $checkout;
+        $startlit = $isCheckIn ? $checkout : strtoupper($checkout);
         echo('<label class="start" for="ss_start">'.$startlit.'</label> ');
         echo(' &nbsp;&nbsp;&nbsp; ');
-        $chk = '';
+        $chk = ($chk == '' ? 'checked' : '');
     }
-    echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_stop" value="stop"> ');
-    echo('<label class="stop" for="ss_stop">'.$checkin.'</label> ');
+    if ($isOdoCheck || !isset($_REQUEST['co'])) {
+        echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_stop" value="stop"> ');
+        $startlit = $isCheckIn ? strtoupper($checkin) : $checkin;
+        echo('<label class="stop" for="ss_stop">'.$startlit.'</label> ');
+    }
+
+    echo(' &nbsp;&nbsp;&nbsp;<span id="timenow" data-time="" data-refresh="1000" data-pause="120000" data-paused="0" onclick="clickTime();">');
+    //echo('12:34.05');
+    echo('</span>');
     echo('</form>');
     echo('<br></div>');
 
@@ -146,12 +173,34 @@ function showOdoList() {
     echo('<tbody id="ssbuttons">');
     $rowspresent = false;
     $startstop = $isOdoCheck ? 'stop' : 'start';
+    $autofocus = ' autofocus ';
     while($rd = $R->fetchArray()) {
         echo('<tr>');
         echo('<td class="EntrantID">'.$rd['EntrantID'].'</td>');
         echo('<td>'.$rd['RiderName'].'</td>');
-        echo('<td><input type="number" placeholder="start" name="'.$checkoutname.'" min="0" tabindex="0" class="bignumber '.$startstop.'" onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkoutname].'"></td>');
-        echo('<td><input type="number" '.$disabledstop.' placeholder="finish" name="'.$checkinname.'" min="0" tabindex="'.$stoptab.'" class="bignumber stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkinname].'"></td>');
+
+        echo('<td><input type="number" ');
+        if ($isCheckIn) echo(' disabled ');
+        echo('placeholder="start" name="'.$checkoutname.'" ');
+        echo('min="0" tabindex="0" class="bignumber '.$startstop.'" ');
+        echo('onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkoutname].'"');
+        if (!$isCheckIn) {
+            echo($autofocus);
+            $autofocus = '';
+        }
+        echo('></td>');
+
+        echo('<td><input type="number" ');
+        if (!$isCheckIn && !$isOdoCheck) echo(' disabled ');
+        echo('placeholder="finish" name="'.$checkinname.'" ');
+        echo('min="0" tabindex="0" class="bignumber stop" ');
+        echo('onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkinname].'"');
+        if ($isCheckIn) {
+            echo($autofocus);
+            $autofocus = '';
+        }
+        echo('></td>');
+
         if ($isOdoCheck) {
             echo('<td><input type="number" placeholder="nn.n" name="OdoCheckTrip" min="0" tabindex="0" class="stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd['OdoCheckTrip'].'"></td>');
         }
@@ -177,6 +226,8 @@ function showOdoList() {
     echo('</div>');
 
     echo('</div>');
+
+    echo('<script>refreshTime(); timertick = setInterval(refreshTime,1000);</script>');
 
 }
 function recalcDistance($e) {
@@ -266,9 +317,11 @@ function updateFastOdo() {
 		echo('');
 		return;
 	}
+    $okFinisher = false;
     switch($_REQUEST['f']) {
-        case 'OdoRallyStart':
         case 'OdoRallyFinish':
+            $okFinisher = true;
+        case 'OdoRallyStart':
         case 'OdoCheckStart':
         case 'OdoCheckFinish':
         case 'OdoCheckTrip':
@@ -283,6 +336,14 @@ function updateFastOdo() {
 	$sql .= " WHERE EntrantID=".$_REQUEST['e'];
 	$updateok = ($DB->exec($sql) && $DB->changes()==1);
     if ($updateok) {
+        if ($okFinisher) {
+            $sql = "UPDATE entrants SET EntrantStatus=".$KONSTANTS['EntrantFinisher'];
+            if (isset($_REQUEST['t']))
+                $sql .= ", FinishTime='".$_REQUEST['t']."'";
+            $sql .= " WHERE EntrantID=".$_REQUEST['e'];
+            $sql .= " AND EntrantStatus=".$KONSTANTS['EntrantOK'];
+            $DB->exec($sql);
+        }
         recalcDistance($_REQUEST['e']);
         recalcScorecard($_REQUEST['e'],true);
     }

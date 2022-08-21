@@ -308,7 +308,7 @@ function calcEntrantStatus($rd) {
     
     // Check for finish time DNF        
     $ft = calcFinishTimeDNF($rd);
-    if ($rd['FinishTime'] > $ft) {
+    if (getSetting('autoLateDNF','false')=='true' && $rd['FinishTime'] > $ft) {
         if (substr($rd['FinishTime'],0,10) == substr($ft,0,10))
             $sx->desc = substr($rd['FinishTime'],11).' > '.substr($ft,11);
         else
@@ -365,6 +365,9 @@ function calcEntrantStatus($rd) {
         return $KONSTANTS['EntrantDNF'];
     }
 
+    if (getSetting('autoFinisher','false') != 'true')
+        return $rd['EntrantStatus'];
+    
     return $KONSTANTS['EntrantFinisher'];
 
 }

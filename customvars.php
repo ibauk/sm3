@@ -266,7 +266,7 @@ $TAGS = array(
 	'cl_EntrantHdr'		=> array('Entrant',''),
 	'cl_EntrantIDs'		=> array('Entrant numbers. Leave blank for all','Comma-separated list of entrant numbers or blank=all'),
 	'cl_FilterBonus'	=> array('B#','Filter list by Bonus'),
-	'cl_FilterEntrant'	=> array('E#','Filter list by Entrant number'),
+	'cl_FilterEntrant'	=> array('E#','Filter list by Entrant#'), /* Entrant# requested by P.Ihlo */
 	'cl_FilterLabel'	=> array('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;List filters','Use these fields to filter this list'),
 	'cl_Go'				=> array('Go on, go for it!','Go on, go for it!'),
 	'cl_LastBonusID'	=> array('Last bonus claimed:','ID of last bonus claimed by this entrant'),

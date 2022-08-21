@@ -12,6 +12,12 @@ useBonusQuestions / valBonusQuestions
 useMagicPenalty / valMagicPenalty
 : Specifies the use of percentage penalties
 
+autoFinisher
+: If true, no formal 'rally complete' process needed; if false, must supply final odo reading
+
+autoLateDNF
+: If true, any timed odo or claim past time results in DNF
+
 ### Presentation
 claimsReloadEBC
 : Number of seconds between refreshes of EBC list
@@ -19,6 +25,8 @@ claimsReloadEBC
 autoAdjustBonusWidth
 : Make all bonus codes occupy the same width on scorecards
 
+showPicklistStatus
+: Show entrant status and points in scorecard picklist
 
 ---
 ### Language

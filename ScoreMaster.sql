@@ -120,7 +120,9 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"RPT_MPenalty": "Excess distance penalty",	
 	"RPT_SPenalty": "Excess speed penalty",
 	"useMagicPenalty": "false",
-	"valMagicPenalty": "10"
+	"valMagicPenalty": "10",
+	"autoFinisher": "false",
+	"autoLateDNF": "false"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com

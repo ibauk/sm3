@@ -1130,8 +1130,9 @@ function setFinisherStatusx()
 		return SFSx(EntrantDNF,tfpx+' < '+MP);
     }
 	
-	
-	SFSx(EntrantFinisher,'');
+	let af = document.querySelector('#autoFinisher');
+    if (af && af.value == 'true')
+	    SFSx(EntrantFinisher,'');
 	
 }
 
