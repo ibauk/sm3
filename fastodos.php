@@ -43,6 +43,15 @@ require_once('recalc.php');
  * then any scoring implications must also be addressed. One of the possibilities is that status becomes DNF.
  * 
  */
+
+function showOdoValue($odo) {
+
+    $reading = intval($odo);
+    if ($reading < 1)
+        return '';
+    return $odo;
+}
+
 function showOdoList() {
 
     global $DB, $TAGS, $KONSTANTS, $HOME_URL, $DBVERSION;
@@ -73,75 +82,10 @@ function showOdoList() {
 	
 	eval("\$evs = ".$TAGS['EntrantStatusV'][0]);
 
-?>
-<script>
-    var timertick;
+    echo("<script>\n");
+    include 'fastodosphp.js';
+    echo("</script>\n");
 
-    function clickTime() {
-        let timeDisplay = document.querySelector('#timenow');
-        console.log('Clicking time');
-        clearInterval(timertick);
-        if (timeDisplay.getAttribute('data-paused') != 0) {
-            timeDisplay.setAttribute('data-paused',0);
-            timertick = setInterval(refreshTime,timeDisplay.getAttribute('data-refresh'));
-            timeDisplay.classList.remove('held');
-        } else {
-            timeDisplay.setAttribute('data-paused',1);
-            timertick = setInterval(clickTime,timeDisplay.getAttribute('data-pause'));
-            timeDisplay.classList.add('held');
-        }
-        console.log('Time clicked');
-    }
-    function oi(obj) {
-        obj.style.background = "var(--bright-background)";
-    }
-    function oc(obj) {
-        let tr = obj.parentNode.parentNode;
-        let ent = tr.cells[0].innerText;
-        let timeDisplay = document.querySelector('#timenow');
-        let ts = timeDisplay.getAttribute('data-time');
-        let url = "fastodos.php?c=setodo&e="+ent+'&f='+obj.name+'&v='+obj.value+'&t='+ts;
-        let xhttp = new XMLHttpRequest();
-    	xhttp.onreadystatechange = function() {
-	    	let ok = new RegExp("\W*ok\W*");
-		    if (this.readyState == 4 && this.status == 200) {
-			    console.log('{'+this.responseText+'}');
-			    if (!ok.test(this.responseText)) {
-				    
-				    alert(UPDATE_FAILED);
-			    } else {
-                    obj.style.background = "var(--regular-background)";
-                }
-		    }
-	    };
-        console.log(url);
-	    xhttp.open("GET", url, true);
-	    xhttp.send();
-	}
-    function swapss(rad) {
-        console.log(rad.value);
-        let frm = document.querySelector('#ssbuttons');
-        let inps = frm.querySelectorAll('input');
-        for (let i = 0; i < inps.length; i++) {
-            inps[i].disabled = !inps[i].classList.contains(rad.value);
-            inps[i].setAttribute('tabindex',inps[i].classList.contains(rad.value) ? "0" : "-1");
-        }
-        let hdr = document.querySelector('#sshdr');
-        let labs = hdr.querySelectorAll('label');
-        for (let i = 0; i < labs.length; i++) {
-            labs[i].style.textTransform = labs[i].classList.contains(rad.value) ? "uppercase" : "lowercase";
-        }
-    }
-    function refreshTime() {
-        let timeDisplay = document.querySelector('#timenow');
-        let dt = new Date();
-        timeDisplay.setAttribute('data-time', dt.toISOString());
-        let dateString = dt.toLocaleString('en-GB',{weekday: "short",hour:"2-digit",minute:"2-digit",second:"2-digit"});
-        let formattedString = dateString.replace(", ", " - ");
-        timeDisplay.innerHTML = formattedString;
-    }
-</script>
-<?php
     echo('<div style="width:36em; max-width: 100vw; margin-left:auto; margin-right: auto;">');
     echo('<div id="sshdr" style="width:100%;text-align:center;height:10vh;"><br>');
     echo('<form>');
@@ -174,16 +118,18 @@ function showOdoList() {
     $rowspresent = false;
     $startstop = $isOdoCheck ? 'stop' : 'start';
     $autofocus = ' autofocus ';
+    $cellid = 1;
     while($rd = $R->fetchArray()) {
         echo('<tr>');
         echo('<td class="EntrantID">'.$rd['EntrantID'].'</td>');
         echo('<td>'.$rd['RiderName'].'</td>');
 
         echo('<td><input type="number" ');
+        echo('id="cid'.$cellid.'" '); $cellid++;
         if ($isCheckIn) echo(' disabled ');
         echo('placeholder="start" name="'.$checkoutname.'" ');
         echo('min="0" tabindex="0" class="bignumber '.$startstop.'" ');
-        echo('onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkoutname].'"');
+        echo('onchange="oc(this);" oninput="oi(this);" value="'.showOdoValue($rd[$checkoutname]).'"');
         if (!$isCheckIn) {
             echo($autofocus);
             $autofocus = '';
@@ -191,10 +137,11 @@ function showOdoList() {
         echo('></td>');
 
         echo('<td><input type="number" ');
+        echo('id="cid'.$cellid.'" '); $cellid++;
         if (!$isCheckIn && !$isOdoCheck) echo(' disabled ');
         echo('placeholder="finish" name="'.$checkinname.'" ');
         echo('min="0" tabindex="0" class="bignumber stop" ');
-        echo('onchange="oc(this);" oninput="oi(this);" value="'.$rd[$checkinname].'"');
+        echo('onchange="oc(this);" oninput="oi(this);" value="'.showOdoValue($rd[$checkinname]).'"');
         if ($isCheckIn) {
             echo($autofocus);
             $autofocus = '';
@@ -202,10 +149,15 @@ function showOdoList() {
         echo('></td>');
 
         if ($isOdoCheck) {
-            echo('<td><input type="number" placeholder="nn.n" name="OdoCheckTrip" min="0" tabindex="0" class="stop" onchange="oc(this);" oninput="oi(this);" value="'.$rd['OdoCheckTrip'].'"></td>');
+            echo('<td><input type="number" ');
+            echo('id="cid'.$cellid.'" '); $cellid++;
+            echo('placeholder="nn.n" name="OdoCheckTrip" min="0" tabindex="0" class="stop" ');
+            echo('onchange="oc(this);" oninput="oi(this);" value="'.showOdoValue($rd['OdoCheckTrip']).'"></td>');
         }
         echo('<td>');
-        echo('<select name="OdoKms" id="OdoKms" onchange="oc(this);">');
+        echo('<select name="OdoKms" ');
+        echo('id="cid'.$cellid.'" '); $cellid++;
+        echo('onchange="oc(this);">');
         if ($rd['OdoKms']==$KONSTANTS['OdoCountsKilometres']) {
             echo('<option value="'.$KONSTANTS['OdoCountsMiles'].'">'.'M'.'</option>');
             echo('<option value="'.$KONSTANTS['OdoCountsKilometres'].'" selected >'.'K'.'</option>');
@@ -339,9 +291,10 @@ function updateFastOdo() {
         if ($okFinisher) {
             $sql = "UPDATE entrants SET EntrantStatus=".$KONSTANTS['EntrantFinisher'];
             if (isset($_REQUEST['t']))
-                $sql .= ", FinishTime='".$_REQUEST['t']."'";
+                $sql .= ", FinishTime='".substr($_REQUEST['t'],0,16)."'";
             $sql .= " WHERE EntrantID=".$_REQUEST['e'];
             $sql .= " AND EntrantStatus=".$KONSTANTS['EntrantOK'];
+            error_log($sql);
             $DB->exec($sql);
         }
         recalcDistance($_REQUEST['e']);

@@ -376,6 +376,7 @@ $TAGS = array(
 	'ebc_HdrBonus'		=> array('Bonus',''),
 	'ebc_HdrClaimedAt'	=> array('Claimed @',''),
 	'ebc_HdrEntrant'	=> array('Entrant',''),
+	'ebc_JudgesNotes'	=> array('Notes',"Judge's notes about decision, not shown on paper"),
 	'ebc_JudgeOrLeave'	=> array('Judge this bonus claim or leave it undecided',''),
 	'ebc_JudgeThis'		=> array('Judge this','Judge this image'),
 	'ebc_RallyPhoto'	=> array('Rally book','This is the rally book image'),

@@ -452,9 +452,15 @@ function saveOldClaim($virtualrally,$virtualstopmins,$XF,$claimtime,$claimid)
 			$sql .= ($sql==''? '' : ',').$fld."=".intval($_REQUEST[$fld]);
 	//echo("[[ $sql ]]");
 
-	if (isset($_REQUEST['MagicWord']))
-		$sql .= ($sql==''? '' : ',')."MagicWord='".$DB->escapeString($_REQUEST['MagicWord'])."'";
-	
+	if (false) {
+		if (isset($_REQUEST['MagicWord']))
+			$sql .= ($sql==''? '' : ',')."MagicWord='".$DB->escapeString($_REQUEST['MagicWord'])."'";
+	} else {
+		if (isset($_REQUEST['JudgesNotes']))
+			$sql .= ($sql==''? '' : ',')."MagicWord='".$DB->escapeString($_REQUEST['JudgesNotes'])."'";
+	}
+
+		
 	if (isset($_REQUEST['NextTimeMins'])){
 		$mins = parseTimeMins($_REQUEST['NextTimeMins']);
 		$sql .= ($sql==''? '' : ',').'NextTimeMins='.$mins;
@@ -498,8 +504,13 @@ function saveNewClaim($virtualrally,$virtualstopmins,$XF,$claimtime)
 //	print_r($_REQUEST);
 		
 	$sql = "INSERT INTO claims (LoggedAt,ClaimTime,BCMethod,EntrantID,BonusID,OdoReading,Decision,Applied";
-	if (isset($_REQUEST['MagicWord'])) 
-		$sql .= ",MagicWord";
+	if (false) {
+		if (isset($_REQUEST['MagicWord'])) 
+			$sql .= ",MagicWord";
+	} else {
+		if (isset($_REQUEST['JudgesNotes']))
+			$sql .= ",MagicWord";
+	}
 	if (isset($_REQUEST['NextTimeMins'])) 
 		$sql .= ",NextTimeMins";
 	if (isset($_REQUEST['QuestionAsked']))
@@ -524,10 +535,15 @@ function saveNewClaim($virtualrally,$virtualstopmins,$XF,$claimtime)
 	$sql .= ",".intval($_REQUEST['OdoReading']);
 	$sql .= ",".(isset($_REQUEST['Decision']) ? $_REQUEST['Decision'] : 0);
 	$sql .= ",".(isset($_REQUEST['Applied']) ? $_REQUEST['Applied'] : 0);
-	
-	if (isset($_REQUEST['MagicWord']))
-		$sql .= ",'".$DB->escapeString($_REQUEST['MagicWord'])."'";
-	
+
+	if (false) {
+		if (isset($_REQUEST['MagicWord']))
+			$sql .= ",'".$DB->escapeString($_REQUEST['MagicWord'])."'";
+	} else {
+		if (isset($_REQUEST['JudgesNotes']))
+			$sql .= ",'".$DB->escapeString($_REQUEST['JudgesNotes'])."'";
+	}
+
 	if (isset($_REQUEST['NextTimeMins'])){
 		$mins = parseTimeMins($_REQUEST['NextTimeMins']);
 		if ($virtualrally)
@@ -773,13 +789,20 @@ echo("</script>\n");
 			$chk = ' checked ';
 		echo('<span title="'.$TAGS['cl_MagicPenalty'][1].'">');
 		echo(' <label for="MagicPenalty">'.$TAGS['cl_MagicPenalty'][0].'</label> ');
-		echo('<input tabindex="9" '.$chk.'type="checkbox" id="MagicPenalty" name="MagicPenalty"');
+		echo('<input tabindex="-1" '.$chk.'type="checkbox" id="MagicPenalty" name="MagicPenalty"');
 		echo(' value="'.$rd['MagicPenalty'].'"');
 		echo(' onchange="applyMagicPenalty(this);">');
 		echo('</span>');
 	}
 	
+
 	echo('</span>');
+
+	echo('<span class="vlabel" title="'.$TAGS['ebc_JudgesNotes'][1].'">');
+	echo('<label for="JudgesNotes">'.$TAGS['ebc_JudgesNotes'][0].'</label> ');
+	echo('<input type="text" tabindex="7" name="JudgesNotes" style="width:20em;" value="'.$rd['MagicWord'].'">');
+	echo('</span>');
+
 
 	echo('</div>'); // frmContent
 

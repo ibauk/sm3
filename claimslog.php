@@ -162,6 +162,7 @@ function emitDecisionsTable() {
 
     echo('<input type="button" id="goodclaim" name="decision" data-value="0" value="'.$TAGS['ebc_DoAccept'][0].'" onclick="submitClaimDecision(this)" class="judge">' );
 
+    echo(' <input type="text" title="'.$TAGS['ebc_JudgesNotes'][1].'" placeholder="'.$TAGS['ebc_JudgesNotes'][0].'" name="JudgesNotes" style="width:30em;">');
 
     echo('<br></span>');
     echo('<span title="'.$TAGS['ebc_DoReject'][1].'">');
@@ -454,6 +455,8 @@ function saveEBClaim($inTransaction) {
         $sqlx .= ",AnswerSupplied";
     if (isset($_REQUEST['QuestionAnswered']))
         $sqlx .= ",QuestionAnswered";
+    if (isset($_REQUEST['JudgesNotes']))
+        $sqlx .= ",MagicWord";
     $sqlx .= ") VALUES(";
     $dtn = new DateTime(Date('Y-m-dTH:i:s'),new DateTimeZone($KONSTANTS['LocalTZ']));
 	$loggedat = $dtn->format('c');
@@ -474,6 +477,8 @@ function saveEBClaim($inTransaction) {
         $sqlx .= ",'".$DB->escapeString($_REQUEST['AnswerSupplied'])."'";
     if (isset($_REQUEST['QuestionAnswered']))
         $sqlx .= ",1";
+    if (isset($_REQUEST['JudgesNotes']))
+        $sqlx .= ",'".$DB->escapeString($_REQUEST['JudgesNotes'])."'";
     $sqlx .= ")";
     if (!$inTransaction)
         $DB->exec("BEGIN IMMEDIATE TRANSACTION");

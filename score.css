@@ -297,6 +297,18 @@ table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align
 input:not([disabled]).start,
 input:not([disabled]).stop		{ background-color:white; }
 
+[name="OdoKms"].oi,
+input:not([disabled]).start.oi,
+input:not([disabled]).stop.oi		{ background-color:yellow; }
+
+[name="OdoKms"].oc,
+input:not([disabled]).start.oc,
+input:not([disabled]).stop.oc		{ background-color:orange; }
+
+[name="OdoKms"].ok,
+input:not([disabled]).start.ok,
+input:not([disabled]).stop.ok		{ background-color:lightgreen; }
+
 /* Spreadsheet import header rows */
 .xlshdr			{ background-color: var(--button-back-disabled); color: var(--button-text-disabled); }
 
