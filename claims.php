@@ -430,6 +430,9 @@ function saveClaim()
 
 	$DB->exec("COMMIT TRANSACTION");
 
+	if (isset($_REQUEST['crs']))
+		prgReshow($_REQUEST['crs']);
+
 	$get = "claims.php";
 	header("Location: ".$get);
 	exit;
@@ -627,6 +630,9 @@ echo("</script>\n");
 	echo('<div id="singleclaim">');
 
 	echo('<form method="post" action="claims.php" onsubmit="return validateClaim(true);">');
+	if (isset($_REQUEST['returnshow'])) {
+		echo('<input type="hidden" name="crs" value="'.$_REQUEST['returnshow'].'">');
+	}
 	echo('<input type="hidden" name="c" value="newclaim">');
 	echo('<input type="hidden" name="nobc" value="1">');
 	echo('<input type="hidden" name="LoggedAt" value="">');
@@ -800,7 +806,7 @@ echo("</script>\n");
 
 	echo('<span class="vlabel" title="'.$TAGS['ebc_JudgesNotes'][1].'">');
 	echo('<label for="JudgesNotes">'.$TAGS['ebc_JudgesNotes'][0].'</label> ');
-	echo('<input type="text" tabindex="7" name="JudgesNotes" style="width:20em;" value="'.$rd['MagicWord'].'">');
+	echo('<input type="text" tabindex="7" name="JudgesNotes" style="width:30em; max-width:100vw;" value="'.$rd['MagicWord'].'" oninput="checkEnableSave();">');
 	echo('</span>');
 
 
@@ -1302,7 +1308,12 @@ function triggerNewRow(obj) {
 	
 }
 
+function prgReshow($url) {
 
+	header("Location: ".$url);
+	exit;
+
+}
 
 function zapScorecard($entrant) {
 
@@ -1320,6 +1331,8 @@ function zapScorecard($entrant) {
 
 if (isset($_REQUEST['deleteclaim']) && isset($_REQUEST['claimid']) && $_REQUEST['claimid']>0) {
 	deleteClaim();
+	if (isset($_REQUEST['crs']))
+		prgReshow($_REQUEST['crs']);
 	listclaims();
 	exit;
 }

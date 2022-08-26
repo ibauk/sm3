@@ -34,7 +34,19 @@ require_once('common.php');
 function showPicklist($ord)
 {
 	global $DB, $TAGS, $KONSTANTS, $HOME_URL, $DBVERSION;
+
+    $showReview = isset($_REQUEST['review']);
+    $showScoring = !$showReview;
 	
+    if ($showReview) {
+        $label = $TAGS['oi_EReviews'][0];
+        $action = "ereviews.php";
+        $button = $TAGS['ReviewThis'][0];
+    } else {
+        $label = $TAGS['oi_Scorecards'][0];
+        $action = "scorecard.php";
+        $button = $TAGS['ScoreThis'][0];
+    }
 
 	$minEntrant = getValueFromDB("SELECT min(EntrantID) as MaxID FROM entrants","MaxID",1);
 	$maxEntrant = getValueFromDB("SELECT max(EntrantID) as MaxID FROM entrants","MaxID",$minEntrant);
@@ -44,7 +56,7 @@ function showPicklist($ord)
 	$R = $DB->query('SELECT * FROM entrants ORDER BY '.$ord);
 	
 	$lnk = '<a href="'.$HOME_URL.'">';
-	startHtml($TAGS['ttScoring'][0],$TAGS['oi_Scorecards'][0],true);
+	startHtml($TAGS['ttScoring'][0],$label,true);
 
 	
 	eval("\$evs = ".$TAGS['EntrantStatusV'][0]);
@@ -90,11 +102,13 @@ sb.click();
 </script>
 <?php	
     echo('<div style="height: 5vh;">');
-    echo('<p>'.$TAGS['accessScorecards'][1].'</p>');
+    if ($showScoring) {
+        echo('<p>'.$TAGS['accessScorecards'][1].'</p>');
+    }
     echo('<h4>'.$TAGS['PickAnEntrant'][1].'</h4>');
 	echo('<div id="pickentrant">');
 
-	echo('<form id="entrantpick" method="get" action="scorecard.php">');
+	echo('<form id="entrantpick" method="get" action="'.$action.'">');
 	echo('<label for="EntrantID">'.$TAGS['EntrantID'][0].'</label> ');
 	echo('<input oninput="choosePickedName();" type="number" autofocus id="EntrantID" name="EntrantID" min="'.$minEntrant.'" max="'.$maxEntrant.'"> '); 
 	echo('<input type="hidden" name="c" value="score">');
@@ -107,7 +121,7 @@ sb.click();
     }
     echo('</select>');
 
-	echo(' <input class="button" type="submit" id="savedata" disabled="disabled" value="'.$TAGS['ScoreThis'][0].'" > ');
+	echo(' <input class="button" type="submit" id="savedata" disabled="disabled" value="'.$button.'" > ');
 	echo('</form>');
     echo('</div>');
 

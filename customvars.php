@@ -121,6 +121,7 @@ $TAGS = array(
 	'AdmConfirm'		=> array('Reconcile scorecards','Confirm scorecards as accurate'),
 	'AdmDoBlank'		=> array('Post score ticksheet','Show blank score with reject reasons sheet ready for printing'),
 	'AdmDoBlankB4'		=> array('Scoring ticksheet','Show paper scoring log sheet ready for printing'),
+	'AdmDoReviewing'	=> array('Review scorecards','Review scorecards/claims'),
 	'AdmDoScoring'		=> array('Scorecards','Score individual entrants'),
 	'AdmEBClaims'		=> array('EBC claims judging','Judge claims automatically retrieved from email'),
 	'AdmEditCert'		=> array('Edit certificate content','Edit the HTML &amp; CSS of the master certificate'),
@@ -139,6 +140,8 @@ $TAGS = array(
 	'AdmNewEntrant'		=> array('Setup new entrant','Add details of another entrant'),
 	'AdmOdoChecks'		=> array('Odometer checks','Record details of odo check ride'),
 	'AdmOdoReadings'	=> array('Odometer readings','Start/finish odo readings'),
+	'AdmOdoReadingsCO'	=> array('Odometer check-OUT','Start odo readings'),
+	'AdmOdoReadingsCI'	=> array('Odometer check-IN','Finish odo readings'),
 	'AdmPrintCerts'		=> array('Finisher certificates','Print certificates for finishers'),
 	'AdmPrintQlist'		=> array('Finisher quicklist','Print quick list of finishers'),
 	'AdmPrintScoreX'	=> array('Score explanations','Print score explanations for everyone not DNS'),
@@ -298,6 +301,7 @@ $TAGS = array(
 	'cl_TimeTo'			=> array('To time','End of time range'),
 	'cl_UpdatingSC'		=> array('Updating scorecard for Entrant %u',''),
 	
+	'ClaimsLit'			=> array('Claims','Bonus claims'),
 	'Class'				=> array('Class #','The certificate class applicable'),
 	'ClassMaintHead'	=> array('Classes','Classes may be used to produce different certificates for different groups or \'classes\' of entrant. Class can be assigned manually, as in the RBLR1000 to distinguish route for example, or can be assigned automatically using entrant scores, bonuses visited and/or rank.<br>Class 0 is the default class for all entrants and may not have any filters applied. Other classes are examined in numeric order starting at 1 until the filter criteria are matched. If no matching class is found, 0 is applied.'),
 
@@ -551,7 +555,7 @@ $TAGS = array(
 	'OdoScaleFactor'	=> array('Correction factor','The number to multiply odo readings to get true distance'),			// Miles/Kms
 	
 	'OfferScore'		=> array('OfferScore','Would you like to help score this rally? If so, please tell me your name'),
-	
+	'oi_EReviews'		=> array('Reviews',''),
 	'oi_Scorecards'		=> array('Scorecards',''),
 	'oi_ScorecardsMC'	=> array('Scorecards (confirm)',''),
 	
@@ -632,6 +636,7 @@ $TAGS = array(
 	'RiderIBA'			=> array('IBA #',"Rider's IBA number if known"),
 	'RiderName'			=> array('Rider name','The full name of the rider'),
 	'ROUseScore'		=> array('ReadOnly','These fields may not be changed here, use Scoring instead'),
+	'ReviewThis'		=> array('Review this entrant',''),
 
 	'rp_ebcsettings'	=> array('EBC','EBC settings: These fields control the use of EBCFetch which processes compliant bonus claims from an email account. Any changes here require the system to be restarted before becoming effective.'),
 	'rp_settings'		=> array('Settings','Settings: These fields contain rather technical information which fine-tune the behaviour of ScoreMaster. If you know what you\'re doing, have at it otherwise don\'t guess, do consult a grownup.'),

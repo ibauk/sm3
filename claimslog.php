@@ -162,7 +162,7 @@ function emitDecisionsTable() {
 
     echo('<input type="button" id="goodclaim" name="decision" data-value="0" value="'.$TAGS['ebc_DoAccept'][0].'" onclick="submitClaimDecision(this)" class="judge">' );
 
-    echo(' <input type="text" title="'.$TAGS['ebc_JudgesNotes'][1].'" placeholder="'.$TAGS['ebc_JudgesNotes'][0].'" name="JudgesNotes" style="width:30em;">');
+    echo(' <input type="text" title="'.$TAGS['ebc_JudgesNotes'][1].'" placeholder="'.$TAGS['ebc_JudgesNotes'][0].'" name="JudgesNotes" style="width:30em; max-width:100vw;">');
 
     echo('<br></span>');
     echo('<span title="'.$TAGS['ebc_DoReject'][1].'">');

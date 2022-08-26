@@ -894,7 +894,8 @@ function showRallyConfig($showAdvanced)
 	
 	if ($showVirtual)
 		echo('<li class="advanced"><a href="#tab_virtual">'.$TAGS['VirtualParams'][0].'</a></li>');
-	echo('<li><a href="#tab_email">'.$TAGS['EmailParams'][0].'</a></li>');
+	if ($showAdvanced)
+		echo('<li><a href="#tab_email" class="advanced">'.$TAGS['EmailParams'][0].'</a></li>');
 	if ($showAdvanced) 
 		echo('<li class="advanced"><a href="#tab_ebcsettings">'.$TAGS['rp_ebcsettings'][0].'</a></li>');
 	if ($showAdvanced) 
@@ -1229,7 +1230,7 @@ function json_ok(txt) {
 	echo('</fieldset>');
 	
 	
-	echo('<fieldset id="tab_email" class="tabContent"><legend>'.$TAGS['EmailParams'][0].'</legend>');
+	echo('<fieldset '.$dn.' id="tab_email" class="tabContent"><legend>'.$TAGS['EmailParams'][0].'</legend>');
 	
 	$email = json_decode($rd['EmailParams'],true);
 	echo('<p>'.$TAGS['EmailParams'][1]);

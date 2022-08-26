@@ -137,6 +137,7 @@ input[name="bonusValues[]"][type="checkbox"] { width:1em; margin-right:1em; }
 input[name="ComboID[]"][type="checkbox"] { width:1em; margin-right:1em; }
 
 #scorecardtop	{ background-color: var(--tabs-background); }
+#ereviewstop	{ background-color: var(--header-background); }
 
 input[name="RiderIBA"],
 input[name="PillionIBA"] { width:5em !important; }
@@ -178,6 +179,8 @@ ul#tabs li a { color: var(--tabs-text); background-color: var(--tabs-background)
 ul#tabs li a:hover { font-weight: bold; color: var(--tabs-text); }
 ul#tabs li a.selected { font-weight: bold; padding: 0.7em 0.3em 0.38em 0.3em; }
 .tabContent { border: 10px solid var(--solid-border);  background-color: var(--form-background); padding: 0.5em;  display:inherit; overflow: auto; }
+.tabContent.ereviews { background-color: var(--header-background); }
+
 .tabContenthide { display: none; }
 .tabcell	{ display: table-cell; }
 
@@ -283,7 +286,7 @@ table#entrants	td.EntrantID	{ text-align: center; }
 table#entrants	.RiderName,.PillionName,.Bike	{ text-align: left; }
 table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align: center; }
 
-#picklistdiv	{ height:55vh; max-width: 30em; overflow-y:auto; }
+#picklistdiv	{ height:75vh; max-width: 30em; overflow-y:auto; }
 #picklistdiv 	td.EntrantID	{ width: 4em; text-align: center; }
 #picklistdiv	td.RiderName	{ padding-right: 1em; }
 #picklistdiv	td.EntrantStatus{ text-align: center; }
@@ -525,6 +528,19 @@ input[name="RallySlogan"]	{ width: 20em; }
 .currenttopic a	{ color: blue; text-decoration: none; }
 .currenttopic a:visited	{ color: blue; text-decoration: none; }
 
+
+/* Review claims log */
+
+table.claimslist tr					{ height: 2.3em; }
+table.claimslist tr.link:hover 		{ background-color: var(--bright-background); }
+table.claimslist td.BriefDesc		{ min-width: 13em; }
+table.claimslist td.OdoReading		{ min-width: 5em; text-align: center; }
+table.claimslist td.ClaimTime		{ min-width: 8em; text-align: center; }
+table.claimslist td.Decision		{ padding-right: 3em; text-align: center; }
+table.claimslist td.JudgesNotes		{ text-align: right; font-style: italic; }
+.NotesFlags							{ padding-bottom: .1em; text-decoration: underline; }
+
+
 /* EBC claims log */
 .ebclaimsitems	{ height: 20em; overflow-y: auto; } /* 20 not 21 so that bottom edge obviously has more */
 .ebc td {
@@ -533,7 +549,7 @@ input[name="RallySlogan"]	{ width: 20em; }
 
 img.icon { width: 36px; margin-right: .5em; }
 
-input[type='button'].judge	{ background-color: var(--button-background); color: var(--button-text);}
+input[type='button'].judge	{ background-color: var(--button-background); color: var(--button-text); padding: .5em; margin: .5em; }
 input[type='button'].judge:focus	{ background-color: var(--bright-background) ; color: var(--bright-text);}
 
 button.list	{ background-color: var(--button-background); color: var(--button-text);}

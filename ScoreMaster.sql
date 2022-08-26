@@ -122,7 +122,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"useMagicPenalty": "false",
 	"valMagicPenalty": "10",
 	"autoFinisher": "false",
-	"autoLateDNF": "false"
+	"autoLateDNF": "false",
+	"showPicklistStatus": "false"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com
@@ -534,12 +535,15 @@ INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (49,'AdmImp
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (50,'AdmRebuildScorecards','claims.php?c=applyclaims&reprocess=1',NULL,'claims,scorecards');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (51,'AdmOdoReadings','fastodos.php',NULL,'entrant,odo');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (52,'AdmOdoChecks','fastodos.php?odocheck',NULL,'entrant,odo');
-INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('admin','AdmMenuHeader','2,37,46,11,4,25,6,5');
+INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (53,'AdmOdoReadingsCO','fastodos.php?co',NULL,'entrant,odo');
+INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (54,'AdmOdoReadingsCI','fastodos.php?ci',NULL,'entrant,odo');
+INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (55,'AdmDoReviewing','picklist.php?review',NULL,'entrant,score,scorex');
+INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('admin','AdmMenuHeader','37,46,55,4,25,6,5');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('setup','AdmSetupHeader','16,17,18,19,20,42');
-INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('entrant','AdmEntrantsHeader','11,51,41,47,48,52,15');
+INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('entrant','AdmEntrantsHeader','11,53,54,41,47,48,52,15');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('bonus','AdmBonusHeader','7,10,9,39,49');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('util','AdmUtilHeader','29,28,27,32,13,33,35,40,45,50');
-INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('advanced','AdmAdvancedHeader','21,22,44,34,23,30');
+INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('advanced','AdmAdvancedHeader','2,21,22,44,34,23,30');
 
 
 
