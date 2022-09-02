@@ -105,6 +105,7 @@ $TAGS = array(
 	'abtPHP'			=> array('PHP version',''),
 	'abtSQLite'			=> array('SQLite version',''),
 	'abtWebserver'		=> array('Webserver','What webserver software is hosting this'),
+	'AcceptedByEntrant'	=> array('Entrant is happy!','Agreed by entrant'),
 	'accessScorecards'	=> array('Scorecard access','Scorecards may be updated directly but any changes will not also update the claims log.'),
 	'AddPoints'			=> array('Add points',''),
 	'AddMults'			=> array('Add multipliers',''),
@@ -447,6 +448,8 @@ $TAGS = array(
 	'FinishTimeE'		=> array('Finish time','Official finish time. Check-in time.'),
 
 	'fl_RefreshList'	=> array('&circlearrowright;','Refresh the list'),
+
+	'FlipReviewQuery'	=> array('Flip review/query','Team review ok/not ok'),
 	
 	'FuelBalance'		=> array('Fuel','Fuel distance remaining'),
 	'FuelWarning'		=> array('OUT OF FUEL!','This leg exceeded the remaining fuel capacity'),
@@ -481,6 +484,7 @@ $TAGS = array(
 	'jodit_Borders_Solid'
 						=> array('Solid',''),
 	'jodit_InsertField'	=> array('Insert database field',''),
+	'LastReviewedHint'	=> array('Reviewed','Last reviewed'),
 	'LegendPenalties'	=> array('Penalties',''),
 	'LegendScoring'		=> array('Scoring &amp; Ranking',''),
 	'LegendTeams'		=> array('Teams',''),
@@ -585,7 +589,8 @@ $TAGS = array(
 	'qKms'				=> array('Kms',''),							// Miles/Kms
 	
 	'qPoints'			=> array('Points',''),
-	
+	'QueriedByTeam'		=> array('Team is NOT happy!','Reviewed by rally team'),
+
 	// Renumber All Entrants texts
 	'raeConfirm'		=> array('Are you sure','Must be checked before submission'),
 	'raeFirst'			=> array('Starting number','The first number to be used'),
@@ -636,6 +641,7 @@ $TAGS = array(
 	'RiderIBA'			=> array('IBA #',"Rider's IBA number if known"),
 	'RiderName'			=> array('Rider name','The full name of the rider'),
 	'ROUseScore'		=> array('ReadOnly','These fields may not be changed here, use Scoring instead'),
+	'ReviewedByTeam'	=> array('Team is happy!','Reviewed by rally team'),
 	'ReviewThis'		=> array('Review this entrant',''),
 
 	'rp_ebcsettings'	=> array('EBC','EBC settings: These fields control the use of EBCFetch which processes compliant bonus claims from an email account. Any changes here require the system to be restarted before becoming effective.'),

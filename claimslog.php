@@ -458,7 +458,7 @@ function saveEBClaim($inTransaction) {
     if (isset($_REQUEST['JudgesNotes']))
         $sqlx .= ",MagicWord";
     $sqlx .= ") VALUES(";
-    $dtn = new DateTime(Date('Y-m-dTH:i:s'),new DateTimeZone($KONSTANTS['LocalTZ']));
+    $dtn = new DateTime("now",new DateTimeZone($KONSTANTS['LocalTZ']));
 	$loggedat = $dtn->format('c');
     $sqlx .= "'".$loggedat."'";
     $sqlx .= ",'".$_REQUEST['ClaimTime']."'";

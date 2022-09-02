@@ -612,31 +612,24 @@ function showEntrantRejectedClaims($rejections)
 	{
 		//echo(' # '.$r.' ## ');
 		$reject = explode('=',$r);
-		$bonustype = substr($reject[0],0,1);
-		$bonusid = substr($reject[0],1);
-		//echo(' [[ '.$r.' - '.$bonustype.' -- '.$bonusid.'  ]] ');
-		switch($bonustype)
-		{
-			case 'B':
-				$sql = "SELECT BonusID as bid, BriefDesc as bd FROM bonuses WHERE BonusID='$bonusid'";
-				break;
-			case 'C':
-				$sql = "SELECT ComboID as bd, BriefDesc as bid FROM combinations WHERE ComboID='$bonusid'";
-				break;
-			case '':
-				continue 2; // next foreach
-			default:
-				echo('<p>OMG</p>');
-				var_dump($bonustype);
-				return; // don't know what's going on so give up
-		}
+		if (!isset($reject[1])) continue;
+		$bonusid = $reject[0];
 		$x = $RR[$reject[1]];
 		if ($x == '')
 			continue;
+
+		$sql = "SELECT BonusID as bid, BriefDesc as bd FROM bonuses WHERE BonusID='$bonusid'";
 		$R = $DB->query($sql);
-		$rd = $R->fetchArray();
-		echo('<li title="'.$rd['bd'].'">');
-		echo($rd['bid'].' = '.htmlspecialchars($x).'; ');
+		if (!$rd = $R->fetchArray()) {
+			$sql = "SELECT ComboID as bd, BriefDesc as bid FROM combinations WHERE ComboID='$bonusid'";
+			$R = $DB->query($sql);
+			if (!$rd = $R->fetchArray()) {
+				$rd['bid'] = $bonusid;
+				$rd['bd'] = $bonusid;
+			}
+		}
+		echo('<li>');
+		echo($rd['bid'].' ('.htmlspecialchars($rd['bd']).') = '.htmlspecialchars($x).'; ');
 		echo('</li>');
 	}	
 	echo('</ul>');
@@ -1450,6 +1443,22 @@ echo('</span> ');
 	echo('<label for="FinishPosition" class="vlabel">'.$TAGS['FinishPosition'][0].' </label>');
 	echo(' <input type="number" name="FinishPosition" id="FinishPosition" onchange="enableSaveButton();" value="'.$rd['FinishPosition'].'" title="'.$TAGS['FinishPosition'][1].'"> ');
 	echo('</span>');
+
+	echo('<span class="vlabel">');
+	echo('<label for="LastReviewed">'.$TAGS['LastReviewedHint'][0].'</label> ');
+	$lr = ($rd['LastReviewed'] != '' ? $rd['LastReviewed'] : '-');
+	echo('<input type="text" id="LastReviewed" readonly name="LastReviewed" value="'.$lr.'"> ');
+	if ($rd['ReviewedByTeam'] > 0) {
+		if ($rd['ReviewedByTeam'] % 2 == 0)
+			echo($TAGS['QueriedByTeam'][0]);
+		else
+			echo($TAGS['ReviewedByTeam'][0]);
+		echo(' ');
+	}
+	if ($rd['AcceptedByEntrant'] > 0)
+		echo($TAGS['AcceptedByEntrant'][0]);
+	echo('</span>');
+
 
 	if (false) {
 		echo('<span class="xlabel" title="'.$TAGS['ScoringNow'][1].'">');

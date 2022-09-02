@@ -24,7 +24,7 @@
  */
 
 
-$HOME_URL = 'admin.php';
+$HOME_URL = 'picklist.php?review';
 
 require_once('common.php');
 
@@ -86,7 +86,7 @@ function emitScorecardVars() {
             continue;
         $n = intval(substr($r,0,$p));
         $x = substr($r,$p + 1);
-        echo('<input type="hidden" id="rejectReason'.$n.'" name="rejectreason" data-code="'.$n.'" value="'.$x.'">');
+        echo('<input type="hidden" id="rejectReason'.$n.'" data-code="'.$n.'" value="'.$x.'">');
         $rcmenu .= '<li data-code="'.$n.'"><a href="#">'.$n.'='.$x.'</a></li>';
     }
     $rcmenu .= '</ul>';
@@ -119,6 +119,8 @@ function reviewEntrant($entrant) {
     echo('<div id="EntrantReview">');
     echo('<form method="post" action="ereviews.php">');
 
+    echo('<input type="hidden" name="EntrantID" value="'.$entrant.'">');
+
     emitScorecardVars();
 
     $sql = "SELECT * FROM entrants WHERE EntrantID=".$entrant;
@@ -140,9 +142,20 @@ function reviewEntrant($entrant) {
             w.document.firstChild.innerHTML = head + y + z + x.innerHTML;
             w.print();
         }
+
+        function flipReviewQuery() {
+            let B = document.getElementById('savescorebutton');
+            let N = B.getAttribute('name');
+            let V = B.getAttribute('value');
+            B.setAttribute('name',B.getAttribute('data-altname'));
+            B.setAttribute('data-altname',N);
+            B.setAttribute('value',B.getAttribute('data-altvalue'));
+            B.setAttribute('data-altvalue',V);
+        }
     </script>
     <?php
     
+
     echo('<div id="ereviewstop">');
     echo('<input type="hidden" id="teamnames" value="'.$teamnames.'">');
     echo('<span class="entrant" id="crewname">'.crewName($rd).'</span> ');
@@ -151,16 +164,16 @@ function reviewEntrant($entrant) {
     echo('<span class="distance" id="showmiles">');
     echo('<label ');
     echo(' for="CorrectedMiles">'.$TAGS['CorrectedMiles'][0].'</label> ');
-    echo('<input type="text" class="bignumber" readonly name="CorrectedMiles" id="CorrectedMiles" value="'.$rd['CorrectedMiles'].'"> ');
+    echo('<input type="text" class="bignumber" readonly  id="CorrectedMiles" value="'.$rd['CorrectedMiles'].'"> ');
     echo('</span> ');
     
 
     echo('<span class="points"><label for="TotalPoints">'.$TAGS['TotalPoints'][0].'</label> ');
-    echo('<input type="text" class="bignumber" readonly name="TotalPoints" id="TotalPoints" value="'.$rd['TotalPoints'].'"> ');
+    echo('<input type="text" class="bignumber" readonly id="TotalPoints" value="'.$rd['TotalPoints'].'"> ');
     echo('</span> ');
 
 	echo('<span class="entrantstatus" title="'.$TAGS['EntrantStatus'][1].'"><label for="EntrantStatus">'.$TAGS['EntrantStatus'][0].' </label> ');
-    echo('<input type="text" readonly class="bignumber" name="EntrantStatus" id="EntrantStatus" value="');
+    echo('<input type="text" readonly class="bignumber" id="EntrantStatus" value="');
     switch($rd['EntrantStatus']) {
         case $KONSTANTS['EntrantDNS']:
             echo($TAGS['EntrantDNS'][0]); break;
@@ -175,14 +188,16 @@ function reviewEntrant($entrant) {
 
 	echo('</span> ');
 
-	echo('<input type="submit" class="noprint" title="'.$TAGS['SaveScore'][1].'" id="savescorebutton" data-triggered="0" ');
-	echo('onclick="'."this.setAttribute('data-triggered','1');".'"');
-	if ($rd['Confirmed'] == $KONSTANTS['ScorecardIsDirty'])
-		echo(' value="'.$TAGS['SaveScore'][0].'"');
-	else
-		echo(' disabled value="'.$TAGS['ScoreSaved'][0].'"');
-	echo(' accesskey="S" name="savescore" data-altvalue="'.$TAGS['SaveScore'][0].'"  /> ');
+    echo('<span title="'.$TAGS['LastReviewedHint'][1].'">'.logtime($rd['LastReviewed']).'</span> ');
 
+    echo('<input type="checkbox" onchange="flipReviewQuery();" title="'.$TAGS['FlipReviewQuery'][1].'"> ');
+	echo('<input type="submit" class="noprint" title="'.$TAGS['ReviewedByTeam'][1].'" id="savescorebutton" data-triggered="1" ');
+	echo(' value="'.$TAGS['ReviewedByTeam'][0].'"');
+	echo(' accesskey="S" name="ReviewedByTeam" data-altname="QueriedByTeam" data-altvalue="'.$TAGS['QueriedByTeam'][0].'"  /> ');
+
+	echo('<input type="submit" class="noprint" title="'.$TAGS['AcceptedByEntrant'][1].'" data-triggered="1" ');
+	echo(' value="'.$TAGS['AcceptedByEntrant'][0].'"');
+	echo(' accesskey="S" name="AcceptedByEntrant" data-altvalue="'.$TAGS['AcceptedByEntrant'][0].'"  /> ');
 
     echo('</div>'); // End scorecardtop
 
@@ -219,11 +234,11 @@ function reviewEntrant($entrant) {
     $style .= 'td.sxitempoints,';
     $style .= 'td.sxtotalpoints { text-align: right; }';
 
-    echo('<div id="scorex" oncontextmenu="showBonusOrder()" title="'.$TAGS['ScorexHints'][0].'" class="scorex" data-show="0" ondblclick="printscorex();" ');
+    echo('<div id="scorex" class="scorex" data-show="0" oncontextmenu="return false;" ondblclick="printscorex();" ');
     echo('data-title="'.htmlspecialchars($RP['RallyTitle']).'" ');
     echo('data-style="'.$style.'" >');
     echo($rd['ScoreX'].'</div>');
-    echo('<input type="hidden" name="ScoreX" id="scorexText" value="'.htmlspecialchars($rd['ScoreX']).'">');
+    echo('<input type="hidden" id="scorexText" value="'.htmlspecialchars($rd['ScoreX']).'">');
 	echo('<div id="ddarea" class="hide"><p> </p></div>');	// Used for drag/drop operations
 
     echo('</div>'); // End tab_scorex
@@ -262,7 +277,8 @@ function reviewEntrant($entrant) {
             $s1 = '<s>';
             $s2 = '</s>';
         }
-        $lnk = 'claims.php?c=showclaim&claimid='.$rd['rowid'].'&returnshow=picklist.php?review';
+        $lnk = 'claims.php?c=showclaim&claimid='.$rd['rowid'].'&returnshow=picklist.php?review&EntrantID=1&c=score';
+        $lnk = 'claims.php?c=showclaim&claimid='.$rd['rowid'].'&returnshow='.htmlentities('ereviews.php?EntrantID='.$entrant.'&amp;c=score');
         echo('<tr class="link"');
         echo(' onclick="window.open('."'".$lnk."','_self'".')">');
         echo('<td class="BonusID">'.$s1.$bonusid.$s2.'</td>');
@@ -282,16 +298,30 @@ function reviewEntrant($entrant) {
     echo('</form>');
 
     echo('</div>'); // End scorecard
-    if (getSetting('autoAdjustBonusWidth',"true")=="true") {
-        echo('<style>');
-        echo('.showbonuslabel { display: inline-block; width: ');
-        echo($bonusWidth.'ch; }');
-        echo('.showcombolabel { display: inline-block; width: ');
-        echo($comboWidth.'ch; }');
-        echo('</style>');                    
-    }
 }
 
+function markReviewedStatus() {
+
+    global $KONSTANTS,$DB,$HOME_URL;
+
+    $dtn = new DateTime("now",new DateTimeZone($KONSTANTS['LocalTZ']));
+    $sql = "UPDATE entrants SET LastReviewed='".$dtn->format('Y-m-d\TH:i:s')."' ";
+    if (isset($_REQUEST['ReviewedByTeam']) || isset($_REQUEST['AcceptedByEntrant']))
+        $sql .= ",ReviewedByTeam=1";
+    if (isset($_REQUEST['QueriedByTeam']))
+        $sql .= ",ReviewedByTeam=2";
+    if (isset($_REQUEST['AcceptedByEntrant']))
+        $sql .= ",AcceptedByEntrant=1";
+    $sql .= " WHERE EntrantID=".$_REQUEST['EntrantID'];
+    error_log($sql);
+    $DB->exec($sql);
+    header("Location: ".$HOME_URL);
+
+}
+if (isset($_REQUEST['EntrantID'])) {
+    if (isset($_REQUEST['ReviewedByTeam']) || isset($_REQUEST['AcceptedByEntrant']) || isset($_REQUEST['QueriedByTeam']))
+        markReviewedStatus();
+}
 $e = 7; // Random default value for testing
 if (isset($_REQUEST['EntrantID']))
     $e = $_REQUEST['EntrantID'];

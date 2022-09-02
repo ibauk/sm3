@@ -291,6 +291,8 @@ table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align
 #picklistdiv	td.RiderName	{ padding-right: 1em; }
 #picklistdiv	td.EntrantStatus{ text-align: center; }
 #picklistdiv	td.TotalPoints	{ width: 6em; text-align: right; }
+#picklistdiv	td.NumClaims	{ text-align: center; }
+#picklistdiv	td.NumRejects	{ width: 3em; text-align:center; font-weight: bold;  }
 #picklistdiv	tr:hover		{ background: lightgray; cursor:pointer;}
 
 #timenow		{ cursor: grab; }

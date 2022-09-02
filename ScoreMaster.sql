@@ -26,7 +26,7 @@
  *
  */
 
--- DBVERSION: 9
+-- DBVERSION: 11
 
 BEGIN TRANSACTION;
 
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS "rallyparams" (
 	"Cat9Label"	TEXT,
 	"RejectReasons"	TEXT,							/* Defaults entered in INSERT below */
 	"DBState" INTEGER NOT NULL DEFAULT 0,
-	"DBVersion" INTEGER NOT NULL DEFAULT 10, 		/* DBVERSION */
+	"DBVersion" INTEGER NOT NULL DEFAULT 11, 		/* DBVERSION */
 	"AutoRank" INTEGER NOT NULL DEFAULT 1,
 	"Theme" TEXT NOT NULL DEFAULT 'default',
 	"MilesKms" INTEGER NOT NULL DEFAULT 0,
@@ -123,7 +123,7 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"valMagicPenalty": "10",
 	"autoFinisher": "false",
 	"autoLateDNF": "false",
-	"showPicklistStatus": "false"
+	"showPicklistStatus": "true"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com
@@ -331,6 +331,9 @@ CREATE TABLE IF NOT EXISTS "entrants" (
 	"Confirmed" INTEGER NOT NULL DEFAULT 0,
 	"AvgSpeed" TEXT,
 	"Cohort" INTEGER NOT NULL DEFAULT 0,
+	"ReviewedByTeam" INTEGER NOT NULL DEFAULT 0,
+	"AcceptedByEntrant" INTEGER NOT NULL DEFAULT 0,
+	"LastReviewed" 	TEXT,
 	PRIMARY KEY("EntrantID")
 );
 

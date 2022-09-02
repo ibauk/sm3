@@ -140,8 +140,28 @@ sb.click();
         }
         echo('</td>');
         if ($showCurrentStatus) {
-            echo('<td class="EntrantStatus">'.$evs[$rd['EntrantStatus']].'</td>');
-            echo('<td class="TotalPoints">'.$rd['TotalPoints'].'</td>');
+            if ($showReview) {
+                $sql = "SELECT count(DISTINCT BonusID) As Rex FROM claims WHERE EntrantID=".$rd['EntrantID'];
+                $nc = getValueFromDB($sql,"Rex",0);
+                echo('<td class="NumClaims">'.$nc.'</td>');
+                $sql .= " AND Decision > 0";
+                $nr = getValueFromDB($sql,"Rex",0);
+                echo('<td class="NumRejects">'.($nr > 0 ? $nr : '').'</td>');
+                $reviewed = '';
+                if (isset($rd['ReviewedByTeam']) && $rd['ReviewedByTeam'] > 0) {
+                    $chk = "&#10003;"; //Regular checkmark
+                    $xxx = "&#10007;";
+                    $reviewed .= ($rd['ReviewedByTeam'] % 2 == 0 ? $xxx : $chk);
+                }
+                echo('<td class="ReviewStatus">'.$reviewed.'</td>');
+                $reviewed = '';
+                if (isset($rd['AcceptedByEntrant']) && $rd['AcceptedByEntrant'] > 0)
+                    $reviewed .= "&#10004;"; //Heavy checkmark
+                echo('<td class="ReviewStatus">'.$reviewed.'</td>');
+            } else {
+                echo('<td class="EntrantStatus">'.$evs[$rd['EntrantStatus']].'</td>');
+                echo('<td class="TotalPoints">'.$rd['TotalPoints'].'</td>');
+            }
         }
         echo('</tr>');
     }
