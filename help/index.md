@@ -33,6 +33,7 @@
 
 - [Reasons to be cheerful](help:reasons)
 - [Rest bonuses](help:rbconfig)
+- [Review scorecards](help:ereviews)
 - [Scorecard reconciliation](help:recon) - building confidence in the results
 - [Score explanations](help:scorex)
 - [Complex Scoring options](help:scoringoptions)

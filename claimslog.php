@@ -284,7 +284,13 @@ function emitEBCjs() {
         rbObj.odo = tr.getAttribute('data-odo');
         fetchRB(rbObj);
 
-        document.getElementById('ebc_claimtime_show').innerHTML = tr.getAttribute('data-odo') + ', ' + tr.getAttribute('data-claimtime-show');
+        let xx = tr.getAttribute('data-odo') + ', ' + tr.getAttribute('data-claimtime-show');
+        let xy = ' onclick="alert(this.title);" ';
+        let yy = '<span ' + xy + 'title="' + tr.getAttribute('data-evidence') + '">' + xx;
+        yy += ' <span style="cursor:pointer;">&nbsp;&nbsp; &#9993; &nbsp;&nbsp;</span></span>';
+
+        document.getElementById('ebc_claimtime_show').innerHTML = yy;
+
         document.getElementById('ebc_notes').innerHTML = tr.getAttribute('data-notes');
         let flagsregion = document.getElementById('ebc_flags');
         let flags = tr.getAttribute('data-flags');
@@ -502,6 +508,7 @@ function listEBClaims() {
 
     $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,xbonus.BonusID,xbonus.BriefDesc";
     $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,ebcphotos.Image,Notes,Flags,TeamID";
+    $sql .= ",ebclaims.AttachmentTime As PhotoTS, ebclaims.DateTime As EmailTS,ebclaims.LoggedAt,ebclaims.Subject";
     $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes,xbonus.Image as BImage,Question,Answer";
     $sql .= " FROM ebclaims LEFT JOIN entrants ON ebclaims.EntrantID=entrants.EntrantID";
     $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,Flags,Points,AskPoints,RestMinutes,AskMinutes,Image,Question,Answer FROM bonuses";
@@ -549,6 +556,17 @@ function listEBClaims() {
         preg_match('/<span[^>]*>([^<]+)/',logtime($rs['ClaimTime']),$lt);
         //logtime($rs['ClaimTime']);
         echo('data-claimtime-show="'.$lt[1].'" ');
+
+        // Now store some timestamp evidence
+        $ev = "Photo: ";
+        if ($rs['PhotoTS'] > '2022') // Missing would have '0001'
+            $ev .= $rs['PhotoTS'];
+        $ev .= "&amp;#10;Claim: ".$rs['ClaimTime'];
+        $ev .= "&amp;#10;Email: ".$rs['EmailTS'];
+        $ev .= "&amp;#10;Rcvd: ".$rs['LoggedAt'];
+        $ev .= "&amp;#10;&amp;#10;Subject: ".htmlspecialchars($rs['Subject']);
+        echo('data-evidence="'.$ev.'" ');
+
         echo('data-bonusdesc="'.str_replace('"','&quot;',$rs['BriefDesc']).'" data-rider="'.str_replace('"','&quot;',$rs['RiderName']).'" ');
         echo('data-notes="'.str_replace('"','&quot;',$rs['Notes']).'" data-flags="'.$rs['Flags'].'" ');
         echo('data-extra="'.str_replace('"','&quot;',$rs['ExtraField']).'" ');
