@@ -500,6 +500,19 @@ function saveEBClaim($inTransaction) {
         $DB->exec('COMMIT TRANSACTION');
 
 }
+function fmtEvidenceDate($dt) {
+
+    $NA = 'n/a';
+    $GoodCheck = '2022';
+
+    if ($dt < $GoodCheck)
+        return $NA;
+
+    $zz = str_replace('Z',' Z',$dt);
+    $zz = str_replace('+',' +',$zz);
+    return str_replace('T',' ',$zz);
+}
+
 function listEBClaims() {
     global $DB,$TAGS,$KONSTANTS;
 
@@ -558,12 +571,10 @@ function listEBClaims() {
         echo('data-claimtime-show="'.$lt[1].'" ');
 
         // Now store some timestamp evidence
-        $ev = "Photo: ";
-        if ($rs['PhotoTS'] > '2022') // Missing would have '0001'
-            $ev .= $rs['PhotoTS'];
-        $ev .= "&amp;#10;Claim: ".$rs['ClaimTime'];
-        $ev .= "&amp;#10;Email: ".$rs['EmailTS'];
-        $ev .= "&amp;#10;Rcvd: ".$rs['LoggedAt'];
+        $ev = "Photo: ".fmtEvidenceDate($rs['PhotoTS']);
+        $ev .= "&amp;#10;Claim: ".fmtEvidenceDate($rs['ClaimTime']);
+        $ev .= "&amp;#10;Email: ".fmtEvidenceDate($rs['EmailTS']);
+        $ev .= "&amp;#10;Rcvd: ".fmtEvidenceDate($rs['LoggedAt']);
         $ev .= "&amp;#10;&amp;#10;Subject: ".htmlspecialchars($rs['Subject']);
         echo('data-evidence="'.$ev.'" ');
 

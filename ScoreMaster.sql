@@ -541,7 +541,8 @@ INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (52,'AdmOdo
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (53,'AdmOdoReadingsCO','fastodos.php?co',NULL,'entrant,odo');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (54,'AdmOdoReadingsCI','fastodos.php?ci',NULL,'entrant,odo');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (55,'AdmDoReviewing','picklist.php?review',NULL,'entrant,score,scorex');
-INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('admin','AdmMenuHeader','37,46,55,4,25,6,5');
+INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (56,'AdmPrintScorex','scorex.php',NULL,'entrant,score,scorex');
+INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('admin','AdmMenuHeader','37,46,55,4,56,25,6,5');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('setup','AdmSetupHeader','16,17,18,19,20,42');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('entrant','AdmEntrantsHeader','11,53,54,41,47,48,52,15');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('bonus','AdmBonusHeader','7,10,9,39,49');
