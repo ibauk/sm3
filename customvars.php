@@ -144,6 +144,7 @@ $TAGS = array(
 	'AdmOdoReadingsCO'	=> array('Odometer check-OUT','Start odo readings'),
 	'AdmOdoReadingsCI'	=> array('Odometer check-IN','Finish odo readings'),
 	'AdmPrintCerts'		=> array('Finisher certificates','Print certificates for finishers'),
+	'AdmPrintScorex'	=> array('Finisher ScoreXes','Print ScoreX for all finishers'),
 	'AdmPrintQlist'		=> array('Finisher quicklist','Print quick list of finishers'),
 	'AdmPrintScoreX'	=> array('Score explanations','Print score explanations for everyone not DNS'),
 	'AdmRallyParams'	=> array('Rally parameters','View/edit current rally parameters'),
