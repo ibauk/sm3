@@ -299,6 +299,7 @@ function updateFastOdo() {
         }
         recalcDistance($_REQUEST['e']);
         recalcScorecard($_REQUEST['e'],true);
+        rankEntrants(true);
     }
     $DB->exec("COMMIT");
 	echo($updateok? 'ok' : 'error' );
