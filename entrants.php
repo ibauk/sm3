@@ -153,12 +153,7 @@ function listEntrants($ord = "EntrantID")
 		if ($_REQUEST['mode']=='bonus')
 		{
 			$bonus = $_REQUEST['bonus'];
-			$sql .= " WHERE ',' || BonusesVisited || ',' LIKE '%,$bonus,%'";
-		}
-		else if ($_REQUEST['mode']=='special')
-		{
-			$bonus = $_REQUEST['bonus'];
-			$sql .= " WHERE ',' || SpecialsTicked || ',' LIKE '%,$bonus,%'";
+			$sql .= " WHERE ',' || BonusesVisited || ',' LIKE '%,$bonus=%'";
 		}
 		else if ($_REQUEST['mode']=='combo')
 		{
