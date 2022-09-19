@@ -296,7 +296,7 @@ function saveEntrantRecord()
 	$fa1 = array('RiderName','RiderFirst','RiderIBA','PillionName','PillionFirst','PillionIBA',
 				'Bike','BikeReg','TeamID','Country','OdoKms','OdoCheckStart','OdoCheckFinish',
 				'OdoScaleFactor','OdoRallyStart','OdoRallyFinish','CorrectedMiles','FinishTime',
-				'BonusesVisited','CombosTicked','TotalPoints','FinishPosition',
+				'TotalPoints','FinishPosition',
 				'EntrantStatus','ScoredBy','StartTime','Class','OdoCheckTrip','ExtraData','Cohort');
 
 	if ($DBVERSION >= 2) {
