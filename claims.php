@@ -1320,7 +1320,7 @@ function zapScorecard($entrant) {
 	global $DB, $KONSTANTS;
 
 	$sql = "UPDATE entrants SET BonusesVisited='',CombosTicked='',TotalPoints=0,FinishPosition=0";
-	$sql .= ",EntrantStatus=".$KONSTANTS['EntrantOK'];
+	//$sql .= ",EntrantStatus=".$KONSTANTS['EntrantOK'];
 	$sql .= ",RejectedClaims='',RestMinutes=0";
 	$sql .= " WHERE EntrantID=$entrant";
 	error_log($sql);
