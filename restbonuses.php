@@ -171,7 +171,7 @@ function ajaxNewRBClaim() {
     }
 
     // Fetch the most recent start claim
-    $sql = "SELECT BonusID,ClaimTime,OdoReading,Decision FROM claims WHERE EntrantID=".$_REQUEST['EntrantID'];
+    $sql = "SELECT BonusID,ClaimTime,OdoReading,Decision,IfNull(Photo,'') As Photo FROM claims WHERE EntrantID=".$_REQUEST['EntrantID'];
     $sql .= " AND BonusID In (".inList($startBonusCodes).")";
     $sql .= "ORDER BY ClaimTime DESC";
     error_log($sql);
@@ -181,6 +181,10 @@ function ajaxNewRBClaim() {
         return;
     }
     error_log('Found RB start '.$claimstart['BonusID']);
+    $photo = '';
+    if ($claimstart['Photo'] != '') {
+        $photo = ',"photo":"'.$claimstart['Photo'].'"';
+    }
 
     $gn = getValueFromDB("SELECT IfNull(GroupName,'') As GroupName FROM bonuses WHERE BonusID='".$_REQUEST['BonusID']."'","GroupName","");
 
@@ -207,7 +211,7 @@ function ajaxNewRBClaim() {
 
         $errmsg = '☹️ '.$claimstart['BonusID'].'=='.$lastclaim['BonusID'].' '.fmtTimestamp($lt[1]);
         $errmsg .= ' @ '.$lastclaim['OdoReading'];
-        echo('{"result":"claimed","error":"'.$errmsg.'"}');
+        echo('{"result":"claimed","error":"'.$errmsg.'"'.$photo.'}');
         return;
     }
 
@@ -215,7 +219,7 @@ function ajaxNewRBClaim() {
     $mins = minutesBetween($claimstart['ClaimTime'],$_REQUEST['ClaimTime']);
     error_log('mins = '.$mins);
     if ($_REQUEST['RestMins'] > $mins) {
-        echo('{"result":"toosoon","error":"☹️'.$claimstart['BonusID'].'=='.fmtTimestamp($claimstart['ClaimTime'])." (".mins2HM(intval($mins)).")".'"}');
+        echo('{"result":"toosoon","error":"☹️'.$claimstart['BonusID'].'=='.fmtTimestamp($claimstart['ClaimTime'])." (".mins2HM(intval($mins)).")".'"'.$photo.'}');
         return;
     }
 
@@ -234,9 +238,11 @@ function ajaxNewRBClaim() {
     if ($claimstart['Decision'] > 0) {
         error_log(json_encode($Rejects));
         echo('{"result":"rejected","error":"☹️'.$claimstart['BonusID'].'=='.fmtTimestamp($claimstart['ClaimTime']));
-        echo(" (".mins2HM(intval($mins)).")".' &#10008; '.$Rejects[$claimstart['Decision']].'"}');
+        echo(" (".mins2HM(intval($mins)).")".' &#10008; '.$Rejects[$claimstart['Decision']].'"');
+        echo($photo);
+        echo('}');
     } else {
-        echo('{"result":"ok","info": "'.$info.'"}');
+        echo('{"result":"ok","info": "'.$info.'"'.$photo.'}');
     }
     return;
 }

@@ -212,6 +212,13 @@ function emitEBCjs() {
                     rbdiv.classList.add('green');
                     rbdiv.innerHTML = res.info;
                 }
+                if (res.hasOwnProperty('photo')) {
+                    console.log('photo is '+res.photo);
+                    let bimgdiv = document.querySelector('#bimgdiv');
+                    let bimg = document.querySelector('#bimgdiv img');
+                    bimgdiv.title = "⁉";
+                    bimg.src = res.photo;
+                }
 			}
 		};
 		xhttp.open("GET", url, true);
