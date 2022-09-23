@@ -70,9 +70,36 @@ table.sxtable td { padding-right: .5em; vertical-align: top; }
 td.sxitempoints,
 td.sxtotalpoints { text-align: right; }
 
+@media print {
+	*			{ background-color: white; color: black !important; }
+.noprint		{ display: none !important; }
+}
 </style>
 </head><body>
+<div class="noprint">
+<form method="get" action="scorex.php" style="display:inline;">
+<label for="showall"> 💯 </label>
+<input type="checkbox" id="showall" name="all" onchange="this.form.submit();"
 <?php
+if (isset($_REQUEST['entrant']) && $_REQUEST['entrant'] != '') {
+	if (isset($_REQUEST['all'])) unset($_REQUEST['all']);
+}
+if (isset($_REQUEST['all']) || !isset($_REQUEST['entrant']) || $_REQUEST['entrant']=='') {
+	echo(' checked ');
+}
+echo('></form>');
+echo('<form method="get" action="scorex.php" style="display:inline;">');
+echo(' &nbsp;&nbsp; #<input type="number" style="width:3em;" name="entrant" onchange="this.form.submit();" ');
+$entrant = 0;
+if (!isset($_REQUEST['all']) && isset($_REQUEST['entrant']) && $_REQUEST['entrant']!='') {
+	$entrant = $_REQUEST['entrant'];
+	$rname = getValueFromDB("SELECT RiderName FROM entrants WHERE EntrantID=".$entrant,"RiderName","");
+    echo('value="'.$entrant.'"> '.$rname);
+} else {
+	echo('>');
+}
+echo('</form></div>');
+
 }
 function printScorex($rd,$RT) {
 
@@ -121,7 +148,7 @@ function printScorexes() {
 	//echo '<hr>'.$_SERVER['HTTP_USER_AGENT'];
 	if (!$ds)
 	{
-		echo($TAGS['NoCerts2Print'][0]);
+		echo('<p style="font-size:24pt;">&#8241;</p>');
 	}
 	echo('</body></html>');
 
