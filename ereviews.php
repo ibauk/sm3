@@ -109,6 +109,70 @@ function emitScorecardVars() {
 
 }
 
+function fmtFlags($flgs,$isTeam) {
+
+    global $KONSTANTS;
+
+    $res = '';
+    $flags = $flgs;
+    if ($isTeam) {
+        $flags .= '2';
+    }
+    for ($i = 0; $i < strlen($flags); $i++) {
+        $alt = '';
+         switch(substr($flags,$i,1)) {
+             case '2':
+                $src = "images/alertteam.png";
+                $alt = "2";
+                $title = $KONSTANTS['EBC_Flag2'];
+                break;
+             case 'A':
+                $src = "images/alertalert.png";
+                $alt = '!';
+                $title = $KONSTANTS['EBC_FlagA'];
+                break;
+             case 'B':
+                $src = "images/alertbike.png";
+                $alt = 'B';
+                $title = $KONSTANTS['EBC_FlagB'];
+                break;
+             case 'D':
+                $src = "images/alertdaylight.png";
+                $alt = 'D';
+                $title = $KONSTANTS['EBC_FlagD'];
+                break;
+             case 'F':
+                $src = "images/alertface.png";
+                $alt = 'F';
+                $title = $KONSTANTS['EBC_FlagF'];
+                break;
+             case 'N':
+                $src = "images/alertnight.png";
+                $alt = 'N';
+                $title = $KONSTANTS['EBC_FlagN'];
+                break;
+             case 'R':
+                $src = "images/alertrestricted.png";
+                $alt = 'R';
+                $title = $KONSTANTS['EBC_FlagR'];
+                break;
+             case 'T':
+                $src = "images/alertreceipt.png";
+                $alt = 'T';
+                $title = $KONSTANTS['EBC_FlagT'];
+                break;
+         }
+         if ($alt != '') {
+            $res .= '<img class="icon" ';
+            $res .= ' src="'.$src.'"';
+            $res .= ' alt="'.$alt.'"';
+            $res .= ' title="'.$title.'"';
+            $res .= '>';
+         }
+    }
+    return $res;
+
+}
 
 function reviewEntrant($entrant) {
 
@@ -282,7 +346,7 @@ function reviewEntrant($entrant) {
         echo('<tr class="link"');
         echo(' onclick="window.open('."'".$lnk."','_self'".')">');
         echo('<td class="BonusID">'.$s1.$bonusid.$s2.'</td>');
-        $nf = $rd['Notes'].' <strong>'.$rd['Flags'].'</strong>';
+        $nf = $rd['Notes'].' <strong>'.fmtFlags($rd['Flags'],false).'</strong>';
         echo('<td class="BriefDesc">'.$s1.$rd['BriefDesc'].$s2.'<br><span class="NotesFlags">'.$nf.'</span></td>');
         echo('<td class="OdoReading">'.$s1.$rd['OdoReading'].$s2.'</td>');
         echo('<td class="ClaimTime">'.$s1.logtime($rd['ClaimTime']).$s2.'</td>');

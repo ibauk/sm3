@@ -82,6 +82,16 @@ $KONSTANTS['RPT_TPenalty']	= "&#x23F0;";
 $KONSTANTS['RPT_Total'] 	= "TOTAL";
 $KONSTANTS['RPT_SPenalty']	= "!! ";
 
+$KONSTANTS['EBC_Flag2']     = "Team rules";
+$KONSTANTS['EBC_FlagA']     = "Read the notes!";
+$KONSTANTS['EBC_FlagB']     = "Bike in photo";
+$KONSTANTS['EBC_FlagD']     = "Daylight only";
+$KONSTANTS['EBC_FlagF']     = "Face in photo";
+$KONSTANTS['EBC_FlagN']     = "Night only";
+$KONSTANTS['EBC_FlagR']     = "Restricted access";
+$KONSTANTS['EBC_FlagT']     = "Need a receipt (ticket)";
+
+
 $KONSTANTS['CLAIM_REJECTED'] = "!! ";
 
 // This array specifies labels and tooltips for each onscreen field to avoid the need for 'literals in the procedure division'.
