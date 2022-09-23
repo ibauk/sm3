@@ -298,6 +298,12 @@ table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align
 #timenow		{ cursor: grab; }
 #timenow.held	{ background-color: yellow; cursor: grabbing; }
 
+[for=cd_hot] { 
+	padding-left: 2em;
+	color: var(--bright-text);
+	font-size: 2.1em !important;
+}
+
 /* Fast odo readings */
 input:not([disabled]).start,
 input:not([disabled]).stop		{ background-color:white; }

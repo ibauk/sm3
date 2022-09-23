@@ -715,6 +715,8 @@ function showFinisherList()
 		$status = $_REQUEST['status'];
 	
 	$sortspec = 'EntrantStatus DESC,FinishPosition,TotalPoints DESC,CorrectedMiles ';
+	if (isset($_REQUEST['hot']))
+		$sortspec = 'EntrantStatus DESC,FinishTime DESC,FinishPosition,TotalPoints DESC,CorrectedMiles ';
 	if (isset($_REQUEST['seq']))
 		$sortspec = $_REQUEST['seq'];
 	
@@ -771,6 +773,7 @@ function formSubmit(e) {
 <?php
 	echo('<label for="cd_ok">+ok</label> <input type="checkbox" id="cd_ok" name="ok" value="ok" '.(isset($_REQUEST['ok'])? 'checked' : '').' onclick="formSubmit(event);"> ');
 	echo('<label for="cd_dnf">+dnf</label> <input type="checkbox" id="cd_dnf" name="dnf" value="dnf" '.(isset($_REQUEST['dnf'])? 'checked' : '').' onclick="formSubmit(event);"> ');
+	echo('<label for="cd_hot"> &#9832; </label> <input type="checkbox" id="cd_hot" name="hot" value="hot" '.(isset($_REQUEST['hot'])? 'checked' : '').' onclick="formSubmit(event);"> ');
 ?> 
  </form>
  </span>

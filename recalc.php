@@ -85,6 +85,8 @@ function applyClaim($claimid,$intransaction) {
 		}
 	}
 
+    $resetTeamHappiness = $rc['Decision'] > 0;
+
     initScorecardVariables();
 
 	$sql = "SELECT IfNull(FinishTime,'2020-01-01') As FinishTime,IfNull(OdoRallyFinish,0) As OdoRallyFinish,BonusesVisited";
@@ -170,6 +172,9 @@ function applyClaim($claimid,$intransaction) {
 
 
 	$sql = "UPDATE entrants SET BonusesVisited='".implode(',',$bv)."', Confirmed=".$KONSTANTS['ScorecardIsDirty'];
+    if ($resetTeamHappiness) {
+        $sql .= ",ReviewedByTeam=0";
+    }
 	$sql .= ",RejectedClaims='".implode(',',$rcd)."'";
 	$sql .= ",StartTime='".$rd['StartTime']."'";
 	$sql .= ",OdoRallyStart=".$rd['OdoRallyStart'];
