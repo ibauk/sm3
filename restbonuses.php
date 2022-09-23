@@ -49,6 +49,37 @@ function bonusCodes($grps) {
     return $codes;
 }
 
+// see also fmtEvidenceDate in claimslog.php
+function fmtTimestamp($dt) {
+
+    $NA = 'n/a';
+    $GoodCheck = '2022';
+
+    if ($dt < $GoodCheck)
+        return $NA;
+
+    $zz = str_replace('Z',' +0000',$dt);
+    $zz = str_replace('+',' +',$zz);
+    return str_replace('T',' ',$zz);
+}
+
+// return an array of reject reason codes and descriptions
+function getRejectReasons() {
+
+    $tmp = explode("\n",getValueFromDB("SELECT RejectReasons FROM rallyparams","RejectReasons","1=rejected"));
+    $rr = [];
+    foreach($tmp as $r) {
+        $p = strpos($r,'=');
+        if ($p === false)
+            continue;
+        $n = intval(substr($r,0,$p));
+        $x = substr($r,$p + 1);
+        $rr[$n] = $x;
+    }
+    return $rr;
+}
+
+
 /**
  * inList formats the entries in the array $arr into a single string
  * of single quoted literals separated by ','.
@@ -118,6 +149,9 @@ function ajaxNewRBClaim() {
         }
     }
 
+    error_log("Hello sailor");
+    $Rejects = getRejectReasons();
+
     $restBonusGroups = getSetting('restBonusGroups','RestBonuses');
     $restBonusCodes = bonusCodes($restBonusGroups);
     error_log('restBonusCodes=='.implode(',',$restBonusCodes).' from '.$restBonusGroups);
@@ -137,7 +171,7 @@ function ajaxNewRBClaim() {
     }
 
     // Fetch the most recent start claim
-    $sql = "SELECT BonusID,ClaimTime,OdoReading FROM claims WHERE EntrantID=".$_REQUEST['EntrantID'];
+    $sql = "SELECT BonusID,ClaimTime,OdoReading,Decision FROM claims WHERE EntrantID=".$_REQUEST['EntrantID'];
     $sql .= " AND BonusID In (".inList($startBonusCodes).")";
     $sql .= "ORDER BY ClaimTime DESC";
     error_log($sql);
@@ -151,7 +185,7 @@ function ajaxNewRBClaim() {
     $gn = getValueFromDB("SELECT IfNull(GroupName,'') As GroupName FROM bonuses WHERE BonusID='".$_REQUEST['BonusID']."'","GroupName","");
 
     // Now fetch newer, repeat or mismatched RB claims
-    $sql = "SELECT claims.BonusID,ClaimTime,OdoReading,IfNull(GroupName,'') As GroupName FROM claims";
+    $sql = "SELECT claims.BonusID,ClaimTime,OdoReading,IfNull(GroupName,'') As GroupName,Decision FROM claims";
     $sql .= " JOIN bonuses ON claims.BonusID=bonuses.BonusID";
     $sql .= " WHERE EntrantID=".$_REQUEST['EntrantID'];
     $sql .= " AND claims.BonusID In (".inList($restBonusCodes).")";
@@ -171,7 +205,7 @@ function ajaxNewRBClaim() {
         $lt = [];
         preg_match('/<span[^>]*>([^<]+)/',logtime($lastclaim['ClaimTime']),$lt);
 
-        $errmsg = '☹️ '.$claimstart['BonusID'].'=='.$lastclaim['BonusID'].' '.$lt[1];
+        $errmsg = '☹️ '.$claimstart['BonusID'].'=='.$lastclaim['BonusID'].' '.fmtTimestamp($lt[1]);
         $errmsg .= ' @ '.$lastclaim['OdoReading'];
         echo('{"result":"claimed","error":"'.$errmsg.'"}');
         return;
@@ -181,7 +215,7 @@ function ajaxNewRBClaim() {
     $mins = minutesBetween($claimstart['ClaimTime'],$_REQUEST['ClaimTime']);
     error_log('mins = '.$mins);
     if ($_REQUEST['RestMins'] > $mins) {
-        echo('{"result":"toosoon","error":"☹️'.$claimstart['BonusID'].'=='.$claimstart['ClaimTime']." (".mins2HM(intval($mins)).")".'"}');
+        echo('{"result":"toosoon","error":"☹️'.$claimstart['BonusID'].'=='.fmtTimestamp($claimstart['ClaimTime'])." (".mins2HM(intval($mins)).")".'"}');
         return;
     }
 
@@ -197,7 +231,14 @@ function ajaxNewRBClaim() {
 
     $delta = "&#916;";
     $info = $claimstart['BonusID'].'  '." $delta = ".mins2HM(intval($mins)).", $cm $bdu";
-    echo('{"result":"ok","info": "'.$info.'"}');
+    if ($claimstart['Decision'] > 0) {
+        error_log(json_encode($Rejects));
+        echo('{"result":"rejected","error":"☹️'.$claimstart['BonusID'].'=='.fmtTimestamp($claimstart['ClaimTime']));
+        echo(" (".mins2HM(intval($mins)).")".' &#10008; '.$Rejects[$claimstart['Decision']].'"}');
+    } else {
+        echo('{"result":"ok","info": "'.$info.'"}');
+    }
+    return;
 }
 
 if (isset($_REQUEST['c']) && $_REQUEST['c']=='rb')
