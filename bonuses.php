@@ -85,11 +85,11 @@ function showBonus($bonusid) {
 	echo('<input type="hidden" name="c" value="bonuses">');
 
 
-	echo('<span class="vlabel"><label for="sdbutton"></label>');
+	echo('<span class="vlabel"><label for="savedata"></label>');
 	echo('<span title="'.$TAGS['DeleteEntryLit'][1].'">');
 	echo('<label for="deletecmd">'.$TAGS['DeleteEntryLit'][0].'</label> ');
-	echo('<input id="deletecmd" type="checkbox" name="deletebonus"> '); 
-	echo('<input type="submit" id="sdbutton" name="savedata" value="'.$TAGS['SaveBonus'][0].'"> ');
+	echo('<input id="deletecmd" type="checkbox" name="deletebonus" onchange="enableSaveButton();"> '); 
+	echo('<input type="submit" disabled id="savedata" name="savedata" data-triggered="0" onclick="setTriggered(this);" value="'.$TAGS['SaveBonus'][0].'"> ');
 
 	$lnk = '<a class="link navLink" style="text-decoration:none;" title="*" href="bonuses.php?c=bonus&amp;bonus='.$rd['BonusID'];
 	$lnk .= '&amp;ord=BonusID';
@@ -105,16 +105,16 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BriefDescLit'][1].'">');
 	echo('<label for="BriefDesc">'.$TAGS['BriefDescLit'][0].'</label> ');
-	echo('<input type="text" name="BriefDesc" id="BriefDesc" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'">');
+	echo('<input type="text" name="BriefDesc" id="BriefDesc"  oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'">');
 	echo('</span>');
 
 	echo('<span class="vlabel">');
 	echo('<span title="'.$TAGS['BonusPoints'][1].'">');
 	echo('<label for="Points">'.$TAGS['BonusPoints'][0].'</label> ');
-	echo('<input type="number" name="Points" id="Points" value="'.$rd['Points'].'"> ');
+	echo('<input type="number" name="Points" id="Points" onchange="enableSaveButton();" value="'.$rd['Points'].'"> ');
 	echo('</span>');
 	echo('<span title="'.$TAGS['AskPoints'][1].'">');
-	echo('<select name="AskPoints">');
+	echo('<select name="AskPoints" onchange="enableSaveButton();">');
 	echo('<option value="0"'.($rd['AskPoints']==0 ? ' selected>' : '>').$TAGS['AskPoints0'][0].'</option>');
 	echo('<option value="1"'.($rd['AskPoints']==0 ? '>' : ' selected>').$TAGS['AskPoints1'][0].'</option>');
 	echo('</select>');
@@ -125,7 +125,7 @@ function showBonus($bonusid) {
 		if (isset($cats[$i])) {
 			echo('<span class="vlabel">');
 			echo('<label for="Cat'.$i.'">'.$catlabels[$i].'</label> ');
-			echo('<select id="Cat'.$i.'" name="Cat'.$i.'">');
+			echo('<select id="Cat'.$i.'" name="Cat'.$i.'" onchange="enableSaveButton();">');
 			foreach ($cats[$i] as $ce => $bd) 		{
 				echo('<option value="'.$ce.'" ');
 				if ($ce == $rd['Cat'.$i])
@@ -137,7 +137,7 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusNotes'][1].'">');
 	echo('<label for="Notes">'.$TAGS['BonusNotes'][0].'</label> ');
-	echo('<textarea name="Notes" id="Notes" cols="80" rows="1">'.str_replace('"','&quot;',$rd['Notes']).'</textarea>');
+	echo('<textarea name="Notes" id="Notes" cols="80" rows="1" oninput="enableSaveButton();">'.str_replace('"','&quot;',$rd['Notes']).'</textarea>');
 	echo('</span>');
 	
 	echo('<span class="vlabel" title="'.$TAGS['BonusFlags'][1].'">');
@@ -157,7 +157,7 @@ function showBonus($bonusid) {
 			case 'T':	echo('alertreceipt.png'); break;
 		}
 		echo('" alt="'.$flg.'"/></label> ');
-		echo('<input type="checkbox" name="BonusScoringFlag'.$flg.'"');
+		echo('<input type="checkbox" onchange="enableSaveButton();" name="BonusScoringFlag'.$flg.'"');
 		if (!(strpos($rd['Flags'],$flg)===false))
 			echo(' checked ');
 		echo('> ');
@@ -167,7 +167,7 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusPhoto'][1].'">');
 	echo('<label for="Image">'.$TAGS['BonusPhoto'][0].'</label> ');
-	echo('<input type="text" name="Image" id="Image" value="'.str_replace('"','&quot;',$rd['Image']).'"> ');
+	echo('<input type="text" name="Image" id="Image" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Image']).'"> ');
 ?>
 <script>
 	function thumbimg(img) {
@@ -179,6 +179,11 @@ function showBonus($bonusid) {
 			img.classList.add('thumbnail');
 		}
 	}
+	function setTriggered(obj) {
+
+		obj.setAttribute('data-triggered','1');
+	}
+
 </script>
 <?php
 	echo('<img style="vertical-align: middle;" src="images/bonuses/'.rawurlencode($rd['Image']).'" alt="**" class="thumbnail" onclick="thumbimg(this);" data-t="1" loading="lazy"/>');
@@ -187,7 +192,7 @@ function showBonus($bonusid) {
 	
 	echo('<span class="vlabel" title="'.$TAGS['CompulsoryBonus'][1].'">');
 	echo('<label for="Compulsory">'.$TAGS['CompulsoryBonus'][0].'</label> ');
-	echo('<select id="Compulsory" name="Compulsory">');
+	echo('<select id="Compulsory" name="Compulsory" onchange="enableSaveButton();">');
 	echo('<option value="0"'.($rd['Compulsory']==0 ? ' selected>' : '>').$TAGS['CompulsoryBonus0'][0].'</option>');
 	echo('<option value="1"'.($rd['Compulsory']==1 ? ' selected>' : '>').$TAGS['CompulsoryBonus1'][0].'</option>');
 	echo('<option value="2"'.($rd['Compulsory']==2 ? ' selected>' : '>').$TAGS['CompulsoryBonus2'][0].'</option>');
@@ -197,10 +202,10 @@ function showBonus($bonusid) {
 	echo('<span class="vlabel">');
 	echo('<span title="'.$TAGS['RestMinutesLit'][1].'">');
 	echo('<label for="RestMinutes">'.$TAGS['RestMinutesLit'][0].'</label> ');
-	echo('<input type="number" class="smallnumber" name="RestMinutes" id="RestMinutes" value="'.$rd['RestMinutes'].'"> ');
+	echo('<input type="number" class="smallnumber" name="RestMinutes" id="RestMinutes" onchange="enableSaveButton();" value="'.$rd['RestMinutes'].'"> ');
 	echo('</span>');
 	echo('<span title="'.$TAGS['AskMinutes'][1].'">');
-	echo('<select name="AskMinutes">');
+	echo('<select name="AskMinutes" onchange="enableSaveButton();">');
 	echo('<option value="0"'.($rd['AskMinutes']==0 ? ' selected>' : '>').$TAGS['AskMinutes0'][0].'</option>');
 	echo('<option value="1"'.($rd['AskMinutes']==0 ? '>' : ' selected>').$TAGS['AskMinutes1'][0].'</option>');
 	echo('</select>');
@@ -209,7 +214,7 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['GroupNameLit'][1].'">');
 	echo('<label for="GroupName">'.$TAGS['GroupNameLit'][0].'</label> ');
-	echo('<select name="GroupName" id="GroupName">');
+	echo('<select name="GroupName" id="GroupName" onchange="enableSaveButton();">');
 	foreach($sgroups as $g => $n) {
 		echo('<option value="'.$g.'" '.($g==$rd['GroupName'] ? ' selected ' : '' ).'>'.$n.'</option>');
 	}
@@ -218,23 +223,23 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusCoords'][1].'">');
 	echo('<label for="Coords">'.$TAGS['BonusCoords'][0].'</label> ');
-	echo('<input type="text" class="wider" name="Coords" id="Coords" value="'.str_replace('"','&quot;',$rd['Coords']).'">');
+	echo('<input type="text" class="wider" name="Coords" id="Coords" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Coords']).'">');
 	echo('</span>');
 	
 	echo('<span class="vlabel" title="'.$TAGS['BonusWaffle'][1].'">');
 	echo('<label for="Waffle">'.$TAGS['BonusWaffle'][0].'</label> ');
-	echo('<textarea name="Waffle" id="Waffle" cols="80" rows="1">'.str_replace('"','&quot;',$rd['Waffle']).'</textarea>');
+	echo('<textarea name="Waffle" id="Waffle" cols="80" rows="1" oninput="enableSaveButton();">'.str_replace('"','&quot;',$rd['Waffle']).'</textarea>');
 	echo('</span>');
 
 	if (getSetting('useBonusQuestions',"false")=="true") {
 		echo('<span class="vlabel" title="'.$TAGS['BonusQuestion'][1].'">');
 		echo('<label for="Question">'.$TAGS['BonusQuestion'][0].'</label> ');
-		echo('<input type="text" class="wider" name="Question" id="Question" value="'.str_replace('"','&quot;',$rd['Question']).'">');
+		echo('<input type="text" class="wider" name="Question" id="Question" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Question']).'">');
 		echo('</span>');
 	
 		echo('<span class="vlabel" title="'.$TAGS['BonusAnswer'][1].'">');
 		echo('<label for="Answer">'.$TAGS['BonusAnswer'][0].'</label> ');
-		echo('<input type="text" class="wider" name="Answer" id="Answer" value="'.str_replace('"','&quot;',$rd['Answer']).'">');
+		echo('<input type="text" class="wider" name="Answer" id="Answer" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Answer']).'">');
 		echo('</span>');
 	}
 	

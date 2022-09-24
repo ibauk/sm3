@@ -566,7 +566,7 @@ function deleteSingleCombo() {
 	global $DB;
 
 		
-	$sql = "DELETE FROM combinations WHERE ComboID='".$DB->escapeString(strtoupper($_REQUEST['comboid']))."'";
+	$sql = "DELETE FROM combinations WHERE ComboID='".$DB->escapeString($_REQUEST['comboid'])."'";
 	$DB->exec($sql);
 	if ($DB->lastErrorCode()<>0) 
 		return dberror();
@@ -582,46 +582,32 @@ function saveSingleCombo() {
 
 	global $DB, $KONSTANTS;
 
-	$comboid = strtoupper($_REQUEST['comboid']);
-	$sql = "SELECT BriefDesc FROM combinations WHERE ComboID='".$DB->escapeString($comboid)."'";
-	$isnew = getValueFromDB($sql,"BriefDesc","") == "";
+	$comboid = $_REQUEST['comboid'];
 	if (isset($_REQUEST['BonusID']))
 		$bonuses = implode(',',$_REQUEST['BonusID']);
 	else if (isset($_REQUEST['Bonuses']))
 		$bonuses = $_REQUEST['Bonuses'];
 	else
 		$bonuses = '';
-	if ($isnew) {
-		$sql = "INSERT INTO combinations(ComboID,BriefDesc,ScoreMethod,MinimumTicks,ScorePoints,Bonuses,Compulsory";
-		for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
-			if (isset($_REQUEST['Cat'.$i.'Entry']))
-				$sql .= ",Cat".$i;
-		$sql .= ") VALUES (";
-		$sql .= "'".$DB->escapeString($comboid)."'";
-		$sql .= ",'".$DB->escapeString($_REQUEST['BriefDesc'])."'";
-		$sql .= ",".$_REQUEST['ScoreMethod'];
-		$sql .= ",".$_REQUEST['MinimumTicks'];
-		$sql .= ",'".$_REQUEST['ScorePoints']."'";
-		$sql .= ",'".$bonuses."'";
-		$sql .= ",".$_REQUEST['Compulsory'];
-		for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
-			if (isset($_REQUEST['Cat'.$i.'Entry']))
-				$sql .= ",".$_REQUEST['Cat'.$i.'Entry'];
-		$sql .= ")";
 
-	} else {
-		$sql = "UPDATE combinations SET ";
-		$sql .= "BriefDesc='".$DB->escapeString($_REQUEST['BriefDesc'])."'";
-		$sql .= ",ScoreMethod=".$_REQUEST['ScoreMethod'];
-		$sql .= ",MinimumTicks=".$_REQUEST['MinimumTicks'];
-		$sql .= ",ScorePoints='".$_REQUEST['ScorePoints']."'";
-		$sql .= ",Bonuses='".$bonuses."'";
-		$sql .= ",Compulsory=".$_REQUEST['Compulsory'];
-		for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) 
-			if (isset($_REQUEST['Cat'.$i.'Entry'])) 
-				$sql .= ",Cat".$i."=".$_REQUEST['Cat'.$i.'Entry'];
-		$sql .= " WHERE ComboID='".$DB->escapeString($comboid)."'";
-	}
+
+	$sql = "INSERT OR REPLACE INTO combinations(ComboID,BriefDesc,ScoreMethod,MinimumTicks,ScorePoints,Bonuses,Compulsory";
+	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
+		if (isset($_REQUEST['Cat'.$i.'Entry']))
+			$sql .= ",Cat".$i;
+	$sql .= ") VALUES (";
+	$sql .= "'".$DB->escapeString($comboid)."'";
+	$sql .= ",'".$DB->escapeString($_REQUEST['BriefDesc'])."'";
+	$sql .= ",".$_REQUEST['ScoreMethod'];
+	$sql .= ",".$_REQUEST['MinimumTicks'];
+	$sql .= ",'".$_REQUEST['ScorePoints']."'";
+	$sql .= ",'".$bonuses."'";
+	$sql .= ",".$_REQUEST['Compulsory'];
+	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
+		if (isset($_REQUEST['Cat'.$i.'Entry']))
+			$sql .= ",".$_REQUEST['Cat'.$i.'Entry'];
+	$sql .= ")";
+
 	//print_r($_REQUEST);echo('<hr>'.$sql); exit;
 	$DB->exec($sql);
 	if ($DB->lastErrorCode()<>0) 

@@ -740,6 +740,11 @@ echo('<title>'.$TAGS['ttFinishers'][0].'</title>');
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="score.css?ver=<?= filemtime('score.css')?>">
 <meta http-equiv="refresh" content="<?php echo($TIMEOUTSECS); ?>">
+<style>
+	.qlc { text-align: center; }
+	.qll { text-align: left; }
+	.qlr { text-align: right; }
+</style>
 <script>
 <!--
 function countdown(secs) {
@@ -773,6 +778,7 @@ function formSubmit(e) {
 <?php
 	echo('<label for="cd_ok">+ok</label> <input type="checkbox" id="cd_ok" name="ok" value="ok" '.(isset($_REQUEST['ok'])? 'checked' : '').' onclick="formSubmit(event);"> ');
 	echo('<label for="cd_dnf">+dnf</label> <input type="checkbox" id="cd_dnf" name="dnf" value="dnf" '.(isset($_REQUEST['dnf'])? 'checked' : '').' onclick="formSubmit(event);"> ');
+	echo('<label for="cd_ss"> &#8669; </label> <input type="checkbox" id="cd_ss" name="ss" value="aa" '.(isset($_REQUEST['ss'])? 'checked' : '').' onclick="formSubmit(event);"> ');
 	echo('<label for="cd_hot"> &#9832; </label> <input type="checkbox" id="cd_hot" name="hot" value="hot" '.(isset($_REQUEST['hot'])? 'checked' : '').' onclick="formSubmit(event);"> ');
 ?> 
  </form>
@@ -794,50 +800,50 @@ function formSubmit(e) {
 	{
 		echo('<table class="qdfinishers">');
 		echo('<thead><tr>');
-		echo('<th>'.$TAGS['qPlace'][0].'</th>');
-		echo('<th>'.$TAGS['qName'][0].'</th>');
+		echo('<th class="qlc">'.$TAGS['qPlace'][0].'</th>');
+		echo('<th class="qll">'.$TAGS['qName'][0].'</th>');
 		
 		if ($rallyUsesKms)
 			$dist = $TAGS['qKms'][0];
 		else
 			$dist = $TAGS['qMiles'][0];
 		$dist = getSetting('distanceCustomUnit',$dist);
-		echo('<th>'.$dist.'</th>');
-		echo('<th>'.$TAGS['qPoints'][0].'</th>');
+		echo('<th class="qlr">'.$dist.'</th>');
+		echo('<th class="qlr">'.$TAGS['qPoints'][0].'</th>');
 	
 		if (isset($_REQUEST['ss']))
-			echo('<th>Speed</th>');
+			echo('<th class="qlr">Speed</th>');
 		echo('</tr></thead><tbody>');
 		$n = 0;
 		
 		while ($rd = $R->fetchArray())
 		{
 			$rowsdone++;
-			echo('<tr>');
+			echo('<tr title="'.$rd['FinishTime'].'">');
 			switch($rd['EntrantStatus']) {
 				case $KONSTANTS['EntrantDNF']:
-					echo('<td>DNF</td>');
+					echo('<td class="qlc">DNF</td>');
 					break;
 				case $KONSTANTS['EntrantDNS']:
-					echo('<td>DNS</td>');
+					echo('<td class="qlc">DNS</td>');
 					break;
 				case $KONSTANTS['EntrantOK']:
-					echo('<td>ok</td>');
+					echo('<td class="qlc">ok</td>');
 					break;
 				default:
-					echo('<td>'.$rd['FinishPosition'].'</td>');
+					echo('<td class="qlc">'.$rd['FinishPosition'].'</td>');
 			}
-			echo('<td>'.$rd['RiderName']);
+			echo('<td class="qll">'.$rd['RiderName']);
 			if ($rd['PillionName'] > '')
 				echo(' & '.$rd['PillionName']);
 			echo('</td>');
 			$dist = $rd['CorrectedMiles'];
 			if (getSetting('distanceZeroBased','false')=='true')
 				$dist++;
-			echo('<td>'.number_format($dist,0,$dp,$cm).'</td>');
-			echo('<td>'.number_format($rd['TotalPoints'],0,$dp,$cm).'</td>');
+			echo('<td class="qlr">'.number_format($dist,0,$dp,$cm).'</td>');
+			echo('<td class="qlr">'.number_format($rd['TotalPoints'],0,$dp,$cm).'</td>');
 			if (isset($_REQUEST['ss']))
-				echo('<td> '.fetchSpeedText($rd).'</td>');
+				echo('<td class="qlr"> '.fetchSpeedText($rd).'</td>');
 			
 			echo('</tr>');
 			$n++;
