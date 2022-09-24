@@ -77,7 +77,7 @@ function editCertificateW() {
 	
 	echo('<input type="hidden" name="c" value="editcert">');
 	echo('<input type="hidden" name="EntrantID" value="'.$EntrantID.'">');
-	echo('<input type="hidden" name="certcss" id="certcss" value="'.$rd['css'].'">');
+	echo('<input type="hidden" name="certcss" id="certcss" value="'.htmlspecialchars($rd['css']).'">');
 	echo('<div class="editwControls" style="font-size:.8em;">');
 
 	// Make provision for multiple classes 
