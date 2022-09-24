@@ -505,9 +505,14 @@ function previewSpreadsheet()
 		return;
 
 
-	//echo('1 .. ');
+	try {
+	error_log('previewSpeadsheet: opening ...');
 	$sheet = openWorksheet();
-	//echo('2 .. ');
+	error_log('previewSpreadsheet: opened!');
+	} catch(Exception $e) {
+		echo("<br>OMG!: ".$e->getMessage());
+		return;
+	}
 	$maxcol = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($sheet->getHighestColumn());
 	$maxrow = $sheet->getHighestRow();
 	//echo('3 .. ');
@@ -678,6 +683,17 @@ function resetMapFields() {
 	}
 }
 
+function testMapFields() {
+
+	let maps = document.querySelector('#previewrows').rows[0];
+	for (let col = 0; col < maps.cells.length; col++) {
+		let sel = maps.cells[col].firstChild;
+		console.log('Col: '+col+' = '+sel.selectedIndex+' ['+sel.options.length+']');
+		if (sel.selectedIndex < sel.options.length - 1) return true;
+	}
+	return false;
+	
+}
 </script>
 
 <?php
@@ -751,7 +767,7 @@ function resetMapFields() {
 	previewSpreadsheet();
 	echo('</form>');
 		
-	echo('<script>autoMapFields();</script>');
+	echo('<script>if (!testMapFields())autoMapFields();</script>');
 }
 
 function defaultSpecfile($datatype)
