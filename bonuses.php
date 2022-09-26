@@ -481,8 +481,23 @@ function triggerNewRow()
 
 	echo('<div class="stickytop">'.$TAGS['BonusMaintHead'][1]);
 	echo('<br><button autofocus value="+" onclick="return triggerNewRow();">+</button>');
-	
 	echo('</div>');
+
+?>
+	<script>	
+		
+	function testBID(inp) {
+		const re = new RegExp('^[A-Z0-9]*-?$');
+		console.log(inp.value);
+		if (re.test(inp.value))
+			inp.classList.remove('yellow');
+		else
+			inp.classList.add('yellow');
+	}
+
+</script>
+<?php
+
 	echo('<table id="bonuses">');
 //	echo('<caption title="'.htmlentities($TAGS['BonusMaintHead'][1]).'">'.htmlentities($TAGS['BonusMaintHead'][0]).'</caption>');
 	echo('<thead class="listhead"><tr><th class="left">'.$TAGS['BonusIDLit'][0].'</th>');
@@ -571,7 +586,7 @@ function triggerNewRow()
 		}
 		echo("</tr>\r\n");
 	}
-	echo('<tr class="newrow hide" data-indb="0"><td><span><input title="'.$TAGS['BonusIDLit'][1].'" class="BonusID" type="text" onblur="enableNewSave(this);"></span></td>');
+	echo('<tr class="newrow hide" data-indb="0"><td><span><input title="'.$TAGS['BonusIDLit'][1].'" class="BonusID" oninput="testBID(this);" type="text" onblur="enableNewSave(this);"></span></td>');
 	echo('<td><span><input data-newrow="x" type="text" onblur="enableNewSave(this);"></span></td>');
 	echo('<td><span><input data-newrow="x" type="number" value="1" onblur="enableNewSave(this);"></span></td>');
 	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)

@@ -125,7 +125,7 @@ input[name="bonusValues[]"],
 input[name="bonusid"],
 input[name="showb"],
 .BonusID,
-input[name="BonusID"]	{ width: 5em; text-transform: uppercase; }
+input[name="BonusID"]	{ width: 5em; }
 
 input[name="comboid"],
 input[name="ComboID[]"]	{ width: 12em; }
