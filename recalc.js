@@ -153,7 +153,7 @@ function initScorecardVariables() {
 function parseBonusClaim(bonus,obj) {
     // Format is bonus[=[points][;minutes]]
     console.log("Parsing BC "+JSON.stringify(bonus));
-    let m = /([a-zA-z0-9]+)=?(\d+)?(X|)?(P|)?;?(\d+)?/.exec(bonus);
+    let m = /([A-Z0-9]+-?)=?(\d+)?(X|)?(P|)?;?(\d+)?/.exec(bonus);
     console.log("Parsed m = "+JSON.stringify(m));
     obj.bon = m[1];
     obj.points = m[2];
