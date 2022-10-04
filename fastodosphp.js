@@ -83,7 +83,7 @@ function sendTransactions() {
             return; // Probably means the network's not available
         }
         xhttp.onload = function() {
-            let ok = new RegExp("\W*ok\W*");
+            let ok = new RegExp("\\W*ok\\W*");
             if (xhttp.status == 200) {
                 console.log('{'+this.responseText.substring(0,30)+'}');
                 if (!ok.test(this.responseText)) {                
