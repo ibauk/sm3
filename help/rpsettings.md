@@ -18,6 +18,9 @@ autoFinisher
 autoLateDNF
 : If true, any timed odo or claim past time results in DNF
 
+multStepValue
+: The value of 'step' on HTML INPUT tag for multipliers. Default is '1'. Use '0.1' or .'0.01' to allow decimals
+
 ### Presentation
 claimsReloadEBC
 : Number of seconds between refreshes of EBC list

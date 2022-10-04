@@ -165,12 +165,31 @@ function changeTimeSpec(obj)
 	}
 	enableSaveButton();
 }
+function changePenaltyType(obj) {
+
+	let sel = obj.selectedIndex;
+	let mstep = document.querySelector('#multStepValue').value;
+	console.log('cpt: sel='+sel+'  mstep='+mstep);
+	let tr = obj.parentNode.parentNode;
+	let inp = tr.getElementsByClassName('NPower');
+	for (let i = 0; i < inp.length; i++) {
+		if (sel % 2 != 0) { // 1,3 = multipliers
+			inp[i].setAttribute('step',mstep);
+		} else {
+			console.log('Setting points');
+			inp[i].setAttribute('step',1);
+		}
+	}
+	enableSaveButton();
+}
 </script>
 <?php	
 
 
+	$mstep = getSetting('multStepValue','1');
+	$pstep = '1';
 	echo('<form method="post" action="timep.php">');
-	
+	echo('<input type="hidden" id="multStepValue" value="'.$mstep.'">');
 	echo('<input type="hidden" name="c" value="timep">');
 	echo('<input type="hidden" name="menu" value="setup">');
 	echo('<p>'.$TAGS['TimePExplain'][0].'</p>');
@@ -215,7 +234,7 @@ function changeTimeSpec(obj)
 			echo('<td title="'.$TAGS['tpFinishLit'][1].'"><input class="date" type="hidden" name="PenaltyFinishDate[]" value="0"> ');
 			echo('<input class="time" type="number" name="PenaltyFinishTime[]" value="'.$rd['PenaltyFinish'].'" onchange="enableSaveButton();"></td>');
 		}
-		echo('<td><select name="PenaltyMethod[]" onchange="enableSaveButton();">');
+		echo('<td><select name="PenaltyMethod[]" onchange="changePenaltyType(this);" data-mstep="'.$mstep.'" data-pstep="'.$pstep.'">');
 		for ($i=0;$i<=3;$i++)
 		{
 			echo("<option value=\"$i\"");
@@ -225,7 +244,9 @@ function changeTimeSpec(obj)
 			echo($TAGS['tpMethod'.$i][1].'</option>');
 		}
 		echo('</select></td>');
-		echo('<td><input type="number" name="PenaltyFactor[]" value="'.$rd['PenaltyFactor'].'" onchange="enableSaveButton();"></td>');
+		echo('<td><input type="number" class="NPower" step="');
+		echo(($rd['PenaltyMethod'] % 2 == 0 ? $pstep : $mstep));
+		echo('" name="PenaltyFactor[]" value="'.$rd['PenaltyFactor'].'" onchange="enableSaveButton();"></td>');
 		echo('<td class="center"><button value="-" onclick="deleteRow(event);return false;">-</button></td>');
 		echo('</tr>');
 	}

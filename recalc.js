@@ -198,7 +198,7 @@ function checkApplySequences(bonv,catcounts,bonusPoints) {
         let ccr_cat = parseInt(ccr.getAttribute('data-cat'));
         let ccr_axis = parseInt(ccr.getAttribute('data-axis'));
         let ccr_min = parseInt(ccr.getAttribute('data-min'));
-        let ccr_pwr = parseInt(ccr.getAttribute('data-pwr'));
+        let ccr_pwr = parseFloat(ccr.getAttribute('data-pwr'));
         
     
         if (bonv != '') { // is there a current bonus or are we done.
@@ -218,7 +218,7 @@ function checkApplySequences(bonv,catcounts,bonusPoints) {
             cdesc = clbl.parentElement.firstChild.innerText;
         
     
-        console.log('SP='+parseInt(catcounts[ccr_axis]['samepoints'])+' Pwr='+parseInt(ccr_pwr));
+        console.log('SP='+parseInt(catcounts[ccr_axis]['samepoints'])+' Pwr='+parseFloat(ccr_pwr));
         //'&#x2713; == checkmark
         let bonusDesc = '&#x2713; '+cdesc+ " x "+ccr_min;
         if (catcounts[ccr_axis]['samecount'] > ccr_min) {
@@ -277,7 +277,7 @@ function recalcScorecard() {
     scorex = []; // Reinitialize the score explanation
 
     let bonusPoints = 0;
-    let multipliers = 0;
+    let multipliers = 1;
     let numBonusesTicked = 0;
     let restMinutes = 0;
     let bonusesScored = {};    // Keeps track of ordinary, special and combo bonuses successfully claimed
@@ -377,7 +377,7 @@ function recalcScorecard() {
             let ccr_cat = parseInt(ccr.getAttribute('data-cat'));
             let ccr_axis = parseInt(ccr.getAttribute('data-axis'));
             let ccr_min = parseInt(ccr.getAttribute('data-min'));
-            let ccr_pwr = parseInt(ccr.getAttribute('data-pwr'));
+            let ccr_pwr = parseFloat(ccr.getAttribute('data-pwr'));
             console.log("Checking rule ccr-dat"+ccr_cat);
             if (ccr_cat > 0)
                 if (bonv.getAttribute('data-cat'+ccr_axis) != ccr_cat)
@@ -507,8 +507,8 @@ function recalcScorecard() {
 
 
         bonusPoints += parseInt(basicBonusPoints);
-        console.log("Processing combo "+c.value+' + '+basicBonusPoints+' = '+bonusPoints+' ['+numbids+'/'+c.getAttribute('data-minticks')+']');
-        multipliers += parseInt(mults);
+        console.log("Processing combo "+c.value+' + '+basicBonusPoints+' = '+bonusPoints+' ['+numbids+'/'+c.getAttribute('data-minticks')+'] Mx='+mults);
+        multipliers += parseFloat(mults);
 
         let sx = new SCOREXLINE();
         sx.id = c.value;
@@ -569,7 +569,7 @@ function recalcScorecard() {
         let ccr_cat = parseInt(ccr.getAttribute('data-cat'));
         let ccr_axis = parseInt(ccr.getAttribute('data-axis'));
         let ccr_min = parseInt(ccr.getAttribute('data-min'));
-        let ccr_pwr = parseInt(ccr.getAttribute('data-pwr'));
+        let ccr_pwr = parseFloat(ccr.getAttribute('data-pwr'));
         let ccr_rtype = parseInt(ccr.getAttribute('data-ruletype'));
         let ccr_pm = parseInt(ccr.getAttribute('data-pm'));
         if (ccr_axis <= lastAxis) // Process each axis only once
@@ -606,6 +606,7 @@ function recalcScorecard() {
         } else if (ccr_pm === CAT_ResultPoints) {
             bonusPoints += points;
         } else { // multipliers
+            console.log('multipliers+='+points);
             multipliers += points;
             bpx = 'x ';
         }
@@ -647,7 +648,7 @@ function recalcScorecard() {
 
     for(let ccr of document.getElementsByName('catCompoundRules')) {
 
-        if (ccr.getAttribute('data-ruletype') != CC_SEQUENCERULE)
+        if (ccr.getAttribute('data-ruletype') == CC_SEQUENCERULE)
             continue;
 
         if (ccr.getAttribute('data-nmethod') != CAT_NumBonusesPerCatMethod || ccr.getAttribute('data-target') == CAT_ModifyBonusScore)
@@ -656,7 +657,7 @@ function recalcScorecard() {
         let ccr_cat = parseInt(ccr.getAttribute('data-cat'));
         let ccr_axis = parseInt(ccr.getAttribute('data-axis'));
         let ccr_min = parseInt(ccr.getAttribute('data-min'));
-        let ccr_pwr = parseInt(ccr.getAttribute('data-pwr'));
+        let ccr_pwr = parseFloat(ccr.getAttribute('data-pwr'));
         let ccr_rtype = parseInt(ccr.getAttribute('data-ruletype'));
         let ccr_pm = parseInt(ccr.getAttribute('data-pm'));
     
@@ -697,7 +698,8 @@ function recalcScorecard() {
             //echo("RC $basicPoints / $bonusPoints <br>");
         } else { // Multipliers then
             let mults = chooseNZ(ccr_pwr,catcount);
-            multipliers += parseInt(mults);
+            console.log('xMultipliers+='+mults);
+            multipliers += parseFloat(mults);
             bpx = 'x ';
             basicPoints = mults;
         }
@@ -740,7 +742,8 @@ function recalcScorecard() {
     let tpM = tp[1]; // Multipliers
 
     if (tpM != 0 || tpP != 0) {
-        multipliers += parseInt(tpM);
+        console.log('xxMultipliers+='+tpM);
+        multipliers += parseFloat(tpM);
         bonusPoints += tpP;
         let sx = new SCOREXLINE();
         let tpx = RPT_TPenalty;
@@ -756,7 +759,7 @@ function recalcScorecard() {
             sx.desc = tp[3].replace('T',' ')+' &#8805; '+tp[2].replace('T',' ').substring(0,16);
         }
         if (tpM != 0) {
-            sx.points = ''+tpM+' x';
+            sx.points = ''+(tpM*100)+'%';
         } else {
             sx.points = tpP;
         }
@@ -769,7 +772,8 @@ function recalcScorecard() {
     let mpM = mp[1]; // Multipliers
 
     if (mpM != 0 || mpP != 0) {
-        multipliers += parseInt(mpM);
+        console.log('xyMultipliers+='+mpM);
+        multipliers += parseFloat(mpM);
         bonusPoints += mpP;
         let sx = new SCOREXLINE();
         let tpx = RPT_MPenalty;
@@ -810,10 +814,10 @@ function recalcScorecard() {
     }
     
 
-    if (multipliers > 1) {
+    if (multipliers != 1) {
         let sx = new SCOREXLINE();
         sx.desc = bonusPoints+' x '+multipliers;
-        sx.points = bonusPoints * multipliers;
+        sx.points = parseInt(bonusPoints * multipliers);
         sx.totalPoints = sx.points;
         scorex.push(sx);
         bonusPoints = sx.points;

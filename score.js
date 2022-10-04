@@ -396,7 +396,7 @@ function calcTimePenalty()
 
 		if (FT >= ds && FT <= de)
 		{
-			var PF = parseInt(TP[i].getAttribute('data-factor'));
+			var PF = parseFloat(TP[i].getAttribute('data-factor'));
 			var PM = parseInt(TP[i].getAttribute('data-method'));
 			var PStartDate = ds; //new Date(TP[i].getAttribute('data-start'));
 			var Mins = 1 + (Math.abs(FTDate - PStartDate) / OneMinute);

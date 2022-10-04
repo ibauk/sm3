@@ -547,11 +547,11 @@ $TAGS = array(
 	'NoScoreX2Print'	=> array('Sorry, no score explanations to print.',''),
 	'NoSelection'		=> array('{no selection}','{no selection}'),
 	'nowlit'			=> array('Now','Record the current date/time'),
-	'NPowerLit'			=> array('Power',"If bonus rule &amp; this is 0, R=bonuspoints(N-1)\n".
-											"If bonus rule &amp; this > 0, R=bonuspoints(this^(N-1))\n".
-											"If sequence rule, this is the multiplier\n".
-											"If set rule &amp; this is 0, R=N\n".
-											"If set rule &amp; this <> 0, R=this value"),
+	'NPowerLit'			=> array('Power',"If Score Level = Modifies Bonus Score &amp; this is 0, resultPoints=bonusPoints * (N-1)\n".
+											"If Score Level = Modifies Bonus Score &amp; this > 0, resultPoints=bonusPoints * (this^(N-1))\n".
+											"If Rule type = Sequential Bonus Award, this is the multiplier or points\n".
+											"If Score Level = Affects Compound Set Score &amp; this is 0, R=N\n".
+											"If Score Level = Affects Compound Set Score &amp; this <> 0, R=this value"),
 											
 	'OdoCaution'		=> array('Caution!','Caution, if you change these values you might need to update the scorecard as well'),
 	'OdoCheckFinish'	=> array('Odo-check finish','The odometer reading at the end of the odo check'),					// Miles/Kms

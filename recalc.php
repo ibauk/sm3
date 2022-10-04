@@ -1029,7 +1029,7 @@ function recalcScorecard($entrant,$intransaction) {
 
     $bonusPoints = 0;
     $restMinutes = 0;
-    $multipliers = 0;
+    $multipliers = 1;
     $numBonusesTicked = 0;
     $bonusesScored = [];    // Keeps track of ordinary, special and combo bonuses successfully claimed
 
@@ -1275,7 +1275,7 @@ function recalcScorecard($entrant,$intransaction) {
         $points = chooseNZ($ccr->pwr,$nzCount);
         $pbx = '';
         if ($ccr->rtype == $KONSTANTS['CAT_DNF_Unless_Triggered']) { // DNF type condition
-            $points = '&checkmark;';
+            $points = '&#x2713;';//checkmark
         } elseif ($ccr->rtype == $KONSTANTS['CAT_DNF_If_Triggered']) {
             $points = $TAGS['EntrantDNF'][0];
         } elseif ($ccr->rtype == $KONSTANTS['CAT_PlaceholderRule'] ) {
@@ -1402,7 +1402,7 @@ function recalcScorecard($entrant,$intransaction) {
         $sx->id = getSetting('RPT_TPenalty',$KONSTANTS['RPT_TPenalty']);
         $sx->desc = $y;
         if ($tpM != 0) {
-            $sx->points = "$tpM x";
+            $sx->points = ($tpM*100)."%";
         } else {
             $sx->points = $tpP;
         }
@@ -1449,10 +1449,10 @@ function recalcScorecard($entrant,$intransaction) {
         $scorex[] = $sx;
     }
 
-    if ($multipliers > 1) {
+    if ($multipliers != 1) {
         $sx = new SCOREXLINE();
         $sx->desc = $bonusPoints.' x '.$multipliers;
-        $sx->points = $bonusPoints * $multipliers;
+        $sx->points = intval($bonusPoints * $multipliers);
         $sx->totalPoints = $sx->points;
         $scorex[] = $sx;
         $bonusPoints = $sx->points;

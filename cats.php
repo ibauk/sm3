@@ -173,7 +173,7 @@ function saveCompoundCalc()
 		if (!isset($_REQUEST['NPower']))
 			$sql .= ',0';
 		else
-			$sql .= ','.intval($_REQUEST['NPower']);
+			$sql .= ','.floatval($_REQUEST['NPower']);
 		$sql .= ','.intval($_REQUEST['Ruletype']);
 		$sql .= ');';
 	}
@@ -195,7 +195,7 @@ function saveCompoundCalc()
 		if (isset($_REQUEST['PointsMults']))
 			$sql .= ",PointsMults=".intval($_REQUEST['PointsMults']);
 		if (isset($_REQUEST['NPower']))
-			$sql .= ",NPower=".intval($_REQUEST['NPower']);
+			$sql .= ",NPower=".floatval($_REQUEST['NPower']);
 		$sql .= ",Ruletype=".intval($_REQUEST['Ruletype']);
 		$sql .=  " WHERE rowid=".intval($_REQUEST['ruleid']);
 	}
@@ -353,7 +353,8 @@ function showCompoundCalc($ruleid)
 	
 	echo('<span class="vlabel" title="'.$TAGS['NPowerLit'][1].'">');
 	echo('<label class="wide" for="NPower">'.$TAGS['NPowerLit'][0].'</label> ');
-	echo('<input type="number" name="NPower" id="NPower" value="'.$rd['NPower'].'">');
+	$stepv = floatval(getSetting('multStepValue','1'));
+	echo('<input type="number" name="NPower" id="NPower" min="0.0" step="'.$stepv.'" value="'.$rd['NPower'].'">');
 	echo('</span>');
 
 	echo('<span class="vlabel"><label for="sdbutton"></label>');
