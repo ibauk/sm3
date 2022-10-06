@@ -692,6 +692,8 @@ function showFinisherList()
 
 	$rallyUsesKms = ($KONSTANTS['BasicDistanceUnit'] != $KONSTANTS['DistanceIsMiles']);
 	
+	$decimalsPPM = intval(getSetting('decimalsPPM','1'));
+
 	if (isset($_REQUEST['t']))
 		$TIMEOUTSECS = intval($_REQUEST['t']);
 	
@@ -722,6 +724,7 @@ function showFinisherList()
 	
 	$sql = "SELECT *,substr(RiderName,1,RiderPos-1) As RiderFirst";
 	$sql .= ",substr(RiderName,RiderPos+1) As RiderLast";
+	$sql .= ",IfNull((TotalPoints*1.0) / CorrectedMiles,0) As PPM";
 	$sql .= " FROM (SELECT *,instr(RiderName,' ') As RiderPos FROM entrants) ";
 
 	$sql .= " WHERE EntrantStatus IN (".$status.")";
@@ -811,6 +814,10 @@ function formSubmit(e) {
 		echo('<th class="qlr">'.$dist.'</th>');
 		echo('<th class="qlr">'.$TAGS['qPoints'][0].'</th>');
 	
+		if (true) {
+			$ppmlit = strtoupper(substr($TAGS['qPoints'][0],0,1).'&#247;'.substr($dist,0,1));
+			echo('<th class="ppm">'.$ppmlit.'</th>');
+		}
 		if (isset($_REQUEST['ss']))
 			echo('<th class="qlr">Speed</th>');
 		echo('</tr></thead><tbody>');
@@ -842,6 +849,10 @@ function formSubmit(e) {
 				$dist++;
 			echo('<td class="qlr">'.number_format($dist,0,$dp,$cm).'</td>');
 			echo('<td class="qlr">'.number_format($rd['TotalPoints'],0,$dp,$cm).'</td>');
+
+			if (true) {
+				echo('<td class="ppm" title="'.$rd['PPM'].'">'.number_format($rd['PPM'],$decimalsPPM,$dp,$cm).'</td>');
+			}
 			if (isset($_REQUEST['ss']))
 				echo('<td class="qlr"> '.fetchSpeedText($rd).'</td>');
 			

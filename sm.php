@@ -845,6 +845,7 @@ function showRallyConfig($showAdvanced)
 {
 	global $DB, $TAGS, $KONSTANTS, $DBVERSION;
 	
+	$rankMethod = getSetting('rankPointsPerMile','false') == 'false' ? 0 : 1;
 
 	$R = $DB->query('SELECT * FROM rallyparams');
 	if (!$rd = $R->fetchArray())
@@ -933,6 +934,17 @@ function calcMaxHours() {
 	console.log('MaxHours == '+hrs);
 	if (hrs > 0)
 		mh.setAttribute('max',hrs);
+}
+// Called for change to the dropdown rankMethod to update the settings values.
+function setRankMethod(sel) {
+
+	const rm = 'rankPointsPerMile';
+	const re = new RegExp(rm+'\"\: \"(true|false)');
+	let settingsTA = document.querySelector('#settings');
+	let settings = JSON.parse(settingsTA.innerText);
+	settings[rm] = sel.value == 1 ? 'true' : 'false';
+	settingsTA.innerText = JSON.stringify(settings);
+	enableSaveButton();
 }
 </script>
 <?php
@@ -1088,11 +1100,20 @@ function calcMaxHours() {
 	echo('</select>');
 	echo('</span>');
 
-	echo('<span class="vlabel">');
-	echo('<label for="AutoRank" title="'.$TAGS['AutoRank'][1].'">'.$TAGS['AutoRank'][0].' </label> ');
+	echo('<span class="vlabel" title="'.$TAGS['AutoRank'][1].'">');
+	echo('<label for="AutoRank">'.$TAGS['AutoRank'][0].' </label> ');
 	$chk = ($rd['AutoRank']==$KONSTANTS['AutoRank']) ? ' checked ' : '';
 	echo(' &nbsp;&nbsp;<input type="checkbox"'.$chk.' name="AutoRank" id="AutoRank" value="'.$KONSTANTS['AutoRank'].'" oninput="enableSaveButton();">');
 	echo('</span>');
+
+	echo('<span class="vlabel" title="'.$TAGS['rankMethod'][1].'">');
+	echo('<label for="rankMethod">'.$TAGS['rankMethod'][0].'</label> ');
+	echo('<select id="rankMethod" name="rankMethod" onchange="setRankMethod(this);">');
+	echo('<option value="0" '.($rankMethod == 0 ? 'selected' : '').'>'.$TAGS['rankMethod0'][0].'</option>');
+	echo('<option value="1" '.($rankMethod == 1 ? 'selected' : '').'>'.$TAGS['rankMethod1'][0].'</option>');
+	echo('</select>');
+	echo('</span>');
+
 	echo('<span class="vlabel">');
 	echo('<label for="MinPoints" class="vlabel">'.$TAGS['MinPoints'][0].': </label> ');
 	echo('<input type="number" name="MinPoints" id="MinPoints" value="'.$rd['MinPoints'].'" title="'.$TAGS['MinPoints'][1].'" oninput="enableSaveButton();"> ');

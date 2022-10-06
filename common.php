@@ -451,15 +451,20 @@ function getValueFromDB($sql,$col,$defaultvalue)
 }
 
 
-function presortTeams($TeamRanking)
+function presortTeams($TeamRanking,$rankPointsPerMile)
 {
 	global $DB, $TAGS, $KONSTANTS;
 	
-	$sql = 'SELECT * FROM _ranking WHERE TeamID>0 ORDER BY TeamID,TotalPoints';
+	$sql = 'SELECT * FROM _ranking WHERE TeamID>0 ORDER BY TeamID,';
+	if ($rankPointsPerMile)
+		$sql .= 'PPM';
+	else
+		$sql .= 'TotalPoints';
 	if ($TeamRanking == $KONSTANTS['TeamRankHighest'])
 		$sql .= ' DESC';
 	$LastTeam = -1;
 	$LastTeamPoints = 0;
+	$LastTeamPPM = 0;
 	$LastTeamMiles = 0;
 
 	//echo($sql.'<br>');
@@ -472,9 +477,10 @@ function presortTeams($TeamRanking)
 		{
 			$LastTeam = $rd['TeamID'];
 			$LastTeamPoints = $rd['TotalPoints'];
+			$LastTeamPPM = $rd['PPM'];
 			$LastTeamMiles = $rd['CorrectedMiles'];
 			//echo("UPDATE _ranking SET TotalPoints=$LastTeamPoints, CorrectedMiles=$LastTeamMiles WHERE TeamID=$LastTeam<br>");
-			$DB->exec("UPDATE _ranking SET TotalPoints=$LastTeamPoints, CorrectedMiles=$LastTeamMiles WHERE TeamID=$LastTeam");
+			$DB->exec("UPDATE _ranking SET TotalPoints=$LastTeamPoints, CorrectedMiles=$LastTeamMiles, PPM=$LastTeamPPM WHERE TeamID=$LastTeam");
 		}	
 	}
 
@@ -487,6 +493,8 @@ function rankEntrants($intransaction)
 	global $DB, $TAGS, $KONSTANTS;
 
 	//error_log(' ranking entrants ');
+
+	$rankPointsPerMile = getSetting('rankPointsPerMile','false') == 'true';
 
 	$R = $DB->query('SELECT * FROM rallyparams');
 	$rd = $R->fetchArray();
@@ -502,16 +510,23 @@ function rankEntrants($intransaction)
 	$DB->exec('UPDATE entrants SET FinishPosition=0');
 
 	$sql = 'CREATE TEMPORARY TABLE "_ranking" ';
-	$sql .= 'AS SELECT EntrantID,TeamID,TotalPoints,CorrectedMiles,0 AS Rank FROM entrants WHERE EntrantStatus = '.$KONSTANTS['EntrantFinisher'];
+	$sql .= 'AS SELECT EntrantID,TeamID,TotalPoints,CorrectedMiles,IfNull((TotalPoints*1.0)/CorrectedMiles,0) AS PPM,0 AS Rank FROM entrants WHERE EntrantStatus = '.$KONSTANTS['EntrantFinisher'];
 	$DB->exec($sql);
 
 	if ($TeamRanking != $KONSTANTS['TeamRankIndividuals'])
-		presortTeams($TeamRanking);
+		presortTeams($TeamRanking,$rankPointsPerMile);
 
-	$R = $DB->query('SELECT * FROM _ranking ORDER BY TotalPoints DESC,CorrectedMiles ASC');
+	$sql = 'SELECT * FROM _ranking ORDER BY ';
+	if ($rankPointsPerMile)
+		$sql .= 'PPM';
+	else
+		$sql .= 'TotalPoints';
+	$sql .= ' DESC,CorrectedMiles ASC';
+	$R = $DB->query($sql);
 	
 	$fp = 0;
 	$lastTotalPoints = -1;
+	$LastPPM = -1;
 	$lastCorrectedMiles = -1;
 	$N = 1;
 	$LastTeam = -1;
@@ -523,13 +538,19 @@ function rankEntrants($intransaction)
 		//echo($rd['EntrantID'].':'.$rd['TeamID'].' = '.$rd['TotalPoints'].', '.$rd['CorrectedMiles'].'<br>');
 		
 		
-		If (($TiedPointsRanking != $KONSTANTS['TiesSplitByMiles']) || ($rd['TotalPoints'] <> $lastTotalPoints) ||
-				($rd['TotalPoints']==$lastTotalPoints && $rd['CorrectedMiles']==$lastCorrectedMiles))
+		If (($TiedPointsRanking != $KONSTANTS['TiesSplitByMiles']) || 
+				($rd['TotalPoints'] <> $lastTotalPoints && !$rankPointsPerMile) ||
+				($rd['TotalPoints']==$lastTotalPoints && $rd['CorrectedMiles']==$lastCorrectedMiles && !$rankPointsPerMile) ||
+				($rd['PPM'] <> $lastPPM && $rankPointsPerMile) ||
+				($rd['PPM']==$lastPPM && $rd['CorrectedMiles']==$lastCorrectedMiles && $rankPointsPerMile) 
+			)
 		{
 			// No splitting needed, just assign rank
 			if ($rd['TeamID'] == $LastTeam && $TeamRanking != $KONSTANTS['TeamRankIndividuals']) 
 				;
-			else if ($rd['TotalPoints'] == $lastTotalPoints)
+			else if ($rd['TotalPoints'] == $lastTotalPoints && !$rankPointsPerMile)
+				$N++;
+			else if ($rd['PPM'] == $lastPPM && $rankPointsPerMile)
 				$N++;
 		
 			else 
@@ -553,6 +574,7 @@ function rankEntrants($intransaction)
 			$LastTeam = $rd['TeamID'];
 		
 		$lastTotalPoints = $rd['TotalPoints'];
+		$LastPPM = $rd['PPM'];
 		$lastCorrectedMiles = $rd['CorrectedMiles'];
 		$sql = "UPDATE entrants SET FinishPosition=$fp WHERE EntrantID=".$rd['EntrantID'];
 		//echo($sql.'; LastTeam='.$LastTeam.', N='.$N.', fp='.$fp.'<br>');

@@ -124,7 +124,9 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"autoFinisher": "false",
 	"autoLateDNF": "false",
 	"showPicklistStatus": "true",
-	"multStepValue": "0.01"
+	"multStepValue": "0.01",
+	"rankPointsPerMile": "false",
+	"decimalsPPM": "1"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com

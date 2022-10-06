@@ -21,6 +21,9 @@ autoLateDNF
 multStepValue
 : The value of 'step' on HTML INPUT tag for multipliers. Default is '1'. Use '0.1' or .'0.01' to allow decimals
 
+rankPointsPerMile
+: Rank finishers by points per mile(km) rather than simple points value
+
 ### Presentation
 claimsReloadEBC
 : Number of seconds between refreshes of EBC list
@@ -30,6 +33,9 @@ autoAdjustBonusWidth
 
 showPicklistStatus
 : Show entrant status and points in scorecard picklist
+
+decimalsPPM
+: Number of decimal places to show for points per mile(km)
 
 ---
 ### Language

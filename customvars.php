@@ -617,6 +617,10 @@ $TAGS = array(
 	'RallyResults'		=> array('Rally&nbsp;results',''),
 	'RallySlogan'		=> array('Rally slogan','Brief description of the rally, may be shown on finisher certificates.'),
 	'RallyTitle'		=> array('Rally title','Formal title of the rally. May be shown on certificates in full or with an optional part omitted. May be split over several lines. Surround an optional part with [ ]; Use | for newlines. eg: IBA Rally [2020]'),
+
+	'rankMethod'		=> array('Rank by','How to rank finishers'),
+	'rankMethod0'		=> array('Total points scored','Highest number of points wins'),
+	'rankMethod1'		=> array('Points per mile(km)','Best ratio of points to distance wins'),
 	
 	'RB_nostart'		=> array('No start!','Cannot find a suitable rest bonus start claim'),
 

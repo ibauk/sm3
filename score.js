@@ -520,7 +520,7 @@ function getScoreLock(btn)
 
 	let xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
-		let ok = new RegExp("\W*ok\W*");
+		let ok = new RegExp("\\W*ok\\W*");
 		if (this.readyState == 4 && this.status == 200) {
 			console.log('{'+this.responseText+'}');
 			if (!ok.test(this.responseText)) {
