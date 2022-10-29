@@ -498,10 +498,15 @@ function saveEBClaim($inTransaction) {
     $DB->exec($sqlx);
     $claimid = $DB->lastInsertRowID();
     $DB->exec("UPDATE ebclaims SET Processed=1, Decision=".$_REQUEST['decision']." WHERE rowid=".$_REQUEST['claimid']);
-    applyClaim($claimid,!$inTransaction);
-	updateTeamScorecards($_REQUEST['EntrantID']);
-    rankEntrants(true);
-    updateAutoClass($_REQUEST['EntrantID']);
+
+    if (true) {
+        applyClaim($claimid,!$inTransaction);
+	    updateTeamScorecards($_REQUEST['EntrantID']);
+        rankEntrants(true);
+        updateAutoClass($_REQUEST['EntrantID']);
+    } else {
+        // For sequences, need to set vars and call applyClaims
+    }
 
     if (!$inTransaction)
         $DB->exec('COMMIT TRANSACTION');

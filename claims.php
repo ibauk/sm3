@@ -419,14 +419,17 @@ function saveClaim()
 	else
 		saveOldClaim($virtualrally,$virtualstopmins,$XF,$claimtime,$claimid);
 
-	//echo('Applying claim #'.$claimid.'<br>');
-	//exit;
-	applyClaim($claimid,true);
-	//echo('Applied that then!<br>');
+	if (false) {
+		applyClaim($claimid,true);
 
-	updateTeamScorecards($_REQUEST['EntrantID']);
-    rankEntrants(true);
-    updateAutoClass($_REQUEST['EntrantID']);
+		updateTeamScorecards($_REQUEST['EntrantID']);
+    	rankEntrants(true);
+    	updateAutoClass($_REQUEST['EntrantID']);
+	} else {
+		/** if sequences used, need to set vars and call applyClaims */
+
+		applyClaimsEntrant($_REQUEST['EntrantID']);
+	}
 
 	$DB->exec("COMMIT TRANSACTION");
 
@@ -721,6 +724,7 @@ echo("</script>\n");
 	echo('</span>');
 
 	if (getSetting('useBonusQuestions','false')=='true') {
+		echo('<br>');
 		echo('<input type="hidden" name="QuestionAsked" id="QuestionAsked" value="'.($claimid> 0 ? $rd['QuestionAsked'] : '0').'"> ');
 		echo('<input type="hidden" id="valBonusQuestions" value="');
 		echo(intval(getSetting('valBonusQuestions','0')).'">');
@@ -1031,6 +1035,20 @@ function fetchEntrantDetail($e)
 
 }
 
+// returns a config array containing settings used for an applyClaims run.
+function defaultReprocessParams ($isLiveRun) {
+
+	$cfg = [];
+	$cfg['lodatetime'] = date("Y-m-d").'T00:00';
+	$cfg['lodatetime'] = getValueFromDB("SELECT StartTime FROM rallyparams","StartTime",$cfg['lodatetime']);
+	
+	$cfg['hidatetime'] = date("Y-m-d")."T".date("H:i");
+	if (!$isLiveRun)
+		$cfg['hidatetime'] = getValueFromDB("SELECT FinishTime FROM rallyparams","FinishTime",$cfg['hidatetime']);
+
+	return $cfg;
+
+}
 
 function applyClaimsForm()
 {
@@ -1053,6 +1071,8 @@ function applyClaimsForm()
 	$hidate = date("Y-m-d");
 	if ($hidate < $lodate)
 		$hidate = $lodate;
+
+	$cfg = defaultReprocessParams(true);
 
 	$vlabelClass = "vlabel";
 
@@ -1082,6 +1102,10 @@ function applyClaimsForm()
 	echo('<option value="0,1,2,3,4,5,6,7,8,9" '.($chooseline==2 ? 'selected' : '').' >'.$TAGS['cl_DecIncDecided'][0].'</option>');
 	echo('</select></span>');
 
+	foreach($cfg as $cfgK => $cfgV) {
+		echo('<input type="hidden" name="cfg['."'$cfgK'".']" value="'.$cfgV.'">');
+	}
+
 	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_DateFrom'][1].'"><label for="lodate">'.$TAGS['cl_DateFrom'][0].'</label> <input type="date" id="lodate" name="lodate" value="'.$lodate.'"></span>');
 	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_DateTo'][1].'"><label for="hidate">'.$TAGS['cl_DateTo'][0].'</label> <input type="date" id="hidate" name="hidate" value="'.$hidate.'"></span>');
 	echo('<span class="'.$vlabelClass.'" title="'.$TAGS['cl_TimeFrom'][1].'"><label for="lotime">'.$TAGS['cl_TimeFrom'][0].'</label> <input type="time" id="lotime" name="lotime" value="00:00"></span>');
@@ -1093,6 +1117,63 @@ function applyClaimsForm()
 	echo('<span class="vlabel"><label for="gobutton"></label> <input id="gobutton" type="submit" value="'.$TAGS['cl_Go'][0].'"></span>');
 	echo('</form>');
 }
+
+
+// I'm called to quietly reprocess all claims for an entrant. I am always called inside a transaction.
+function applyClaimsEntrant($entrantid) {
+
+	global $DB;
+
+	$cfg = defaultReprocessParams(false);
+
+	$sqlW = "";
+	$sqlW .= "ClaimTime>='".$cfg['lodatetime']."'";
+	$sqlW .= " AND ClaimTime<='".$cfg['hidatetime']."'";
+	
+	$sqlW .= " AND EntrantID = $entrantid";
+
+
+	$sql = "SELECT claims.*,claims.rowid as claimid,xbonus.BriefDesc,xbonus.Type As BonusType FROM claims JOIN (SELECT BonusID,BriefDesc,'B' As Type FROM bonuses) AS xbonus ON claims.BonusID=xbonus.BonusID WHERE ";
+
+
+	$sql .= $sqlW;
+	$sql .= " ORDER BY ClaimTime";
+
+
+	// Load all claims records into memory
+	// organised as EntrantID, BonusID
+	$claims = [];
+
+	error_log("ACE:- $sql");
+	$R = $DB->query($sql);
+	while ($rd = $R->fetchArray()){
+		if (!isset($claims[$rd['EntrantID']])) 
+			$claims[$rd['EntrantID']] = [];
+		if (!isset([$rd['EntrantID']][$rd['claimid']]))
+			$claims[$rd['EntrantID']][$rd['claimid']] = $rd['BonusID'];
+	}
+	
+	foreach($claims as $entrant => $eclaims) {
+		
+		zapScorecard($entrant);
+
+		foreach($eclaims as $claimid => $bonusid) {
+			applyClaim($claimid,true);
+		}
+
+		updateTeamScorecards($entrant);
+
+		updateAutoClass($entrant);
+	
+	}
+	rankEntrants(true);
+
+}
+
+
+
+
+
 
 function applyClaims()
 // One-off for no ride rally April 2020
@@ -1193,6 +1274,7 @@ function applyClaims()
 
 		$scorecardsTouched++;
 
+		updateTeamScorecards($entrant);
 
 		updateAutoClass($entrant);
 	

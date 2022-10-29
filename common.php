@@ -526,7 +526,7 @@ function rankEntrants($intransaction)
 	
 	$fp = 0;
 	$lastTotalPoints = -1;
-	$LastPPM = -1;
+	$lastPPM = -1;
 	$lastCorrectedMiles = -1;
 	$N = 1;
 	$LastTeam = -1;

@@ -587,6 +587,7 @@ td.sxtotalpoints { text-align: right; }
 #ScoreSheet		{ background-image: none !important; font-size: 1.2em; font-family: monospace;}
 input[type="checkbox"] {
     -webkit-appearance:none;
+	appearance:none;
     width:1.2em;
     height:1.2em;
     background:white;
