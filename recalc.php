@@ -134,7 +134,7 @@ function applyClaim($claimid,$intransaction) {
         if ($rc['BonusID'] == $bonusid) {
             $bonusclaim = $bonusid.'='.$rc['Points'];
             $bonusclaim .= ($rc['QuestionAnswered']==1 ? 'X' : '');
-            $bonusclaim .= ($rc['MagicPenalty']==1 ? 'P' : '');
+            $bonusclaim .= ($rc['PercentPenalty']==1 ? 'P' : '');
             $bonusclaim .= ';'.$rc['RestMinutes'];
             $bv[$ix] = $bonusclaim;
             $appendclaim = false;
@@ -144,7 +144,7 @@ function applyClaim($claimid,$intransaction) {
         error_log('Appending new claim for '.$rc['BonusID']);
         $newclaim = $rc['BonusID'].'='.$rc['Points'];
         $newclaim .= ($rc['QuestionAnswered']==1 ? 'X' : '');
-        $newclaim .= ($rc['MagicPenalty']==1 ? 'P' : '');
+        $newclaim .= ($rc['PercentPenalty']==1 ? 'P' : '');
         $newclaim .= ';'.$rc['RestMinutes'];
         array_push($bv,$newclaim);
     }
@@ -1015,17 +1015,23 @@ function recalcScorecard($entrant,$intransaction) {
     }
 
     // Rejected claims
-    $tmp = explode(',',$rd['RejectedClaims']);
     $rejectedClaims = [];
-    foreach ($tmp as $r) {
-        // Format is (code)=(reason)
-        $e = strpos($r,'=');
-        $rejectedClaims[substr($r,0,$e)] = intval(substr($r,$e + 1));
+    if ($rd['RejectedClaims'] != '') {
+        error_log("Exploding rejectedClaims [".$rd['RejectedClaims'].']');
+        $tmp = explode(',',$rd['RejectedClaims']);
+        foreach ($tmp as $r) {
+            // Format is (code)=(reason)
+            $e = strpos($r,'=');
+            if ($e != false) {
+                $rc = intval(substr($r,$e + 1));
+                $rejectedClaims[substr($r,0,$e)] = $rc;
+            }
+        }
     }
 
-    //echo(' RejectedClaims:');
+    error_log(' RejectedClaims has '.count($rejectedClaims));
     //print_r($rejectedClaims);
-    //echo('<br>');
+    //exit;
 
     $bonusPoints = 0;
     $restMinutes = 0;
@@ -1045,7 +1051,7 @@ function recalcScorecard($entrant,$intransaction) {
 
         $bon = ''; $points = ''; $minutes = ''; $xp = false; $pp = false;
         parseBonusClaim($bonus,$bon,$points,$minutes,$xp,$pp);
-//        echo('<br>'.$bonus.': '.$bon.', '.$points.', '.$minutes);
+        error_log('PBC:='.$bonus.': '.$bon.', '.$points.', '.$minutes);
 
         $bonv = '';
         foreach($bonusValues as $bv) {
@@ -1067,6 +1073,7 @@ function recalcScorecard($entrant,$intransaction) {
 
         if ($bon == '' || array_key_exists($bon,$rejectedClaims)) { // is it a rejected claim?
 
+            error_log("Rejecting [$bon] (".array_key_exists($bon,$rejectedClaims).")");
             // Zap the sequence then
             for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
                 $catcounts[$i]->samecount = 0;

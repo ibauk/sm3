@@ -163,6 +163,23 @@ function emitDecisionsTable() {
     echo('<input type="button" id="goodclaim" name="decision" data-value="0" value="'.$TAGS['ebc_DoAccept'][0].'" onclick="submitClaimDecision(this)" class="judge">' );
 
     echo(' <input type="text" title="'.$TAGS['ebc_JudgesNotes'][1].'" placeholder="'.$TAGS['ebc_JudgesNotes'][0].'" name="JudgesNotes" style="width:30em; max-width:100vw;">');
+    echo('<input type="hidden" id="ebc_Evidence" name="Evidence">');
+
+    	// This block is concerned with individual bonus percentage penalty, not 'magic' penalties.
+	if (getSetting('usePercentPenalty','false')=='true') {
+        $pct = intval(getSetting('valPercentPenalty','0'));
+		echo('<input type="hidden" id="valPercentPenalty" value="');
+		echo($pct.'">');
+		$chk = '';
+		echo('<span title="'.$TAGS['cl_PercentPenalty'][1].'">');
+		echo('<input type="hidden" id="PercentPenalty" name="PercentPenalty">');
+        echo(' &nbsp;&nbsp;<input type="button" name="decision" data-value="0" ');
+        echo('value="'.$pct.'% '.$TAGS['cl_PercentPenalty'][0].'" class="judge" ');
+        echo('onclick="applyPercentPenalty(true);submitClaimDecision(this);">');
+		echo('</span>');
+	}
+	
+
 
     echo('<br></span>');
     echo('<span title="'.$TAGS['ebc_DoReject'][1].'">');
@@ -274,6 +291,7 @@ function emitEBCjs() {
             ebcmins.parentNode.classList = '';
         else
             ebcmins.parentNode.classList = 'hide';
+        document.getElementById('ebc_Evidence').value = tr.getAttribute('data-evidence');
         document.getElementById('ebc_photo').value = is;
         document.getElementById('ebc_claimid').value = claimid;
         document.getElementById('ebc_entrant').value = entrant;
@@ -468,8 +486,14 @@ function saveEBClaim($inTransaction) {
         $sqlx .= ",AnswerSupplied";
     if (isset($_REQUEST['QuestionAnswered']))
         $sqlx .= ",QuestionAnswered";
-    if (isset($_REQUEST['JudgesNotes']))
+    if (isset($_REQUEST['MagicWord']))
         $sqlx .= ",MagicWord";
+    if (isset($_REQUEST['JudgesNotes']))
+        $sqlx .= ",JudgesNotes";
+    if (isset($_REQUEST['Evidence']))
+        $sqlx .= ",Evidence";
+    if (isset($_REQUEST['PercentPenalty']))
+        $sqlx .= ",PercentPenalty";
     $sqlx .= ") VALUES(";
     $dtn = new DateTime("now",new DateTimeZone($KONSTANTS['LocalTZ']));
 	$loggedat = $dtn->format('c');
@@ -490,8 +514,14 @@ function saveEBClaim($inTransaction) {
         $sqlx .= ",'".$DB->escapeString($_REQUEST['AnswerSupplied'])."'";
     if (isset($_REQUEST['QuestionAnswered']))
         $sqlx .= ",1";
+    if (isset($_REQUEST['MagicWord']))
+        $sqlx .= ",'".$DB->escapeString($_REQUEST['MagicWord'])."'";
     if (isset($_REQUEST['JudgesNotes']))
         $sqlx .= ",'".$DB->escapeString($_REQUEST['JudgesNotes'])."'";
+    if (isset($_REQUEST['Evidence']))
+        $sqlx .= ",'".$DB->escapeString($_REQUEST['Evidence'])."'";
+    if (isset($_REQUEST['PercentPenalty']))
+        $sqlx .= ",".$_REQUEST['PercentPenalty'];
     $sqlx .= ")";
     if (!$inTransaction)
         $DB->exec("BEGIN IMMEDIATE TRANSACTION");

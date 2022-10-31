@@ -9,7 +9,7 @@ The fields are generally self-explanatory but if in doubt as to their exact use,
 useBonusQuestions / valBonusQuestions
 : Control the use of bonus "extra points" questions
 
-useMagicPenalty / valMagicPenalty
+usePercentPenalty / valPercentPenalty
 : Specifies the use of percentage penalties
 
 autoFinisher

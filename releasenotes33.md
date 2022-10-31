@@ -12,23 +12,25 @@ I am delighted to announce the release of ScoreMaster v3.3 incorporating the fol
 - Finisher quicklist enhancements
 - Automap suppression on import template selection
 
+This is a major release and updates the database schema from 11 to 12.
+
 ## Rank by Points per mile(km)
-Finisher ranking can now be based on points per mile(km) rather than absolute total points value.
+Finisher ranking can now be based on points per mile(km) rather than absolute total points value. Many consider this to be the better measure of rallying skill.
 
 ## Fractional multipliers
 The multiplier logic has been completely overhauled and now caters for fractional multipliers as well as integers. This enables features such as 25% (of total points scored) penalties. It continues to be possible to apply a multiplication factor to total points yielding final scores.
 
 ## Scorecard reviews
-The transition away from scorecard ticking to individual bonus claiming is now complete and universally adopted. The old tickbox scorecard screen has now been replaced with an all new Scorecard Review facility providing convenient access to score explanations and individual claim history. Full access to individual claims and scorecard recalculation is made available as well as buttons to mark scorecards as "Team is happy" and "Entrant is happy".
+The transition away from scorecard ticking to individual bonus claiming is now complete and universally adopted. The old tickbox scorecard screen has now been replaced with an all new Scorecard Review facility providing convenient access to score explanations and individual claim history. Full access to individual claims and scorecard recalculation is made available as well as buttons to mark scorecards as "Team is happy" (in other words, reviewed and confirmed) and "Entrant is happy" (final score agreed by entrant).
 
 ## Rest bonus start/finish handling
-Special rest bonus handling is provided to enable the use of separate start and finish claims rather than a single claim with two receipts. This method of handling is optional and requires the use of special coding within the rally database. Finish claims are matched automatically with start claims enabling rapid validation of claims.
+Special rest bonus handling is provided to enable the use of separate start and finish claims rather than a single claim with two receipts. This method of handling is optional and requires the use of special bonus codings within the rally database. Finish claims are matched automatically with start claims enabling rapid validation of claims.
 
 ## Offline odo capture
 Odo readings and check-out/check-in times can now be captured using offline devices such as iPads. Readings are automatically updated when connection to the database is re-established.
 
 ## EBC evidence peeking
-When judging EBC claims, convenient access is now provided to supporting evidence such as various timestamps and original uninterpreted Subject line.
+When judging EBC claims, convenient access is now provided to supporting evidence such as various timestamps and original uninterpreted Subject line. This evidence is recorded on the claim record and is available for later inspection.
 
 ## Batched ScoreX printing
 ScoreX sheets can now be printed for all finishers in a single print run, in the same order used for certificate printing.

@@ -26,7 +26,7 @@
  *
  */
 
--- DBVERSION: 11
+-- DBVERSION: 12
 
 BEGIN TRANSACTION;
 
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS "rallyparams" (
 	"Cat9Label"	TEXT,
 	"RejectReasons"	TEXT,							/* Defaults entered in INSERT below */
 	"DBState" INTEGER NOT NULL DEFAULT 0,
-	"DBVersion" INTEGER NOT NULL DEFAULT 11, 		/* DBVERSION */
+	"DBVersion" INTEGER NOT NULL DEFAULT 12, 		/* DBVERSION */
 	"AutoRank" INTEGER NOT NULL DEFAULT 1,
 	"Theme" TEXT NOT NULL DEFAULT 'default',
 	"MilesKms" INTEGER NOT NULL DEFAULT 0,
@@ -119,8 +119,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"RPT_TPenalty": "&#x23F0;Late arrival penalty",
 	"RPT_MPenalty": "Excess distance penalty",	
 	"RPT_SPenalty": "Excess speed penalty",
-	"useMagicPenalty": "false",
-	"valMagicPenalty": "10",
+	"usePercentPenalty": "false",
+	"valPercentPenalty": "10",
 	"autoFinisher": "false",
 	"autoLateDNF": "false",
 	"showPicklistStatus": "true",
@@ -382,7 +382,10 @@ CREATE TABLE IF NOT EXISTS "claims" (
 	"AskMinutes"	INTEGER NOT NULL DEFAULT 0,
 	"QuestionAsked"	INTEGER NOT NULL DEFAULT 0,
 	"QuestionAnswered"	INTEGER NOT NULL DEFAULT 0,
-	"AnswerSupplied" TEXT
+	"AnswerSupplied" TEXT,
+	"JudgesNotes"	 TEXT,
+	"PercentPenalty" INTEGER NOT NULL DEFAULT 0,
+	"Evidence"		 TEXT
 );
 CREATE TABLE IF NOT EXISTS "categories" (
 	"Axis"	INTEGER NOT NULL DEFAULT 1,

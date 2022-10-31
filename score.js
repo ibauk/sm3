@@ -190,6 +190,33 @@ function isBefore(el1, el2) {
 
 // Alphabetic order below
 
+function applyPercentPenalty(apply) {
+
+	let pts = document.getElementById('PointsValue');
+	if (!pts)
+		pts = document.getElementById('ebc_points');
+	let pv = parseInt(pts.value);
+	let qv = parseInt(document.getElementById('valPercentPenalty').value);
+	// qv now holds the percentage 
+	let points2deduct = Math.floor((qv / 100) * pv);
+	let points2return = Math.floor((pv * 100) / (100 - qv));
+	console.log('Applying magic penalty: pv='+pv+' qv='+qv+' -='+points2deduct+' += '+points2return+' checked='+apply);
+	// 100 - 10% = 90, (90 * 100)  / (100 - 10)
+	if (apply)
+		pv -= points2deduct;
+	else
+		pv = points2return;
+	pts.value = pv;
+	let qa = document.getElementById('PercentPenalty');
+	qa.value = 1;
+	console.log('applying magic enabling save; new value is '+pv);
+	try {
+		checkEnableSave();
+	} catch(err) {
+
+	}
+}
+
 function areYouSure(question)
 {
 	return window.confirm(question);

@@ -402,7 +402,7 @@ function saveClaim()
 		$virtualrally = ($rd['isvirtual'] != 0);
 		$virtualstopmins = $rd['stopmins'];
 	}
-	$XF = ['FuelBalance','SpeedPenalty','FuelPenalty','MagicPenalty','Points','RestMinutes','AskPoints','AskMinutes'];
+	$XF = ['FuelBalance','SpeedPenalty','FuelPenalty','MagicPenalty','Points','RestMinutes','AskPoints','AskMinutes','PercentPenalty'];
 	
 	$dtn = new DateTime(Date('Y-m-dTH:i:s'),new DateTimeZone($KONSTANTS['LocalTZ']));
 	$datenow = $dtn->format('c');
@@ -458,13 +458,10 @@ function saveOldClaim($virtualrally,$virtualstopmins,$XF,$claimtime,$claimid)
 			$sql .= ($sql==''? '' : ',').$fld."=".intval($_REQUEST[$fld]);
 	//echo("[[ $sql ]]");
 
-	if (false) {
-		if (isset($_REQUEST['MagicWord']))
-			$sql .= ($sql==''? '' : ',')."MagicWord='".$DB->escapeString($_REQUEST['MagicWord'])."'";
-	} else {
-		if (isset($_REQUEST['JudgesNotes']))
-			$sql .= ($sql==''? '' : ',')."MagicWord='".$DB->escapeString($_REQUEST['JudgesNotes'])."'";
-	}
+	if (isset($_REQUEST['MagicWord']))
+		$sql .= ($sql==''? '' : ',')."MagicWord='".$DB->escapeString($_REQUEST['MagicWord'])."'";
+	if (isset($_REQUEST['JudgesNotes']))
+			$sql .= ($sql==''? '' : ',')."JudgesNotes='".$DB->escapeString($_REQUEST['JudgesNotes'])."'";
 
 		
 	if (isset($_REQUEST['NextTimeMins'])){
@@ -510,13 +507,10 @@ function saveNewClaim($virtualrally,$virtualstopmins,$XF,$claimtime)
 //	print_r($_REQUEST);
 		
 	$sql = "INSERT INTO claims (LoggedAt,ClaimTime,BCMethod,EntrantID,BonusID,OdoReading,Decision,Applied";
-	if (false) {
-		if (isset($_REQUEST['MagicWord'])) 
-			$sql .= ",MagicWord";
-	} else {
-		if (isset($_REQUEST['JudgesNotes']))
-			$sql .= ",MagicWord";
-	}
+	if (isset($_REQUEST['MagicWord'])) 
+		$sql .= ",MagicWord";
+	if (isset($_REQUEST['JudgesNotes']))
+			$sql .= ",JudgesNotes";
 	if (isset($_REQUEST['NextTimeMins'])) 
 		$sql .= ",NextTimeMins";
 	if (isset($_REQUEST['QuestionAsked']))
@@ -542,13 +536,10 @@ function saveNewClaim($virtualrally,$virtualstopmins,$XF,$claimtime)
 	$sql .= ",".(isset($_REQUEST['Decision']) ? $_REQUEST['Decision'] : 0);
 	$sql .= ",".(isset($_REQUEST['Applied']) ? $_REQUEST['Applied'] : 0);
 
-	if (false) {
-		if (isset($_REQUEST['MagicWord']))
-			$sql .= ",'".$DB->escapeString($_REQUEST['MagicWord'])."'";
-	} else {
-		if (isset($_REQUEST['JudgesNotes']))
-			$sql .= ",'".$DB->escapeString($_REQUEST['JudgesNotes'])."'";
-	}
+	if (isset($_REQUEST['MagicWord']))
+		$sql .= ",'".$DB->escapeString($_REQUEST['MagicWord'])."'";
+	if (isset($_REQUEST['JudgesNotes']))
+		$sql .= ",'".$DB->escapeString($_REQUEST['JudgesNotes'])."'";
 
 	if (isset($_REQUEST['NextTimeMins'])){
 		$mins = parseTimeMins($_REQUEST['NextTimeMins']);
@@ -721,6 +712,11 @@ echo("</script>\n");
 	$ds = ($claimid > 0 && $rd['SpeedPenalty'] != 0 ? 'inline' : 'none');
 	$oc = ($claimid > 0 && $rd['SpeedPenalty'] != 0 ? '&dzigrarr; <input type="checkbox" value="1" name="SpeedPenalty" oninput="checkEnableSave();" checked>' : '');
 	echo('<span id="SpeedWarning" style="display:'.$ds.';">'.$oc.'</span>');
+
+	if ($rd['Evidence'] != "") {
+		echo(' <span title="'.$rd['Evidence'].'" onclick="alert(this.title);" style="cursor:pointer;">&nbsp;&nbsp; &#9993; &nbsp;&nbsp;</span>');
+	}
+
 	echo('</span>');
 
 	if (getSetting('useBonusQuestions','false')=='true') {
@@ -791,17 +787,19 @@ echo("</script>\n");
 	}
 	echo('</select>');
 
-	if (getSetting('useMagicPenalty','false')=='true') {
-		echo('<input type="hidden" id="valMagicPenalty" value="');
-		echo(intval(getSetting('valMagicPenalty','0')).'">');
+	// This block is concerned with individual bonus percentage penalty, not 'magic' penalties.
+	if (getSetting('usePercentPenalty','false')=='true') {
+		$pct = intval(getSetting('valPercentPenalty','0'));
+		echo('<input type="hidden" id="valPercentPenalty" value="');
+		echo($pct.'">');
 		$chk = '';
-		if ($rd['MagicPenalty']==1)
+		if ($rd['PercentPenalty']==1)
 			$chk = ' checked ';
-		echo('<span title="'.$TAGS['cl_MagicPenalty'][1].'">');
-		echo(' <label for="MagicPenalty">'.$TAGS['cl_MagicPenalty'][0].'</label> ');
-		echo('<input tabindex="-1" '.$chk.'type="checkbox" id="MagicPenalty" name="MagicPenalty"');
-		echo(' value="'.$rd['MagicPenalty'].'"');
-		echo(' onchange="applyMagicPenalty(this);">');
+		echo('<span title="'.$TAGS['cl_PercentPenalty'][1].'">');
+		echo(' <label for="PercentPenalty">'.$pct.'% '.$TAGS['cl_PercentPenalty'][0].'</label> ');
+		echo('<input tabindex="-1" '.$chk.'type="checkbox" id="PercentPenalty" name="PercentPenalty"');
+		echo(' value="'.$rd['PercentPenalty'].'"');
+		echo(' onchange="applyPercentPenalty(this.checked);">');
 		echo('</span>');
 	}
 	
@@ -810,7 +808,7 @@ echo("</script>\n");
 
 	echo('<span class="vlabel" title="'.$TAGS['ebc_JudgesNotes'][1].'">');
 	echo('<label for="JudgesNotes">'.$TAGS['ebc_JudgesNotes'][0].'</label> ');
-	echo('<input type="text" tabindex="7" name="JudgesNotes" style="width:30em; max-width:100vw;" value="'.$rd['MagicWord'].'" oninput="checkEnableSave();">');
+	echo('<input type="text" tabindex="7" name="JudgesNotes" style="width:30em; max-width:100vw;" value="'.$rd['JudgesNotes'].'" oninput="checkEnableSave();">');
 	echo('</span>');
 
 
@@ -1231,7 +1229,7 @@ function applyClaims()
 	$sqlW .= " AND ClaimTime<='".$hiclaimtime."'";
 	$sqlW .= " AND Decision IN (".$_REQUEST['decisions'].") ";
 	
-	$sqlW .= " AND SpeedPenalty=0 AND FuelPenalty=0" ; // AND MagicPenalty=0"; // Penalties applied by hand
+	$sqlW .= " AND SpeedPenalty=0 AND FuelPenalty=0 AND MagicPenalty=0"; // Penalties applied by hand
 	
 	if (isset($_REQUEST['entrants']) && $_REQUEST['entrants'] != '')
 		$sqlW .= " AND EntrantID IN (".$_REQUEST['entrants'].")";

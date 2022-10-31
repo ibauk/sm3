@@ -351,7 +351,7 @@ function reviewEntrant($entrant) {
         echo('<td class="OdoReading">'.$s1.$rd['OdoReading'].$s2.'</td>');
         echo('<td class="ClaimTime">'.$s1.logtime(str_replace('T',' ',$rd['ClaimTime'])).$s2.'</td>');
         echo('<td class="Decision">'.$s1.$decisions[$rd['Decision']].$s2.'</td>');
-        echo('<td class="JudgesNotes">'.$rd['MagicWord'].'</td>');
+        echo('<td class="JudgesNotes">'.$rd['JudgesNotes'].'</td>');
         echo('</tr>');
 
     }
