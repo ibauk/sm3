@@ -816,7 +816,7 @@ function recalcScorecard() {
 
     if (multipliers != 1) {
         let sx = new SCOREXLINE();
-        sx.desc = bonusPoints+' x '+multipliers;
+        sx.desc = "= "+bonusPoints+' x '+multipliers;
         sx.points = parseInt(bonusPoints * multipliers);
         sx.totalPoints = sx.points;
         scorex.push(sx);

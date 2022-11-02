@@ -13,5 +13,6 @@ Dave    | Team A | 9000 | 1 | 1 | 1
 Steve   | Team A | 8000 | 3 | 1 | 1
 Wilma   | -      | 7000 | 4 | 3 | 2
 Gordon  | Team B | 2000 | 5 | 1 | 3
- 
+
+### Cloning 
 It is also possible to specify “team cloning” as the scoring strategy in which case whenever a team member’s scorecard is updated the resultant scores and timings will be replicated to the other team members.

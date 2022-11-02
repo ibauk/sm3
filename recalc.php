@@ -1458,7 +1458,7 @@ function recalcScorecard($entrant,$intransaction) {
 
     if ($multipliers != 1) {
         $sx = new SCOREXLINE();
-        $sx->desc = $bonusPoints.' x '.$multipliers;
+        $sx->desc = "= ".$bonusPoints.' x '.$multipliers;
         $sx->points = intval($bonusPoints * $multipliers);
         $sx->totalPoints = $sx->points;
         $scorex[] = $sx;
