@@ -12,17 +12,12 @@
  * This file is part of IBAUK-SCOREMASTER.
  *
  * IBAUK-SCOREMASTER is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the MIT License
  *
  * IBAUK-SCOREMASTER is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with IBAUK-SCOREMASTER.  If not, see <http://www.gnu.org/licenses/>.
+ * MIT License for more details.
  *
  */
 
@@ -76,7 +71,9 @@ CREATE TABLE IF NOT EXISTS "rallyparams" (
 	"mpbonus"	TEXT,
 	"settings"	TEXT,								/* Defaults entered in INSERT below */
 	"StartOption" INTEGER NOT NULL DEFAULT 0,
-	"ebcsettings" TEXT
+	"ebcsettings" TEXT,
+	"CurrentLeg" INTEGER NOT NULL DEFAULT 1,
+	"NumLegs" INTEGER NOT NULL DEFAULT 1
 );
 
 DELETE FROM "rallyparams";
@@ -219,7 +216,8 @@ CREATE TABLE IF NOT EXISTS "ebclaims" (
 	"PhotoID"	INTEGER,
 	"RestMinutes"	INTEGER NOT NULL DEFAULT 0,
 	"AskPoints"		INTEGER NOT NULL DEFAULT 0,
-	"AskMinutes"	INTEGER NOT NULL DEFAULT 0
+	"AskMinutes"	INTEGER NOT NULL DEFAULT 0,
+	"Leg"		INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS "ebcphotos" (
@@ -284,8 +282,11 @@ CREATE TABLE IF NOT EXISTS "timepenalties" (
 	"PenaltyStart"	TEXT,
 	"PenaltyFinish"	TEXT,
 	"PenaltyMethod"	INTEGER NOT NULL DEFAULT 0,
-	"PenaltyFactor"	INTEGER NOT NULL DEFAULT 0
+	"PenaltyFactor"	INTEGER NOT NULL DEFAULT 0,
+	"LegAffected" INTEGER NOT NULL DEFAULT 0,
+	"LegTriggered" INTEGER NOT NULL DEFAULT 0
 );
+
 CREATE TABLE IF NOT EXISTS "sgroups" (
 	"GroupName"	TEXT NOT NULL,
 	"GroupType"	TEXT DEFAULT 'C',
@@ -337,6 +338,7 @@ CREATE TABLE IF NOT EXISTS "entrants" (
 	"ReviewedByTeam" INTEGER NOT NULL DEFAULT 0,
 	"AcceptedByEntrant" INTEGER NOT NULL DEFAULT 0,
 	"LastReviewed" 	TEXT,
+	"LegData"	TEXT,
 	PRIMARY KEY("EntrantID")
 );
 
@@ -358,6 +360,7 @@ CREATE TABLE IF NOT EXISTS "combinations" (
 	"Cat8"	INTEGER NOT NULL DEFAULT 0,
 	"Cat9"	INTEGER NOT NULL DEFAULT 0,
 	"Compulsory"	INTEGER NOT NULL DEFAULT 0,
+	"Leg" INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY("ComboID")
 );
 CREATE TABLE IF NOT EXISTS "claims" (
@@ -385,7 +388,8 @@ CREATE TABLE IF NOT EXISTS "claims" (
 	"AnswerSupplied" TEXT,
 	"JudgesNotes"	 TEXT,
 	"PercentPenalty" INTEGER NOT NULL DEFAULT 0,
-	"Evidence"		 TEXT
+	"Evidence"		 TEXT,
+	"Leg"            INTEGER NOT NULL DEFAULT 1
 );
 CREATE TABLE IF NOT EXISTS "categories" (
 	"Axis"	INTEGER NOT NULL DEFAULT 1,
@@ -401,7 +405,8 @@ CREATE TABLE IF NOT EXISTS "catcompound" (
 	"NMin"	INTEGER NOT NULL DEFAULT 1,
 	"PointsMults"	INTEGER NOT NULL DEFAULT 0,
 	"NPower"	INTEGER NOT NULL DEFAULT 2,
-	"Ruletype" INTEGER NOT NULL DEFAULT 0
+	"Ruletype" INTEGER NOT NULL DEFAULT 0,
+	"Leg" INTEGER NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS "bonuses" (
 	"BonusID"	TEXT,
@@ -428,6 +433,7 @@ CREATE TABLE IF NOT EXISTS "bonuses" (
 	"Waffle" TEXT,
 	"Question" TEXT,
 	"Answer" TEXT,
+	"Leg" INTEGER NOT NULL DEFAULT 0
 	PRIMARY KEY("BonusID")
 );
 
@@ -440,7 +446,8 @@ CREATE TABLE IF NOT EXISTS "speedpenalties" (
 	"Basis"	INTEGER NOT NULL DEFAULT 0,
 	"MinSpeed"	INTEGER NOT NULL,
 	"PenaltyType"	INTEGER NOT NULL DEFAULT 0,
-	"PenaltyPoints"	INTEGER DEFAULT 0
+	"PenaltyPoints"	INTEGER DEFAULT 0,
+	"Leg" INTEGER NOT NULL DEFAULT 0
 );
 
 
@@ -469,6 +476,22 @@ CREATE TABLE IF NOT EXISTS "classes" (
 	"LowestRank" INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY("Class")
 );
+
+
+CREATE TABLE IF NOT EXISTS "legs" (
+	"Leg"	INTEGER NOT NULL,
+	"LegStartTime"	TEXT NOT NULL,
+	"LegFinishTime"	TEXT NOT NULL,
+	"LegMaxHours"	INTEGER NOT NULL DEFAULT 0,
+	"LegMinMiles"	INTEGER NOT NULL DEFAULT 0,
+	"LegPenaltyMaxMiles"	INTEGER NOT NULL DEFAULT 0,
+	"LegPenaltyMaxMilesMethod"	INTEGER NOT NULL DEFAULT 0,
+	"LegPenaltyMaxMilesPoints"	INTEGER NOT NULL DEFAULT 0,
+	"LegPenaltyMilesDNF"	INTEGER NOT NULL DEFAULT 0,
+	"LegMinPoints"	INTEGER NOT NULL DEFAULT 0,
+	PRIMARY KEY("Leg")
+);
+
 
 DELETE FROM "functions";
 DELETE FROM "menus";

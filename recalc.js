@@ -742,8 +742,9 @@ function recalcScorecard() {
     let tpM = tp[1]; // Multipliers
 
     if (tpM != 0 || tpP != 0) {
-        console.log('xxMultipliers+='+tpM);
+        console.log('xxMultipliers+='+tpM+' multipliers is '+multipliers);
         multipliers += parseFloat(tpM);
+        console.log('Multipliers is now '+multipliers);
         bonusPoints += tpP;
         let sx = new SCOREXLINE();
         let tpx = RPT_TPenalty;

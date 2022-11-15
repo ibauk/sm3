@@ -713,7 +713,7 @@ function initRallyVariables() {
 //    print_r($catlabels);
 //    echo('<br>');
 
-    $R = $DB->query("SELECT * FROM combinations ORDER BY ComboID");
+    $R = $DB->query("SELECT * FROM combinations WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY ComboID");
     while($rd = $R->fetchArray()) {
         $cmb = new StdClass();
         $cmb->cid   = $rd['ComboID'];
@@ -750,7 +750,10 @@ function initRallyVariables() {
     }
     //debugCombos();
 
-    $R = $DB->query('SELECT rowid AS id,Axis,Cat,NMethod,ModBonus,NMin,PointsMults,NPower,Ruletype FROM catcompound ORDER BY Axis,NMin DESC');
+    $sql = "SELECT rowid AS id,Axis,Cat,NMethod,ModBonus,NMin,PointsMults,NPower,Ruletype";
+    $sql .= " FROM catcompound WHERE Leg=0 OR Leg=".$RP['CurrentLeg'];
+    $sql .= " ORDER BY Axis,NMin DESC";
+    $R = $DB->query($sql);
 	while ($rd = $R->fetchArray()) {
         $ccr = new StdClass();
         $ccr->rid   = $rd['id'];
@@ -771,7 +774,11 @@ function initRallyVariables() {
 
 
 
-	$R = $DB->query('SELECT BonusID,BriefDesc,Compulsory,Points,RestMinutes'.$cats.' FROM bonuses ORDER BY BonusID');
+    $sql = "SELECT BonusID,BriefDesc,Compulsory,Points,RestMinutes";
+    $sql .= $cats;
+    $sql .= " FROM bonuses WHERE Leg=0 OR Leg=".$RP['CurrentLeg'];
+    $sql .= " ORDER BY BonusID";
+	$R = $DB->query($sql);
     while ($rd = $R->fetchArray()) {
         $bon = new StdClass();
         $bon->bid   = $rd['BonusID'];
@@ -788,8 +795,14 @@ function initRallyVariables() {
 //    debugBonuses();
 
 //	Time penalties
-		
-    $R = $DB->query('SELECT rowid AS id,TimeSpec,PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor FROM timepenalties ORDER BY PenaltyStart,PenaltyFinish');
+
+    $sql = "SELECT rowid AS id,TimeSpec";
+    $sql .= ",PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor";
+    $sql .= " FROM timepenalties";
+    $sql .= " WHERE (LegAffected = 0 OR LegAffected = ".$RP['CurrentLeg'].")";
+    $sql .= " ORDER BY PenaltyStart,PenaltyFinish";
+    $R = $DB->query($sql);
+    
     while ($rd = $R->fetchArray()) {
         $timp = new StdClass();
         $timp->spec = $rd['TimeSpec'];
@@ -804,7 +817,10 @@ function initRallyVariables() {
 
 // Speed penalties
 
-    $R = $DB->query('SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints FROM speedpenalties ORDER BY MinSpeed DESC');
+    $sql = "SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints";
+    $sql .= "FROM speedpenalties WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY MinSpeed DESC";
+    $R = $DB->query($sql);
+
     while ($rd = $R->fetchArray()) {
         $spd = new StdClass();
         $spd->Basis = $rd['Basis'];

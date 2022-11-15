@@ -28,6 +28,7 @@ $HOME_URL = 'admin.php';
 
  
 require_once('common.php');
+require_once('legs.php');
 
 
 
@@ -1819,6 +1820,153 @@ function listTeamMembers($team) {
 
 }
 
+/******************* m u l t i - l e g   s t u f f *******************/
+
+
+/**
+ * This retrieves the specified leg's data and updates the main entrant record to reflect it.
+ * This operates on all entrant records in a single batch. 
+ */
+function mlRetrieveLeg($leg) {
+
+	global $DB,$TAGS,$KONSTANTS;
+
+	$sql = "SELECT * FROM entrants";
+	$DB->exec("BEGIN TRANSACTION");
+	$R = $DB->query($sql);
+	while ($rd = $R->fetchArray(SQLITE3_ASSOC)) {
+		$lda = json_decode($rd['LegData']);
+		if (!$lda) {
+			continue;
+		} 
+		foreach ($lda as $ldax) {
+			if ($ldax->leg == $leg) {
+				LegData::retrieveLeg($ldax,$leg,$rd);
+				// save the entrant record
+				mlSaveEntrant($rd);
+			}
+		}
+	}
+
+}
+
+/**
+ * This retrieves the specified leg's data and updates the main entrant record to reflect it.
+ * This operates on a single named entrant record. 
+ */
+function mlRetrieveLegEntrant($leg,$entrant) {
+
+	global $DB,$TAGS,$KONSTANTS;
+
+	$sql = "SELECT * FROM entrants WHERE EntrantID=".$entrant;
+	$R = $DB->query($sql);
+	if (!$rd = $R->fetchArray(SQLITE3_ASSOC)) { return; }
+
+	$lda = json_decode($rd['LegData']);
+	if (!$lda) {
+		return;
+	} 
+	foreach ($lda as $ldax) {
+		if ($ldax->leg == $leg) {
+			LegData::retrieveLeg($ldax,$leg,$rd);
+			// save the entrant record
+			mlSaveEntrant($rd);
+		}
+	}
+
+}
+
+function mlSaveEntrant($rd) {
+
+	global $DB;
+
+	$sql = "UPDATE entrants SET ";
+	$flds = "";
+	foreach ($rd as $fld=>$val) {
+		if ($fld == 'EntrantID') { continue; }
+		if ($fld == '') { continue; }
+		if ($fld == 'LegData') {
+			$S = $DB->prepare("UPDATE entrants SET LegData=:LegData WHERE EntrantID=:EntrantID");
+			$S->bindValue(':LegData',$val,SQLITE3_TEXT);
+			$S->bindValue(':EntrantID',$rd['EntrantID'],SQLITE3_INTEGER);
+			error_log('LegData SQL '.$S->getSQL(true));
+			$S->execute();
+			continue;
+		}
+		if ($flds != "") { $flds .= ','; }
+		$flds .= $fld.'=';
+		switch($fld)
+		{
+			case 'RiderIBA':
+			case 'PillionIBA':
+			case 'OdoKms':
+			case 'TeamID':
+			case 'CorrectedMiles':
+			case 'TotalPoints':
+			case 'Class':
+			case 'RestMinutes':
+			case 'MultiplierUsed':
+				$flds .= $val;
+				break;
+			case 'OdoCheckStart':
+			case 'OdoCheckFinish':
+			case 'OdoScaleFactor':
+			case 'OdoRallyStart':
+			case 'OdoRallyFinish':
+				$flds .= $val;
+				break;
+			case 'FinishTime':
+			case 'StartTime':
+			case 'BonusesVisited':
+			case 'CombosTicked':
+				if (!is_null($val))
+					$flds .= "'".$DB->escapeString($val)."'";
+				else
+					$flds .= "null";
+				break;
+
+			default:
+				$flds .= "'".$DB->escapeString($val)."'";
+		}
+
+		
+	}
+	$sql .= $flds." WHERE EntrantID=".$rd['EntrantID'];
+	//error_log($sql);
+	$DB->exec($sql);
+
+}
+function mlStoreLeg($leg) {
+
+	global $DB,$TAGS,$KONSTANTS;
+
+	$sql = "SELECT * FROM entrants";
+	$DB->exec("BEGIN TRANSACTION");
+	$R = $DB->query($sql);
+	while ($rd = $R->fetchArray(SQLITE3_ASSOC)) {
+		$lda = json_decode($rd['LegData']);
+		if (!$lda) {
+			$lda = [];
+		} 
+		$newld = true;
+		foreach ($lda as $ldax) {
+			if ($ldax->leg == $leg) {
+				LegData::storeLeg($ldax,$leg,$rd);
+				$newld = false;
+			}
+		}
+		if ($newld) {
+			$ld = new LegData();
+			LegData::storeLeg($ld,$leg,$rd);
+			$lda[] = $ld;
+		}
+		$sql = "UPDATE entrants SET LegData='".json_encode($lda)."' WHERE EntrantID=".$rd['EntrantID'];
+		$DB->exec($sql);
+
+	}
+	$DB->exec("COMMIT");
+}
+
 function ajaxAddMemberSelector() {
 
 	global $DB,$TAGS,$KONSTANTS;
@@ -1980,6 +2128,14 @@ if (isset($_REQUEST['c']))
 				echo(listTeamMembers($_REQUEST['team']));
 				exit;
 			}
+			break;
+
+		case 'storeleg':
+			mlStoreLeg((isset($_REQUEST['leg']) ? $_REQUEST['leg'] : 1));
+			break;
+
+		case 'resetleg':
+			mlRetrieveLeg((isset($_REQUEST['leg']) ? $_REQUEST['leg'] : 1));
 			break;
 	}
 

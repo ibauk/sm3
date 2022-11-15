@@ -104,9 +104,9 @@ function emitJS() {
 
 function emitCatCompoundRules() {
 
-    global $DB;
+    global $DB, $RP;
 
-    $R = $DB->query("SELECT * FROM  catcompound ORDER BY Axis,NMin DESC");
+    $R = $DB->query("SELECT * FROM  catcompound WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY Axis,NMin DESC");
     while ($rd = $R->fetchArray()) {
         echo('<input type="hidden" name="catCompoundRules" ');
         echo('data-nmethod="'.$rd['NMethod'].'" ');
@@ -123,17 +123,27 @@ function emitCatCompoundRules() {
 
 function emitPenalties() {
 
-    global $DB;
+    global $DB, $RP;
     
     //	Time penalties
 		
-	$R = $DB->query('SELECT rowid AS id,TimeSpec,PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor FROM timepenalties ORDER BY PenaltyStart,PenaltyFinish');
-	while ($rd = $R->fetchArray())
-		echo('<input type="hidden" name="TimePenalty[]" data-spec="'.$rd['TimeSpec'].'" data-start="'.$rd['PenaltyStart'].'" data-end="'.$rd['PenaltyFinish'].'" data-factor="'.$rd['PenaltyFactor'].'" data-method="'.$rd['PenaltyMethod'].'">');
+    $sql = "SELECT rowid AS id,TimeSpec";
+    $sql .= ",PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor";
+    $sql .= " FROM timepenalties";
+    $sql .= " WHERE (LegAffected = 0 OR LegAffected = ".$RP['CurrentLeg'].")";
+    $sql .= " ORDER BY PenaltyStart,PenaltyFinish";
+	$R = $DB->query($sql);
+	while ($rd = $R->fetchArray()) {
+		echo('<input type="hidden" name="TimePenalty[]"');
+        echo(' data-spec="'.$rd['TimeSpec'].'" data-start="'.$rd['PenaltyStart'].'" data-end="'.$rd['PenaltyFinish'].'"');
+        echo(' data-factor="'.$rd['PenaltyFactor'].'" data-method="'.$rd['PenaltyMethod'].'">');
+    }
 
     // Speed penalties
 
-    $R = $DB->query('SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints FROM speedpenalties ORDER BY MinSpeed DESC');
+    $sql = "SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints";
+    $sql .= "FROM speedpenalties WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY MinSpeed DESC";
+    $R = $DB->query($sql);
     while ($rd = $R->fetchArray()) {
         echo('<input type="hidden" name="SpeedPenalty[]" data-Basis="'.$rd['Basis'].'" data-MinSpeed="'.$rd['MinSpeed'].'" ');
         echo('data-PenaltyType="'.$rd['PenaltyType'].'" value="'.$rd['PenaltyPoints'].'">');
@@ -339,22 +349,6 @@ function showScorecard($entrant) {
         // Format is (code)=?(points)?,?(minutes)
         parseBonusClaim($b,$bc['Bonus'],$bc['Points'],$bc['Mins'],$bc['XP'],$bc['PP']);
         $bonusesScored[$bc['Bonus']] = $bc;
-        /**
-        $e = strpos($b,'=');
-        if ($e === false) {
-            $bonusesScored[$b] = [];
-            //echo(' b === '.$b.'  ');
-        } else {
-            $bc = substr($b,0,$e);
-            //echo(' bc === '.$bc.'  ');
-            $pm = substr($b,$e + 1);
-            $c = strpos($pm,';');
-            if ($c === false)
-                $bonusesScored[$bc] = [intval($pm)];
-            else
-                $bonusesScored[$bc] = [intval(substr($pm,0,$c)),intval(substr($pm,$c + 1))];
-        }
-        **/
     }
 
 
@@ -374,7 +368,7 @@ function showScorecard($entrant) {
 
     echo('<div id="tab_bonuses" class="tabContent">');
 
-    $sql = "SELECT * FROM bonuses ORDER BY IfNull(GroupName,''), BonusID";
+    $sql = "SELECT * FROM bonuses WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY IfNull(GroupName,''), BonusID";
     $R = $DB->query($sql);
     $lastGroup = 'ZZZ'; // Non-existent high value
     $lastGroupStarted = false;
@@ -431,13 +425,6 @@ function showScorecard($entrant) {
                 if ($bs['PP']) { $pp .= 'true'; }
                 $pp .= '" '; 
             }
-            /** 
-            if (count($bs) > 0) {
-                $pts = $bs[0];
-                if (count($bs) > 1)
-                    $mins = $bs[1];
-            }
-            **/
             echo($xp.$pp);
 
         }
@@ -464,7 +451,7 @@ function showScorecard($entrant) {
 
     $combosTicked = explode(',',$rd['CombosTicked']);
     //echo('<input type="hidden" id="CombosTicked" value="'.$rd['CombosTicked'].'" >');
-    $sql = "SELECT * FROM combinations ORDER BY ComboID";
+    $sql = "SELECT * FROM combinations WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY ComboID";
     $R = $DB->query($sql);
     $combosStarted = false;
     while ($rc = $R->fetchArray()) {
