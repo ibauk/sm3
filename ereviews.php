@@ -311,6 +311,7 @@ function reviewEntrant($entrant) {
 
     $sql = "SELECT claims.*,bonuses.BriefDesc,bonuses.Notes,bonuses.Flags,bonuses.GroupName,claims.rowid";
     $sql .= " FROM claims LEFT JOIN bonuses ON claims.BonusID=bonuses.BonusID WHERE claims.EntrantID=$entrant";
+    $sql .= " AND claims.Leg=".$RP['CurrentLeg'];
     $sql .= " ORDER BY ClaimTime";
     $R = $DB->query($sql);
 

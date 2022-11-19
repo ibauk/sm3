@@ -26,7 +26,7 @@ ini_set('display_errors', 1);
  *
  */
 
- class LegData {
+  class EntrantLegData {
 
     public $leg;
     public $ScoreX;
@@ -70,6 +70,53 @@ ini_set('display_errors', 1);
         $entrantRecord['OdoRallyFinish'] = $ld->OdoRallyFinish;
         
     }
+
+ }
+
+ class RallyLegData {
+
+    public $leg;
+    public $StartTime;
+    public $FinishTime;
+    public $MaxHours;
+    public $MinMiles;
+    public $PenaltyMaxMiles;
+    public $MaxMilesMethod;
+    public $MaxMilesPoints;
+    public $PenaltyMilesDNF;
+    public $MinPoints;
+
+    
+    public static function storeLeg($ld,$leg,$rallyParamsRecord) {
+
+        $ld->leg          = $leg;
+        $ld->MaxHours       = $rallyParamsRecord['MaxHours'];
+        $ld->MinMiles  = $rallyParamsRecord['MinMiles'];
+        $ld->PenaltyMaxMiles  = $rallyParamsRecord['PenaltyMaxMiles'];
+        $ld->MaxMilesMethod     = $rallyParamsRecord['MaxMilesMethod'];
+        $ld->StartTime    = $rallyParamsRecord['StartTime'];
+        $ld->FinishTime   = $rallyParamsRecord['FinishTime'];
+        $ld->MaxMilesPoints = $rallyParamsRecord['MaxMilesPoints'];
+        $ld->PenaltyMilesDNF = $rallyParamsRecord['PenaltyMilesDNF'];
+        $ld->MinPoints  = $rallyParamsRecord['MinPoints'];
+
+    }
+
+    public static function retrieveLeg($ld,$leg,&$rallyParamsRecord) {
+
+        $rallyParamsRecord['MaxHours']        = $ld->MaxHours;
+        $rallyParamsRecord['MinMiles']   = $ld->MinMiles;
+        $rallyParamsRecord['PenaltyMaxMiles']   = $ld->PenaltyMaxMiles;
+        $rallyParamsRecord['MaxMilesMethod']      = $ld->MaxMilesMethod;
+        $rallyParamsRecord['StartTime']     = $ld->StartTime;
+        $rallyParamsRecord['FinishTime']    = $ld->FinishTime;
+        $rallyParamsRecord['MaxMilesPoints'] = $ld->MaxMilesPoints;
+        $rallyParamsRecord['PenaltyMilesDNF'] = $ld->PenaltyMilesDNF;
+        $rallyParamsRecord['MinPoints']  = $ld->MinPoints;
+        
+    }
+
+
 
  }
 ?>

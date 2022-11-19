@@ -112,10 +112,11 @@ function showTimePenalties()
 {
 	global $DB, $TAGS, $KONSTANTS, $DBVERSION;
 	
+	$NumLegs = getValueFromDB("SELECT NumLegs FROM rallyparams","NumLegs","1");
 
 	$tpdefs = defaultRecord('timepenalties');
 	
-	$sql = 'SELECT rowid AS id,TimeSpec,PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor FROM timepenalties ORDER BY PenaltyStart';
+	$sql = 'SELECT rowid AS id,TimeSpec,PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor,Leg FROM timepenalties ORDER BY PenaltyStart';
 	$R = $DB->query($sql);
 	if ($DB->lastErrorCode() <> 0)
 		echo($DB->lastErrorMsg().'<br>'.$sql.'<hr>');
@@ -200,6 +201,10 @@ function changePenaltyType(obj) {
 	echo('<th>'.$TAGS['tpFinishLit'][0].'</th>');
 	echo('<th>'.$TAGS['tpMethodLit'][0].'</th>');
 	echo('<th>'.$TAGS['tpFactorLit'][0].'</th>');
+	echo('<th');
+	if ($NumLegs < 2) echo(' style="display:none;"');
+	echo('>'.$TAGS['LegHdr'][0].'</th>');
+
 	echo('<th></th>');
 	echo('</tr>');
 	echo('</thead><tbody>');
@@ -247,6 +252,14 @@ function changePenaltyType(obj) {
 		echo('<td><input type="number" class="NPower" step="');
 		echo(($rd['PenaltyMethod'] % 2 == 0 ? $pstep : $mstep));
 		echo('" name="PenaltyFactor[]" value="'.$rd['PenaltyFactor'].'" onchange="enableSaveButton();"></td>');
+
+		echo('<td');
+		if ($NumLegs < 2) echo(' style="display:none;"');
+		echo('><input type="number" class="tinynumber" min="0"');
+		echo(' name="Leg[]" onchange="enableSaveButton();"');
+		echo(' max="'.$NumLegs.'" value="'.$rd['Leg'].'"></td>');
+	
+
 		echo('<td class="center"><button value="-" onclick="deleteRow(event);return false;">-</button></td>');
 		echo('</tr>');
 	}
@@ -278,6 +291,14 @@ function changePenaltyType(obj) {
 	}
 	echo('</select></td>');
 	echo('<td><input type="number" name="PenaltyFactor[]" value="'.$tpdefs['PenaltyFactor'].'" onchange="enableSaveButton();"></td>');
+
+	echo('<td');
+	if ($NumLegs < 2) echo(' style="display:none;"');
+	echo('><input type="number" class="tinynumber" min="0"');
+	echo(' name="Leg[]" onchange="enableSaveButton();"');
+	echo(' max="'.$NumLegs.'" value="0"></td>');
+
+
 	echo('<td class="center"><button value="-" onclick="deleteRow(event);return false;">-</button></td>');
 	echo('</tr>');
 	

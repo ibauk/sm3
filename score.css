@@ -147,6 +147,7 @@ input[name="OdoCheckMiles"]	{ width:4em; }
 input[type="email"], .email	{ width:25em; }
 input.bignumber			{ width: 6em;}
 input.smallnumber		{ width: 3em; }
+input.tinynumber		{ width: 2em; }
 
 .link:hover				{ cursor: pointer; background-color: var(--hover-background);}
 
@@ -278,6 +279,9 @@ h4				{ margin-top: .9em; margin-bottom: 5px; }
 
 #FuelWarning,
 #SpeedWarning { padding: .75em; background: var(--bright-background); color: var(--bright-text); }
+
+#speedPenalties td { padding-right: 3em; }
+#speedPenalties th { text-align: left; }
 
 
 
@@ -578,6 +582,15 @@ td.sxtotalpoints { text-align: right; }
 #teamrows th,
 #teamrows td	{ padding-right: 1em; }
 #teamrows .EntrantID	{ width: 3em; text-align: center; }
+
+.LegRow			{ height: 4em; }
+.LegHdr			{ text-align: center; }
+.LegStartDate,
+.LegFinishDate	{ padding-left: 1em; padding-right: 1em; }
+.LegStartTime,
+.LegFinishTime	{ padding-left: 2em; padding-right: 2em; }
+.LegMaxHours	{ text-align: center; }
+
 
 @media print {
 	*			{ background-color: white; color: black !important; }

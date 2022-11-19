@@ -187,6 +187,7 @@ function listclaims()
 	$rallyFinishDate = substr(getValueFromDB("SELECT FinishTime FROM rallyparams","FinishTime",$todaysDate),0,10);
 	$defaultDate = ($todaysDate<$rallyStartDate ? $rallyStartDate : ($todaysDate>$rallyFinishDate ? $rallyFinishDate : $todaysDate));
 	$rr = explode("\n",str_replace("\r","",getValueFromDB("SELECT RejectReasons FROM rallyparams","RejectReasons","1=1")));
+	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams", "CurrentLeg","1");
 	$decisions = [];
 	$decisions['0'] = $TAGS['BonusClaimOK'][0];
 	foreach($rr as $rt) {
@@ -198,10 +199,10 @@ function listclaims()
 	$decided = isset($_REQUEST['showd']) ? intval($_REQUEST['showd']) : (isset($_SESSION['fd']) ? $_SESSION['fd'] : $KONSTANTS['showAll']);
 	$applied = isset($_REQUEST['showa']) ? intval($_REQUEST['showa']) : (isset($_SESSION['fa']) ? $_SESSION['fa'] : $KONSTANTS['showNot']);
 
-	$sql = "SELECT Count(*) AS rex FROM claims";
-	$sqlw = '';
+	$sql = "SELECT Count(*) AS rex FROM claims ";
+	$sqlw = 'Leg='.$CurrentLeg;
 	if (isset($_REQUEST['showe']) && $_REQUEST['showe']!='')
-		$sqlw .= "EntrantID=".$_REQUEST['showe'];
+		$sqlw .= ($sqlw != ''? ' AND ' : '')."EntrantID=".$_REQUEST['showe'];
 	if (isset($_REQUEST['showb']) && $_REQUEST['showb']!='')
 		$sqlw .= ($sqlw != ''? ' AND ' : '')."Bonusid='".$DB->escapeString(strtoupper($_REQUEST['showb']))."'";
 	if ($decided != $KONSTANTS['showAll']) {
@@ -505,8 +506,10 @@ function saveNewClaim($virtualrally,$virtualstopmins,$XF,$claimtime)
 	global $DB,$TAGS,$KONSTANTS;
 	
 //	print_r($_REQUEST);
+
+	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
 		
-	$sql = "INSERT INTO claims (LoggedAt,ClaimTime,BCMethod,EntrantID,BonusID,OdoReading,Decision,Applied";
+	$sql = "INSERT INTO claims (LoggedAt,ClaimTime,BCMethod,EntrantID,BonusID,OdoReading,Decision,Applied,Leg";
 	if (isset($_REQUEST['MagicWord'])) 
 		$sql .= ",MagicWord";
 	if (isset($_REQUEST['JudgesNotes']))
@@ -535,6 +538,7 @@ function saveNewClaim($virtualrally,$virtualstopmins,$XF,$claimtime)
 	$sql .= ",".intval($_REQUEST['OdoReading']);
 	$sql .= ",".(isset($_REQUEST['Decision']) ? $_REQUEST['Decision'] : 0);
 	$sql .= ",".(isset($_REQUEST['Applied']) ? $_REQUEST['Applied'] : 0);
+	$sql .= ",".$CurrentLeg;
 
 	if (isset($_REQUEST['MagicWord']))
 		$sql .= ",'".$DB->escapeString($_REQUEST['MagicWord'])."'";
@@ -853,7 +857,10 @@ function fetchBonusName($b,$htmlok)
 		echo('');
 		return;
 	}
-	$R = $DB->query("SELECT BriefDesc, Points, RestMinutes, AskPoints, AskMinutes, Notes, Flags, Question, Answer FROM bonuses WHERE BonusID='".strtoupper($b)."'");
+	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
+	$sql = "SELECT BriefDesc, Points, RestMinutes, AskPoints, AskMinutes, Notes, Flags, Question, Answer FROM bonuses";
+	$sql .= " WHERE BonusID='".strtoupper($b)."' AND (Leg=0 OR Leg=".$CurrentLeg.")";
+	$R = $DB->query($sql);
 	if ($rd = $R->fetchArray()) {
 		$res = '';
 		if ($htmlok) {
@@ -915,7 +922,7 @@ function fetchBonusName($b,$htmlok)
 		}
 		echo($res);
 	} else {
-		$R = $DB->query("SELECT BriefDesc FROM combinations WHERE ComboID='".$b."'");
+		$R = $DB->query("SELECT BriefDesc FROM combinations WHERE ComboID='".$b."' AND (Leg=0 OR Leg=".$CurrentLeg.")");
 		if ($rd = $R->fetchArray()) {
 			if ($htmlok)
 				echo($rd['BriefDesc']);
@@ -963,6 +970,8 @@ function fetchEntrantDetail($e)
 		return;
 	}
 	$virtualrally = getValueFromDB("SELECT isvirtual FROM rallyparams","isvirtual",0);
+	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
+
 	$R = $DB->query("SELECT * FROM entrants WHERE EntrantID=".$e);
 	if ($rd = $R->fetchArray()) {
 		echo($rd['RiderName']);
@@ -974,7 +983,7 @@ function fetchEntrantDetail($e)
 
 		$tankrange = getValueFromDB("SELECT tankrange FROM rallyparams","tankrange",0);
 		
-		$sql = "SELECT * FROM claims WHERE EntrantID=".$e;
+		$sql = "SELECT * FROM claims WHERE EntrantID=".$e." AND Leg=".$CurrentLeg;
 		$sql .= " ORDER BY ClaimTime DESC";
 		$R = $DB->query($sql);
 		$lastodo = 0;
@@ -1124,8 +1133,10 @@ function applyClaimsEntrant($entrantid) {
 
 	$cfg = defaultReprocessParams(false);
 
-	$sqlW = "";
-	$sqlW .= "ClaimTime>='".$cfg['lodatetime']."'";
+	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
+
+	$sqlW = "Leg=".$CurrentLeg;
+	$sqlW .= " AND ClaimTime>='".$cfg['lodatetime']."'";
 	$sqlW .= " AND ClaimTime<='".$cfg['hidatetime']."'";
 	
 	$sqlW .= " AND EntrantID = $entrantid";
@@ -1196,6 +1207,7 @@ function applyClaims()
 		exit;
 	}
 
+	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
 
 	startHtml($TAGS['cl_ClaimsTitle'][0]);
 
@@ -1211,7 +1223,9 @@ function applyClaims()
 
 	$isVirtual = getValueFromDB("SELECT isvirtual FROM rallyparams","isvirtual",0);
 
-	$sql = "SELECT claims.*,claims.rowid as claimid,xbonus.BriefDesc,xbonus.Type As BonusType FROM claims JOIN (SELECT BonusID,BriefDesc,'B' As Type FROM bonuses) AS xbonus ON claims.BonusID=xbonus.BonusID WHERE ";
+	$sql = "SELECT claims.*,claims.rowid as claimid,xbonus.BriefDesc,xbonus.Type As BonusType FROM claims";
+	$sql .= " JOIN (SELECT BonusID,BriefDesc,'B' As Type FROM bonuses WHERE Leg=0 OR Leg=".$CurrentLeg.")";
+	$sql .= " AS xbonus ON claims.BonusID=xbonus.BonusID WHERE ";
 	
 	// Because of the link to bonuses, only ordinary bonus claims will be processed here.
 	// Claims for combos or non-existent bonuses must be handled by hand.
@@ -1225,6 +1239,7 @@ function applyClaims()
 		$sqlW = "Applied=0";		// Not already applied
 	}
 	
+	$sqlW .= " AND Leg=".$CurrentLeg;
 	$sqlW .= " AND ClaimTime>='".$loclaimtime."'";
 	$sqlW .= " AND ClaimTime<='".$hiclaimtime."'";
 	$sqlW .= " AND Decision IN (".$_REQUEST['decisions'].") ";
@@ -1243,6 +1258,7 @@ function applyClaims()
 	// Load all claims records into memory
 	// organised as EntrantID, BonusID
 	$claims = [];
+	error_log($sql);
 	//echo($sql.'<hr>'); exit;
 	$R = $DB->query($sql);
 	$claimcount = 0;
@@ -1256,15 +1272,16 @@ function applyClaims()
 		if (!isset([$rd['EntrantID']][$rd['claimid']]))
 			$claims[$rd['EntrantID']][$rd['claimid']] = $rd['BonusID'];
 	}
-	//print_r($claims);
-	//return;
+	//print_r($claims); return;
 	
 	$scorecardsTouched = 0;
 	foreach($claims as $entrant => $eclaims) {
 		
+		error_log("Zapping $entrant");
 		if (isset($_REQUEST['reprocess']) && $_REQUEST['reprocess'] > '1')
 			zapScorecard($entrant);
 
+		error_log("Applying claims for $entrant");
 		foreach($eclaims as $claimid => $bonusid) {
 			applyClaim($claimid,true);
 		}

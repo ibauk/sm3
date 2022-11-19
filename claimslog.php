@@ -479,7 +479,9 @@ function saveEBClaim($inTransaction) {
 
     global $DB,$KONSTANTS;
 
-    $sqlx = "INSERT INTO claims(LoggedAt,ClaimTime,EntrantID,BonusID,OdoReading,Decision,Photo,Points,RestMinutes,AskPoints,AskMinutes";
+    $CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
+
+    $sqlx = "INSERT INTO claims(LoggedAt,ClaimTime,EntrantID,BonusID,OdoReading,Decision,Photo,Points,RestMinutes,AskPoints,AskMinutes,Leg";
     if (isset($_REQUEST['QuestionAsked']))
         $sqlx .= ",QuestionAsked";
     if (isset($_REQUEST['AnswerSupplied']))
@@ -508,6 +510,7 @@ function saveEBClaim($inTransaction) {
     $sqlx .= ",".$_REQUEST['RestMinutes'];
     $sqlx .= ",".$_REQUEST['AskPoints'];
     $sqlx .= ",".$_REQUEST['AskMinutes'];
+    $sqlx .= ",".$CurrentLeg;
     if (isset($_REQUEST['QuestionAsked']))
         $sqlx .= ",".$_REQUEST['QuestionAsked'];
     if (isset($_REQUEST['AnswerSupplied']))

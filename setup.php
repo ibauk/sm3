@@ -26,8 +26,33 @@
  
 $HOME_URL = "setup.php";
 require_once("common.php");
+require_once("legs.php");
 
 $LAST_WIZARD_PAGE = 5;
+
+function InitializeLegData() {
+
+	global $DB;
+
+	$sql = "SELECT * FROM rallyparams";
+	$R = $DB->query($sql);
+	if (!$rd = $R->fetchArray()) { return; }
+	$lda = json_decode($rd['LegData']);
+	for ($leg = 1; $leg <= $rd['NumLegs']; $leg++) {
+		if (!isset($lda[$leg - 1])) {
+			$ld = new RallyLegData();
+			RallyLegData::storeleg($ld,$leg,$rd);
+			$lda[] = $ld;
+		}
+	}
+	$val = json_encode($lda);
+	$S = $DB->prepare("UPDATE rallyparams SET LegData=:LegData");
+	$S->bindValue(':LegData',$val,SQLITE3_TEXT);
+	error_log('LegData SQL '.$S->getSQL(true));
+	$S->execute();
+
+
+}
 
 function savePage($page_number)
 {
@@ -172,8 +197,9 @@ function chgregion() {
 			echo('<option value="1"'.($rd['isvirtual']!=0 ? ' selected ' : '').'>'.$TAGS['WizIsVirtual'][0].'</option>');
 			echo('</select>');
 			echo('</div>');
-			
 			break;
+			
+
 		case 2:
 			if ($rd['StartTime']=='') {
 				$rd['StartTime'] = date("Y-m-d 09:00");
@@ -294,6 +320,11 @@ function chgregion() {
 			echo('</select>');
 			echo('</div>');
 
+			echo('<div class="wizitem"><p>'.$TAGS['WizNumLegs'][1].'</p>');
+			echo('<label for="NumLegs">'.$TAGS['WizNumLegs'][0].'</label> ');
+			echo('<input type="number" class="smallnumber" id="NumLegs" min="1" name="NumLegs" value="'.$rd['NumLegs'].'">');
+			echo('</div>');
+	
 
 
 			break;
@@ -384,6 +415,7 @@ function showPageTrailer($page_number)
 	if (isset($_REQUEST['nextpage']) || isset($_REQUEST['prevpage']) || isset($_REQUEST['endwiz']))
 		savePage($_REQUEST['frompage']);
 	if (isset($_REQUEST['endwiz'])) {
+		InitializeLegData();
 		$get = 'admin.php?menu=setup';
 		header("Location: $get");
 		exit;

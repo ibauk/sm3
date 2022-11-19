@@ -1841,7 +1841,7 @@ function mlRetrieveLeg($leg) {
 		} 
 		foreach ($lda as $ldax) {
 			if ($ldax->leg == $leg) {
-				LegData::retrieveLeg($ldax,$leg,$rd);
+				EntrantLegData::retrieveLeg($ldax,$leg,$rd);
 				// save the entrant record
 				mlSaveEntrant($rd);
 			}
@@ -1868,7 +1868,7 @@ function mlRetrieveLegEntrant($leg,$entrant) {
 	} 
 	foreach ($lda as $ldax) {
 		if ($ldax->leg == $leg) {
-			LegData::retrieveLeg($ldax,$leg,$rd);
+			EntrantLegData::retrieveLeg($ldax,$leg,$rd);
 			// save the entrant record
 			mlSaveEntrant($rd);
 		}
@@ -1951,13 +1951,13 @@ function mlStoreLeg($leg) {
 		$newld = true;
 		foreach ($lda as $ldax) {
 			if ($ldax->leg == $leg) {
-				LegData::storeLeg($ldax,$leg,$rd);
+				EntrantLegData::storeLeg($ldax,$leg,$rd);
 				$newld = false;
 			}
 		}
 		if ($newld) {
-			$ld = new LegData();
-			LegData::storeLeg($ld,$leg,$rd);
+			$ld = new EntrantLegData();
+			EntrantLegData::storeLeg($ld,$leg,$rd);
 			$lda[] = $ld;
 		}
 		$sql = "UPDATE entrants SET LegData='".json_encode($lda)."' WHERE EntrantID=".$rd['EntrantID'];

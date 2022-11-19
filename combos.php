@@ -121,6 +121,7 @@ function showSingleCombo($comboid)
 
 	$R = $DB->query('SELECT * FROM rallyparams');
 	$rd = $R->fetchArray();
+	$NumLegs = $rd['NumLegs'];	
 	$ScoringMethod = $rd['ScoringMethod'];
 	if ($ScoringMethod == $KONSTANTS['AutoScoring'])
 		$ScoringMethod = chooseScoringMethod();
@@ -536,6 +537,14 @@ function hideBonusList() {
 			}
 			echo('</select></span>');
 		}
+
+	echo('<span class="vlabel"');
+	if ($NumLegs < 2) echo(' style="display:none;"');
+	echo(' title="'.$TAGS['BonusLeg'][1].'">');
+	echo('<label class="wide" for="Leg">'.$TAGS['BonusLeg'][0].'</label> ');
+	echo('<input type="number" class="tinynumber" id="Leg" name="Leg" min="0"');
+	echo(' max="'.$NumLegs.'" value="'.$rd['Leg'].'" onchange="enableSaveButton();">');
+	echo('</span>');
 			
 	echo('</form>');
 	echo('</div>');
@@ -591,7 +600,7 @@ function saveSingleCombo() {
 		$bonuses = '';
 
 
-	$sql = "INSERT OR REPLACE INTO combinations(ComboID,BriefDesc,ScoreMethod,MinimumTicks,ScorePoints,Bonuses,Compulsory";
+	$sql = "INSERT OR REPLACE INTO combinations(ComboID,BriefDesc,ScoreMethod,MinimumTicks,ScorePoints,Bonuses,Compulsory,Leg";
 	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
 		if (isset($_REQUEST['Cat'.$i.'Entry']))
 			$sql .= ",Cat".$i;
@@ -603,6 +612,7 @@ function saveSingleCombo() {
 	$sql .= ",'".$_REQUEST['ScorePoints']."'";
 	$sql .= ",'".$bonuses."'";
 	$sql .= ",".$_REQUEST['Compulsory'];
+	$sql .= ",".$_REQUEST['Leg'];
 	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
 		if (isset($_REQUEST['Cat'.$i.'Entry']))
 			$sql .= ",".$_REQUEST['Cat'.$i.'Entry'];

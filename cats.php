@@ -209,7 +209,9 @@ function showCompoundCalc($ruleid)
 {
 
 	global $DB, $TAGS, $KONSTANTS;
-	
+
+	$NumLegs = getValueFromDB("SELECT NumLegs FROM rallyparams","NumLegs","1");
+
 	$cats = fetchCategoryArrays();
 
 	$AxisLabels = [];
@@ -356,6 +358,14 @@ function showCompoundCalc($ruleid)
 	$stepv = floatval(getSetting('multStepValue','1'));
 	echo('<input type="number" name="NPower" id="NPower" min="0.0" step="'.$stepv.'" value="'.$rd['NPower'].'">');
 	echo('</span>');
+
+	echo('<span class="vlabel"');
+	if ($NumLegs < 2) echo(' style="display:none;"');
+	echo(' title="'.$TAGS['BonusLeg'][1].'">');
+	echo('<label class="wide" for="Leg">'.$TAGS['BonusLeg'][0].'</label>');
+	echo(' <input type="number" class="tinynumber" id="Leg" name="Leg" min="0"');
+	echo(' max="'.$NumLegs.'" onchange="enableSaveButton();" value="'.$rd['Leg'].'">');
+	echo('</span>'); // Leg
 
 	echo('<span class="vlabel"><label for="sdbutton"></label>');
 	if ($ruleid < 1)

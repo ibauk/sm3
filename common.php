@@ -705,7 +705,11 @@ echo('<title>'.$pagetitle.'</title>');
 			echo("?ScorerName=$scorer&amp;clear");
 	}
 	echo("\">");
-	echo('<span id="hdrRallyTitle" title="'.htmlspecialchars($TAGS['gblMainMenu'][1]).'"> '.htmlspecialchars(preg_replace('/\[|\]|\|/','',$rd['RallyTitle'])).' </span>');
+	echo('<span id="hdrRallyTitle" title="'.htmlspecialchars($TAGS['gblMainMenu'][1]).'"> ');
+	echo(htmlspecialchars(preg_replace('/\[|\]|\|/','',$rd['RallyTitle'])));
+	if ($rd['NumLegs'] > 1)
+		echo(' ['.$rd['CurrentLeg'].'/'.$rd['NumLegs'].']');
+	echo(' </span>');
 	echo("</a>");
 	echo('<span id="hdrOtherInfo">'.$otherInfo.'</span>');
 	echo("\r\n</div>\r\n");

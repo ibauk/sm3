@@ -128,9 +128,9 @@ function emitPenalties() {
     //	Time penalties
 		
     $sql = "SELECT rowid AS id,TimeSpec";
-    $sql .= ",PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor";
+    $sql .= ",PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor,Leg";
     $sql .= " FROM timepenalties";
-    $sql .= " WHERE (LegAffected = 0 OR LegAffected = ".$RP['CurrentLeg'].")";
+    $sql .= " WHERE (Leg = 0 OR Leg = ".$RP['CurrentLeg'].")";
     $sql .= " ORDER BY PenaltyStart,PenaltyFinish";
 	$R = $DB->query($sql);
 	while ($rd = $R->fetchArray()) {
@@ -141,8 +141,9 @@ function emitPenalties() {
 
     // Speed penalties
 
-    $sql = "SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints";
-    $sql .= "FROM speedpenalties WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY MinSpeed DESC";
+    $sql = "SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints,Leg";
+    $sql .= " FROM speedpenalties WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY MinSpeed DESC";
+    error_log($sql);
     $R = $DB->query($sql);
     while ($rd = $R->fetchArray()) {
         echo('<input type="hidden" name="SpeedPenalty[]" data-Basis="'.$rd['Basis'].'" data-MinSpeed="'.$rd['MinSpeed'].'" ');

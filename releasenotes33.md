@@ -2,6 +2,7 @@
 
 I am delighted to announce the release of ScoreMaster v3.3 incorporating the following significant developments:-
 
+- Multi-leg rallies
 - Rank by points per mile(km) rather than total points
 - Fractional multipliers
 - Scorecard reviews
@@ -13,6 +14,11 @@ I am delighted to announce the release of ScoreMaster v3.3 incorporating the fol
 - Automap suppression on import template selection
 
 This is a major release and updates the database schema from 11 to 12.
+
+## Multi-leg rallies
+While UK based rallies are all single-leg affairs, longer rallies abroad are often split into two or more legs with entrants having to check in and out at the end of each leg. To some extent each leg can be considered as a standalone rally but the scores all contribute to the overall rally score.
+
+The software has facilities to flag bonuses, combos and penalties as being available either during one specified leg or in all legs. Scorecards are produced for individual legs but finisher certificates reflect the whole rally.
 
 ## Rank by Points per mile(km)
 Finisher ranking can now be based on points per mile(km) rather than absolute total points value. Many consider this to be the better measure of rallying skill.

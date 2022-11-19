@@ -73,7 +73,8 @@ CREATE TABLE IF NOT EXISTS "rallyparams" (
 	"StartOption" INTEGER NOT NULL DEFAULT 0,
 	"ebcsettings" TEXT,
 	"CurrentLeg" INTEGER NOT NULL DEFAULT 1,
-	"NumLegs" INTEGER NOT NULL DEFAULT 1
+	"NumLegs" INTEGER NOT NULL DEFAULT 1,
+	"LegData" TEXT
 );
 
 DELETE FROM "rallyparams";
@@ -283,8 +284,7 @@ CREATE TABLE IF NOT EXISTS "timepenalties" (
 	"PenaltyFinish"	TEXT,
 	"PenaltyMethod"	INTEGER NOT NULL DEFAULT 0,
 	"PenaltyFactor"	INTEGER NOT NULL DEFAULT 0,
-	"LegAffected" INTEGER NOT NULL DEFAULT 0,
-	"LegTriggered" INTEGER NOT NULL DEFAULT 0
+	"Leg" INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS "sgroups" (
@@ -433,7 +433,7 @@ CREATE TABLE IF NOT EXISTS "bonuses" (
 	"Waffle" TEXT,
 	"Question" TEXT,
 	"Answer" TEXT,
-	"Leg" INTEGER NOT NULL DEFAULT 0
+	"Leg" INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY("BonusID")
 );
 

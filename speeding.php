@@ -10,7 +10,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2020 Bob Stammers
+ * Copyright (c) 2022 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -36,6 +36,8 @@ function editSpeedPenalties()
 	
 	startHtml('speed');
 	
+	$NumLegs = getValueFromDB("SELECT NumLegs FROM rallyparams","NumLegs","1");
+
 ?>
 <script>
 function deleteRow(e)
@@ -68,9 +70,12 @@ function triggerNewRow(obj1)
 	echo('<tr><th>'.$TAGS['spMinSpeedCol'][0].'</th>');
 	echo('<th>'.$TAGS['spPenaltyTypeCol'][0].'</th>');
 	echo('<th>'.$TAGS['spPenaltyPointsCol'][0].'</th>');
+	echo('<th');
+	if ($NumLegs < 2) echo(' style="display:none;"');
+	echo('>'.$TAGS['LegHdr'][0].'</th>');
 	echo('<th></th>');
 	echo('</thead><tbody>');
-	$sql = 'SELECT rowid AS id,Basis,MinSpeed,PenaltyType,PenaltyPoints FROM speedpenalties ORDER BY MinSpeed';
+	$sql = 'SELECT rowid AS id,Basis,MinSpeed,PenaltyType,PenaltyPoints,Leg FROM speedpenalties ORDER BY MinSpeed';
 	$R = $DB->query($sql);
 	if ($DB->lastErrorCode() <> 0)
 		echo($DB->lastErrorMsg().'<br>'.$sql.'<hr>');
@@ -85,6 +90,11 @@ function triggerNewRow(obj1)
 		echo('</select></td>');
 		echo('<td><input type="number" name="PenaltyPoints[]" value="'.$rd['PenaltyPoints'].'" onchange="enableSaveButton();"');
 		echo('></td>');
+		echo('<td');
+		if ($NumLegs < 2) echo(' style="display:none;"');
+		echo('><input type="number" class="tinynumber" min="0"');
+		echo(' name="Leg[]" onchange="enableSaveButton();"');
+		echo(' max="'.$NumLegs.'" value="'.$rd['Leg'].'"></td>');
 		echo('<td><button value="-" onclick="deleteRow(event);return false;">-</button></td>');
 		echo('</tr>');
 	}
@@ -101,6 +111,12 @@ function triggerNewRow(obj1)
 	echo('<option value="1">'.$TAGS['spPenaltyTypeDNF'][0].'</value>');
 ?>		
 </select></td>
+<?php
+echo('<td');
+if ($NumLegs < 2) echo(' style="display:none;"');
+echo('><input type="number" class="tinynumber" min="0" max="'.$NumLegs.'" name="Leg[]" onchange="enableSaveButton();" value="0">');
+echo('</td>');
+?>
 <td><input type="number" name="PenaltyPoints[]" value="" onchange="enableSaveButton();"></td>
 <td><button value="-" onclick="deleteRow(event);return false;">-</button></td>
 </tr>
@@ -138,11 +154,12 @@ function saveSpeedPenalties()
 	{
 		if ($_REQUEST['MinSpeed'][$i] != '')
 		{
-			$sql = "INSERT INTO speedpenalties (Basis,MinSpeed,PenaltyType,PenaltyPoints) VALUES(";
+			$sql = "INSERT INTO speedpenalties (Basis,MinSpeed,PenaltyType,PenaltyPoints,Leg) VALUES(";
 			$sql .= intval($_REQUEST['Basis'][$i]);
 			$sql .= ",".intval($_REQUEST['MinSpeed'][$i]);
 			$sql .= ",".intval($_REQUEST['PenaltyType'][$i]);
 			$sql .= ",".intval($_REQUEST['PenaltyPoints'][$i]);
+			$sql .= ",".intval($_REQUEST['Leg'][$i]);
 			$sql .= ")";
 			$DB->exec($sql);
 		}

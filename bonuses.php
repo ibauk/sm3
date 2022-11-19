@@ -33,6 +33,9 @@ function showBonus($bonusid) {
 	global $DB, $TAGS, $KONSTANTS;
 
 	$R = $DB->query("SELECT * FROM sgroups ORDER BY GroupName");
+	$nsgroups = 0;
+	while ($rd = $R->fetchArray()) $nsgroups++;
+	$R->reset();
 	$sgroups[''] = $TAGS['NoSelection'][0];
 	while ($rd = $R->fetchArray()) {
 		$sgroups[$rd['GroupName']] = $rd['GroupName'];
@@ -41,6 +44,8 @@ function showBonus($bonusid) {
 	$R = $DB->query('SELECT * FROM rallyparams');
 	$rd = $R->fetchArray();
 	
+	$NumLegs = $rd['NumLegs'];
+
 	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
 		$catlabels[$i] = $rd['Cat'.$i.'Label'];
 	
@@ -101,7 +106,17 @@ function showBonus($bonusid) {
 	echo('<span class="vlabel" title="'.$TAGS['BonusIDLit'][1].'">');
 	echo('<label for="BonusID">'.$TAGS['BonusIDLit'][0].'</label> ');
 	echo('<input type="text" readonly name="BonusID" id="BonusID" value="'.$rd['BonusID'].'">');
-	echo('</span>');
+
+	echo('<span ');
+	if ($NumLegs < 2) echo(' style="display:none;"');
+	echo(' title="'.$TAGS['BonusLeg'][1].'">');
+	echo(' &nbsp;&nbsp;&nbsp; ');
+	echo('<label for="Leg">'.$TAGS['BonusLeg'][0].'</label>');
+	echo(' <input type="number" class="tinynumber" id="Leg" name="Leg" min="0"');
+	echo(' max="'.$NumLegs.'" onchange="enableSaveButton();" value="'.$rd['Leg'].'">');
+	echo('</span>'); // Leg
+
+	echo('</span>'); // Bonus ID 
 
 	echo('<span class="vlabel" title="'.$TAGS['BriefDescLit'][1].'">');
 	echo('<label for="BriefDesc">'.$TAGS['BriefDescLit'][0].'</label> ');
@@ -212,8 +227,9 @@ function showBonus($bonusid) {
 	echo('</span>');
 	echo('</span>');
 
-	echo('<span class="vlabel" title="'.$TAGS['GroupNameLit'][1].'">');
-	echo('<label for="GroupName">'.$TAGS['GroupNameLit'][0].'</label> ');
+	echo('<span class="vlabel" title="'.$TAGS['GroupNameLit'][1].'"');
+	if ($nsgroups < 1) echo(' style="display:none;"');
+	echo('><label for="GroupName">'.$TAGS['GroupNameLit'][0].'</label> ');
 	echo('<select name="GroupName" id="GroupName" onchange="enableSaveButton();">');
 	foreach($sgroups as $g => $n) {
 		echo('<option value="'.$g.'" '.($g==$rd['GroupName'] ? ' selected ' : '' ).'>'.$n.'</option>');
@@ -632,7 +648,8 @@ function saveSingleBonus() {
 	global $DB, $KONSTANTS;
 
 	$sql = "UPDATE bonuses SET ";
-	$sql .= "BriefDesc='".$DB->escapeString($_REQUEST['BriefDesc'])."'";
+	$sql .= "Leg=".intval($_REQUEST['Leg']);
+	$sql .= ",BriefDesc='".$DB->escapeString($_REQUEST['BriefDesc'])."'";
 	$sql .= ",Points=".intval($_REQUEST['Points']);
 	$sql .= ",AskPoints=".intval($_REQUEST['AskPoints']);
 	$sql .= ",Compulsory=".intval($_REQUEST['Compulsory']);

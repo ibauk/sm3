@@ -35,6 +35,7 @@
 $HOME_URL = 'admin.php';
 
 require_once('common.php');
+require_once('legs.php');
 
 // Alphabetic from here on in
 
@@ -234,6 +235,8 @@ function saveRallyConfig()
 	$sql .= "RallyTitle='".$DB->escapeString($_REQUEST['RallyTitle'])."'";
 	$sql .= ",RallySlogan='".$DB->escapeString($_REQUEST['RallySlogan'])."'";
 	$sql .= ",MaxHours=".intval($_REQUEST['MaxHours']);
+	$sql .= ",NumLegs=".intval($_REQUEST['NumLegs']);
+	$sql .= ",LegData='".$DB->escapeString($_REQUEST['LegsDataJSON'])."'";
 	$sql .= ",StartOption=".intval($_REQUEST['StartOption']);
 	$sql .= ",StartTime='".$DB->escapeString($_REQUEST['StartDate']).'T'.$DB->escapeString($_REQUEST['StartTime'])."'";
 	$sql .= ",FinishTime='".$DB->escapeString($_REQUEST['FinishDate']).'T'.$DB->escapeString($_REQUEST['FinishTime'])."'";
@@ -872,8 +875,10 @@ function showRallyConfig($showAdvanced)
 
 	$showDistance = $showAdvanced || $rd['OdoCheckMiles'] > 0 || $rd['PenaltyMaxMiles'] > 0 || $rd['MinMiles'] > 0 || $rd['PenaltyMilesDNF'] > 0;
 	$showVirtual = $showAdvanced || $rd['isvirtual'] != 0;
+	$showLegs = $showAdvanced && $rd['NumLegs'] > 1;
 	
 	echo('<div id="RallyParamsSet">');
+	echo('<script src="legs.js"></script>');
 
 	echo('<form method="post" action="sm.php">');
 
@@ -893,6 +898,9 @@ function showRallyConfig($showAdvanced)
 	
 	echo('<li><a href="#tab_rejections">'.$TAGS['RejectReasons'][0].'</a></li>');
 	
+	if ($showLegs)
+		echo('<li class="advanced"><a href="#tab_legs">'.$TAGS['LegsTab'][0].'</a></li>');
+
 	if ($showVirtual)
 		echo('<li class="advanced"><a href="#tab_virtual">'.$TAGS['VirtualParams'][0].'</a></li>');
 	if ($showAdvanced)
@@ -978,6 +986,10 @@ function setRankMethod(sel) {
 	echo('<span class="vlabel">');
 	echo('<label for="MaxHours" class="vlabel">'.$TAGS['MaxHours'][0].' </label> ');
 	echo('<input type="number" max="'.$maxhours.'" class="smallnumber" name="MaxHours" id="MaxHours" value="'.$rd['MaxHours'].'" title="'.$TAGS['MaxHours'][1].'" oninput="enableSaveButton();"> ');
+	
+	echo(' &nbsp;&nbsp;&nbsp;&nbsp;<label for="NumLegs">'.$TAGS['WizNumLegs'][0].'</label> ');
+	echo('<input type="number" min="1" class="smallnumber" name="NumLegs" id="NumLegs" value="'.$rd['NumLegs'].'" onchange="adjustLegCount();"');
+	echo(' title="'.$TAGS['WizNumLegs'][1].'" oninput="enableSaveButton();"> ');
 	echo('</span>');
 
 	echo('<span class="vlabel">');
@@ -1046,8 +1058,9 @@ function setRankMethod(sel) {
 
 	echo('</fieldset>'); // tab_regional
 
-	$dn = $showAdvanced ? '' : ' style="display:none;" ';
-	$dnd = $showDistance ? '' : ' style="display:none;" ';
+	$dn = ($showAdvanced ? '' : ' style="display:none;" ');
+	$dnd = ($showDistance ? '' : ' style="display:none;" ');
+	$dnl = ($showLegs ? '' : ' style="display:none;" ');
 	
 	echo('<fieldset '.$dn.' id="tab_scoring" class="tabContent"><legend>'.$TAGS['LegendScoring'][0].'</legend>');
 	
@@ -1180,6 +1193,21 @@ function setRankMethod(sel) {
 	}
 	echo('</ol>');
 	echo('</fieldset>');
+
+	echo('<fieldset '.$dnl.' id="tab_legs" class="tabContent"><legend>'.$TAGS['LegsTab'][0].'</legend>');
+	echo('<input type="hidden" id="LegsDataJSON" name="LegsDataJSON" value='."'".$rd['LegData']."'>");
+	echo('<table id="LegsDataTable">');
+	echo('<thead><tr>');
+	echo('<th class="LegHdr">'.$TAGS['LegHdr'][0].'</th>');
+	echo('<th class="LegStartDate">'.$TAGS['LegStartDate'][0].'</th>');
+	echo('<th class="LegStartTime">'.$TAGS['LegStartTime'][0].'</th>');
+	echo('<th class="LegFinishDate">'.$TAGS['LegFinishDate'][0].'</th>');
+	echo('<th class="LefFinishTime">'.$TAGS['LegFinishTime'][0].'</th>');
+	echo('<th class="LegMaxHours">'.$TAGS['LegMaxHours'][0].'</th>');
+	echo('</tr></thead><tbody>');
+	echo('</tbody></table>');
+	echo('</fieldset>');
+
 	
 	echo('<fieldset '.$dn.' id="tab_virtual" class="tabContent"><legend>'.$TAGS['VirtualParams'][0].'</legend>');
 ?>
@@ -1321,6 +1349,7 @@ function json_ok(txt) {
 	echo('</form>');
 	echo('</div> <!-- RallyParamsSet -->');
 	echo('<script>');
+	echo('showLegsEditTable();');
 	echo('switcha('.$advInit.');');
 	echo('</script>');
 	//showFooter();
