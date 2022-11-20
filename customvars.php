@@ -360,6 +360,7 @@ $TAGS = array(
 	'CorrectedMiles'	=> array('Distance ridden','Official rally distance ridden'),	// Miles/Kms
 	
 	'Country'			=> array('Country',"Entrant's home country"),
+	'CurrentLeg'		=> array('Current Leg','Which Leg is currently active'),
 	'dberroragain'		=> array('The database save failed because [%s]. Please <button onClick="window.location.reload();">resubmit</button>. If problem persists tell Bob','The database save failed, probably temporary lock issue'),
 	'dblclickprint'		=> array('Double-click to print',''),
 	'DecimalComma'		=> array('Decimal point is','What character indicates a decimal point?'),
@@ -500,10 +501,14 @@ $TAGS = array(
 	'LegendPenalties'	=> array('Penalties',''),
 	'LegendScoring'		=> array('Scoring &amp; Ranking',''),
 	'LegendTeams'		=> array('Teams',''),
+	'LegExplain'		=> array('Legs are separately scored parts of the overall rally.',
+				'The Current Leg is the one currently being scored. When the rally is complete, choose Leg 0 (Whole Rally) before printing certificates.'),
 	'LegFinishDate'		=> array('Finish Date','Date this Leg finishes'),
 	'LegFinishTime'		=> array('Finish Time','Time this Leg finishes'),
 	'LegHdr'			=> array('Leg','Unique number of this Leg'),
 	'LegMaxHours'		=> array('Max hours','Number of rideable hours for this Leg'),
+	'LegRuSure'			=> array('Are you sure you want to switch Legs?','You should have exclusive use of the database while the transition occurs.'),
+	'LegsCount'			=> array('Number of Legs','The total number of separate Legs in this rally'),
 	'LegsTab'			=> array('Legs','Leg details'),
 	'LegStartDate'		=> array('Start Date','Date this Leg begins'),
 	'LegStartTime'		=> array('Start Time','Time this Leg begins'),

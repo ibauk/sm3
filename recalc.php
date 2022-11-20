@@ -512,7 +512,7 @@ function calcTimePenalty($STDate,$FTDate) {
             switch($PM) {
 
                 case $KONSTANTS['TPM_MultPerMin']:
-                    return [0,0 - $PF * $Mins,$Dtx,$FTDate];
+                    return [0,0 - $PF * $Mins,$DTx,$FTDate];
                 case $KONSTANTS['TPM_PointsPerMin']:
                     return [0 - $PF * $Mins,0,$DTx,$FTDate];
                 case $KONSTANTS['TPM_FixedMult']:
@@ -668,7 +668,7 @@ function recalcAll($force) {
             $scorecards[] = $rd['EntrantID'];
     }
     foreach ($scorecards as $sc) {
-        echo('<br>'.$TAGS['cl_Recalculating'][0].' '.$entrant.' ...');
+        echo('<br>'.$TAGS['cl_Recalculating'][0].' '.$sc.' ...');
         recalcScorecard($sc,false);
     }
         
@@ -799,7 +799,7 @@ function initRallyVariables() {
     $sql = "SELECT rowid AS id,TimeSpec";
     $sql .= ",PenaltyStart,PenaltyFinish,PenaltyMethod,PenaltyFactor";
     $sql .= " FROM timepenalties";
-    $sql .= " WHERE (LegAffected = 0 OR LegAffected = ".$RP['CurrentLeg'].")";
+    $sql .= " WHERE (Leg = 0 OR Leg = ".$RP['CurrentLeg'].")";
     $sql .= " ORDER BY PenaltyStart,PenaltyFinish";
     $R = $DB->query($sql);
     
@@ -818,7 +818,7 @@ function initRallyVariables() {
 // Speed penalties
 
     $sql = "SELECT Basis,MinSpeed,PenaltyType,PenaltyPoints";
-    $sql .= "FROM speedpenalties WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY MinSpeed DESC";
+    $sql .= " FROM speedpenalties WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY MinSpeed DESC";
     $R = $DB->query($sql);
 
     while ($rd = $R->fetchArray()) {

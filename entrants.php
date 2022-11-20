@@ -750,7 +750,7 @@ echo('<title>'.$TAGS['ttFinishers'][0].'</title>');
 	.qlr { text-align: right; }
 </style>
 <script>
-<!--
+
 function countdown(secs) {
 	var spo = document.querySelector('#countdown');
 	setInterval(function() {
@@ -770,7 +770,7 @@ function countup(secs) {
 function formSubmit(e) {
 	e.target.form.submit();
 }
--->
+
 </script>
 </head>
 <body onload="<?php echo("countup($TIMEOUTSECS)")?>">
@@ -1829,10 +1829,9 @@ function listTeamMembers($team) {
  */
 function mlRetrieveLeg($leg) {
 
-	global $DB,$TAGS,$KONSTANTS;
+	global $DB;
 
 	$sql = "SELECT * FROM entrants";
-	$DB->exec("BEGIN TRANSACTION");
 	$R = $DB->query($sql);
 	while ($rd = $R->fetchArray(SQLITE3_ASSOC)) {
 		$lda = json_decode($rd['LegData']);
@@ -1841,7 +1840,7 @@ function mlRetrieveLeg($leg) {
 		} 
 		foreach ($lda as $ldax) {
 			if ($ldax->leg == $leg) {
-				EntrantLegData::retrieveLeg($ldax,$leg,$rd);
+				EntrantLegData::retrieveLeg($ldax,$rd);
 				// save the entrant record
 				mlSaveEntrant($rd);
 			}
@@ -2055,10 +2054,78 @@ function ajaxSaveTeam() {
 	
 }
 
+function ajaxChangeLeg() {
+
+	global $DB;
+
+	if (!isset($_REQUEST['oldleg']) || !isset($_REQUEST['newleg'])) {
+		echo('error1');
+		return;
+	}
+	$DB->exec("BEGIN TRANSACTION");
+	$R = $DB->query("SELECT * FROM rallyparams");
+	if (!$rp = $R->fetchArray(SQLITE3_ASSOC)) {
+		echo('error2');
+		return;
+	}
+	error_log('Changin leg from '.$_REQUEST['oldleg'].' to '.$_REQUEST['newleg']);
+	$LegData = json_decode(getValueFromDB("SELECT LegData FROM rallyparams","LegData","[]"));
+	if ($_REQUEST['oldleg'] > 0)
+		RallyLegData::storeLeg(($LegData[intval($_REQUEST['oldleg']) - 1]),$_REQUEST['oldleg'],$rp);
+	if ($_REQUEST['newleg'] == 0)
+		RallyLegData::retrieveLegSpread($LegData,$rp['NumLegs'],$rp);
+	else
+		RallyLegData::retrieveLeg($LegData[intval($_REQUEST['newleg']) - 1],$rp);
+	$rp['CurrentLeg'] = $_REQUEST['newleg'];
+	$rp['LegData'] = json_encode($LegData);
+	$sqlx = '';
+	foreach($rp as $fld => $val) {
+		if ($sqlx != '') $sqlx .= ',';
+		$sqlx .= $fld.'=:'.$fld;
+	}
+	$sql = "UPDATE rallyparams SET ".$sqlx;
+	$stmt = $DB->prepare($sql);
+	foreach($rp as $fld => $val) {
+		$stmt->bindValue($fld,$val);
+	}
+	$stmt->execute();
+
+
+	$sql = "SELECT * FROM entrants";
+	$R = $DB->query($sql);
+	while ($rd = $R->fetchArray(SQLITE3_ASSOC)) {
+		$lda = json_decode($rd['LegData']);
+		if (!$lda) {
+			$lda = [];
+			for ($i=0; $i < $rp['NumLegs']; $i++) {
+			 	$ld = new EntrantLegData();
+				$lda[] = $ld;
+			}
+		} 
+		if ($_REQUEST['oldleg'] > 0)
+			EntrantLegData::storeLeg(($lda[intval($_REQUEST['oldleg']) - 1]),$_REQUEST['oldleg'],$rd);
+		if ($_REQUEST['newleg'] < $_REQUEST['oldleg'] || $_REQUEST['oldleg'] == 0) {
+			if ($_REQUEST['newleg'] == 0)
+				EntrantLegData::retrieveLegSpread($lda,$rp['NumLegs'],$rd);
+			else
+				EntrantLegData::retrieveLeg($lda[intval($_REQUEST['newleg']) - 1],$rd);
+		}
+		$rd['LegData'] = json_encode($lda);
+		mlSaveEntrant($rd);
+	}
+
+
+	$DB->exec("COMMIT");
+	echo('ok');
+}
 
 
 
+if (isset($_REQUEST['c']) && $_REQUEST['c']=='changeleg') {
 
+	ajaxChangeLeg();
+	exit;
+}
 
 
 if (isset($_REQUEST['c']) && $_REQUEST['c']=='saveteam') {

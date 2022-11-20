@@ -236,6 +236,7 @@ function saveRallyConfig()
 	$sql .= ",RallySlogan='".$DB->escapeString($_REQUEST['RallySlogan'])."'";
 	$sql .= ",MaxHours=".intval($_REQUEST['MaxHours']);
 	$sql .= ",NumLegs=".intval($_REQUEST['NumLegs']);
+	$sql .= ",CurrentLeg=".intval($_REQUEST['CurrentLeg']);
 	$sql .= ",LegData='".$DB->escapeString($_REQUEST['LegsDataJSON'])."'";
 	$sql .= ",StartOption=".intval($_REQUEST['StartOption']);
 	$sql .= ",StartTime='".$DB->escapeString($_REQUEST['StartDate']).'T'.$DB->escapeString($_REQUEST['StartTime'])."'";
@@ -520,10 +521,6 @@ function triggerNewRow(obj)
 }
 </script>
 <?php	
-
-
-	$myurl = "<a href='sm.php?c=combos'>".$TAGS['ComboMaintHead'][0].'</a>';
-	pushBreadcrumb($myurl);
 
 
 	echo('<form method="post" action="sm.php">');
@@ -875,7 +872,7 @@ function showRallyConfig($showAdvanced)
 
 	$showDistance = $showAdvanced || $rd['OdoCheckMiles'] > 0 || $rd['PenaltyMaxMiles'] > 0 || $rd['MinMiles'] > 0 || $rd['PenaltyMilesDNF'] > 0;
 	$showVirtual = $showAdvanced || $rd['isvirtual'] != 0;
-	$showLegs = $showAdvanced && $rd['NumLegs'] > 1;
+	$showLegs = $showAdvanced;
 	
 	echo('<div id="RallyParamsSet">');
 	echo('<script src="legs.js"></script>');
@@ -986,10 +983,6 @@ function setRankMethod(sel) {
 	echo('<span class="vlabel">');
 	echo('<label for="MaxHours" class="vlabel">'.$TAGS['MaxHours'][0].' </label> ');
 	echo('<input type="number" max="'.$maxhours.'" class="smallnumber" name="MaxHours" id="MaxHours" value="'.$rd['MaxHours'].'" title="'.$TAGS['MaxHours'][1].'" oninput="enableSaveButton();"> ');
-	
-	echo(' &nbsp;&nbsp;&nbsp;&nbsp;<label for="NumLegs">'.$TAGS['WizNumLegs'][0].'</label> ');
-	echo('<input type="number" min="1" class="smallnumber" name="NumLegs" id="NumLegs" value="'.$rd['NumLegs'].'" onchange="adjustLegCount();"');
-	echo(' title="'.$TAGS['WizNumLegs'][1].'" oninput="enableSaveButton();"> ');
 	echo('</span>');
 
 	echo('<span class="vlabel">');
@@ -1195,7 +1188,26 @@ function setRankMethod(sel) {
 	echo('</fieldset>');
 
 	echo('<fieldset '.$dnl.' id="tab_legs" class="tabContent"><legend>'.$TAGS['LegsTab'][0].'</legend>');
-	echo('<input type="hidden" id="LegsDataJSON" name="LegsDataJSON" value='."'".$rd['LegData']."'>");
+	error_log($rd['LegData']);
+	echo('<textarea style="display:none;" id="LegsDataJSON" name="LegsDataJSON">'.$rd['LegData']."</textarea>");
+	echo('<input type="hidden" id="CurrentLeg" name="CurrentLeg" value='."'".$rd['CurrentLeg']."'>");
+	echo('<input type="hidden" id="LegRuSure0" value="'.htmlspecialchars($TAGS['LegRuSure'][0]).'">');
+	echo('<input type="hidden" id="LegRuSure1" value="'.htmlspecialchars($TAGS['LegRuSure'][1]).'">');
+	echo('<p>'.$TAGS['LegExplain'][0].'</p>');
+	echo('<p id="LegsX2"');
+	if ($rd['NumLegs'] < 2) echo(' style="display:none;"');
+	echo('>'.$TAGS['LegExplain'][1].'</p>');
+	echo('<span class="vlabel" title="'.$TAGS['LegsCount'][1].'">');
+	echo('<label for="NumLegs">'.$TAGS['LegsCount'][0].'</label> ');
+	echo('<input type="number" min="1" class="tinynumber" name="NumLegs" id="NumLegs" value="'.$rd['NumLegs'].'" onchange="adjustLegCount();"');
+	echo(' oninput="enableSaveButton();"> ');
+	echo('</span>');
+
+	echo('<span class="vlabel" id="CurrentLegSpan" title="'.$TAGS['CurrentLeg'][1].'">');
+	echo($TAGS['CurrentLeg'][0].' <span>');
+	echo('</span></span>');
+
+
 	echo('<table id="LegsDataTable">');
 	echo('<thead><tr>');
 	echo('<th class="LegHdr">'.$TAGS['LegHdr'][0].'</th>');

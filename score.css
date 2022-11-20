@@ -583,6 +583,7 @@ td.sxtotalpoints { text-align: right; }
 #teamrows td	{ padding-right: 1em; }
 #teamrows .EntrantID	{ width: 3em; text-align: center; }
 
+#LegsDataTable  { margin-top: 2em; border-top: solid; }
 .LegRow			{ height: 4em; }
 .LegHdr			{ text-align: center; }
 .LegStartDate,

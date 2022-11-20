@@ -56,7 +56,7 @@ ini_set('display_errors', 1);
 
     }
 
-    public static function retrieveLeg($ld,$leg,&$entrantRecord) {
+    public static function retrieveLeg($ld,&$entrantRecord) {
 
         $entrantRecord['ScoreX']        = $ld->ScoreX;
         $entrantRecord['TotalPoints']   = $ld->TotalPoints;
@@ -68,6 +68,27 @@ ini_set('display_errors', 1);
         $entrantRecord['FinishPosition'] = $ld->FinishPosition;
         $entrantRecord['OdoRallyStart']  = $ld->OdoRallyStart;
         $entrantRecord['OdoRallyFinish'] = $ld->OdoRallyFinish;
+        
+    }
+
+    public static function retrieveLegSpread($lda,$NLegs,&$entrantRecord) {
+
+        for ($ix = 0; $ix < $NLegs; $ix++) {
+            if ($ix == 0) {
+                $entrantRecord['StartTime']     = $lda[0]->StartTime;
+                $entrantRecord['OdoRallyStart']  = $lda[0]->OdoRallyStart;
+                $entrantRecord['TotalPoints']   = $lda[0]->TotalPoints;
+                $entrantRecord['RestMinutes']   = $lda[0]->RestMinutes;
+                $entrantRecord['CorrectedMiles'] = $lda[0]->CorrectedMiles;
+            } else {
+                $entrantRecord['TotalPoints']   += $lda[$ix]->TotalPoints;
+                $entrantRecord['RestMinutes']   += $lda[$ix]->RestMinutes;
+                $entrantRecord['FinishTime']    = $lda[$ix]->FinishTime;
+                $entrantRecord['CorrectedMiles'] += $lda[$ix]->CorrectedMiles;
+                $entrantRecord['FinishPosition'] = $lda[$ix]->FinishPosition;
+                $entrantRecord['OdoRallyFinish'] = $lda[$ix]->OdoRallyFinish;
+            }
+        }
         
     }
 
@@ -102,7 +123,7 @@ ini_set('display_errors', 1);
 
     }
 
-    public static function retrieveLeg($ld,$leg,&$rallyParamsRecord) {
+    public static function retrieveLeg($ld,&$rallyParamsRecord) {
 
         $rallyParamsRecord['MaxHours']        = $ld->MaxHours;
         $rallyParamsRecord['MinMiles']   = $ld->MinMiles;
@@ -113,6 +134,17 @@ ini_set('display_errors', 1);
         $rallyParamsRecord['MaxMilesPoints'] = $ld->MaxMilesPoints;
         $rallyParamsRecord['PenaltyMilesDNF'] = $ld->PenaltyMilesDNF;
         $rallyParamsRecord['MinPoints']  = $ld->MinPoints;
+        
+    }
+
+    public static function retrieveLegSpread($lda,$NLegs,&$rallyParamsRecord) {
+
+        $rallyParamsRecord['MaxHours']          = 0;
+        $rallyParamsRecord['StartTime']         = $lda[0]->StartTime;
+        $rallyParamsRecord['FinishTime']        = $lda[$NLegs - 1]->FinishTime;
+
+        for ($leg = 0; $leg < $NLegs; $leg++)
+            $rallyParamsRecord['MaxHours']      += $lda[$leg]->MaxHours;
         
     }
 

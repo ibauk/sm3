@@ -505,6 +505,7 @@ function triggerNewRow()
 	function testBID(inp) {
 		const re = new RegExp('^[A-Z0-9]*-?$');
 		console.log(inp.value);
+		inp.value = inp.value.toUpperCase();
 		if (re.test(inp.value))
 			inp.classList.remove('yellow');
 		else

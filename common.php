@@ -707,8 +707,10 @@ echo('<title>'.$pagetitle.'</title>');
 	echo("\">");
 	echo('<span id="hdrRallyTitle" title="'.htmlspecialchars($TAGS['gblMainMenu'][1]).'"> ');
 	echo(htmlspecialchars(preg_replace('/\[|\]|\|/','',$rd['RallyTitle'])));
-	if ($rd['NumLegs'] > 1)
-		echo(' ['.$rd['CurrentLeg'].'/'.$rd['NumLegs'].']');
+	if ($rd['NumLegs'] > 1 && $rd['CurrentLeg'] > 0) {
+		echo(' <span title="'.$TAGS['CurrentLeg'][1].'">['.$rd['CurrentLeg'].'</span>/');
+		echo('<span title="'.$TAGS['LegsCount'][1].'">'.$rd['NumLegs'].'] </span>');
+	}
 	echo(' </span>');
 	echo("</a>");
 	echo('<span id="hdrOtherInfo">'.$otherInfo.'</span>');
