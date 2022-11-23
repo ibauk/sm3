@@ -330,7 +330,7 @@ function calcMileagePenalty()
 	var CM = parseInt(document.getElementById('CorrectedMiles').value);
 	var PMM = parseInt(document.getElementById('PenaltyMaxMiles').value);
 	var PMMethod = parseInt(document.getElementById('MaxMilesMethod').value);
-	var PMPoints = parseInt(document.getElementById('MaxMilesPoints').value);
+	var PMPoints = parseFloat(document.getElementById('MaxMilesPoints').value);
 	var PenaltyMiles = CM - PMM;
 	
 	if (PenaltyMiles <= 0) // No penalty

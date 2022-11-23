@@ -202,6 +202,7 @@ function emitScorecardVars() {
     echo('<input type="hidden" id="RTP_SPenalty" value="'.htmlentities(getSetting('RPT_SPenalty',$KONSTANTS['RPT_SPenalty'])).'">');
     echo('<input type="hidden" id="DNF_TOOFEWPOINTS" value="'.htmlentities(getSetting('DNF_TOOFEWPOINTS',$KONSTANTS['DNF_TOOFEWPOINTS'])).'">');
     echo('<input type="hidden" id="ccApplyToAll" value="'.htmlentities(getSetting('ccApplyToAll',$TAGS['ccApplyToAll'][0])).'">');
+    echo('<input type="hidden" id="autoLateDNF" value="'.htmlentities(getSetting('autoLateDNF','false')).'">');
     // Needed for use with setFinisherStatus (score.js)
 
     echo("\r\n<!--End of rally standard variables-->\r\n");

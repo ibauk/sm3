@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2021 Bob Stammers
+ * Copyright (c) 2022 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -220,7 +220,7 @@ function checkApplySequences(bonv,catcounts,bonusPoints) {
     
         console.log('SP='+parseInt(catcounts[ccr_axis]['samepoints'])+' Pwr='+parseFloat(ccr_pwr));
         //'&#x2713; == checkmark
-        let bonusDesc = '&#x2713; '+cdesc+ " x "+ccr_min;
+        let bonusDesc = cdesc+'(&#8752;&ge;'+ccr_min+')&#x2713;';
         if (catcounts[ccr_axis]['samecount'] > ccr_min) {
             bonusDesc += '+';
         }
@@ -617,7 +617,7 @@ function recalcScorecard() {
         if (axl === null)
             sx.desc = '###';
         else
-            sx.desc = axl.value+': n';
+            sx.desc = axl.value+': <em>n</em>='+nzCount;
         if (ccr_cat !== 0) {
             let clbl = document.getElementById('cat'+ccr_axis+'_'+ccr_cat);
             if (clbl === null)
@@ -711,14 +711,14 @@ function recalcScorecard() {
         if (axl === null)
             sx.desc = '###';
         else
-            sx.desc = axl.value+': n';
+            sx.desc = axl.value+': <em>n</em>';
 
         if (ccr_cat !== 0) {
             let clbl = document.getElementById('cat'+ccr_axis+'_'+ccr_cat);
             if (clbl === null)
                 sx.desc += '[###]';
             else
-                sx.desc += '['+clbl.parentElement.firstChild.innerText+']';
+                sx.desc += '['+clbl.parentElement.firstChild.innerText+']='+catcount;
         } else
             sx.desc += ' ';
     
@@ -737,13 +737,33 @@ function recalcScorecard() {
 
     } // Bonus per cat axis
 
+
+    if (multipliers != 1) {
+        let sx = new SCOREXLINE();
+        sx.desc = "= "+bonusPoints+' x '+multipliers;
+        sx.points = parseInt(bonusPoints * multipliers);
+        sx.totalPoints = sx.points;
+        scorex.push(sx);
+        bonusPoints = sx.points;
+    }
+
+    let sxgap = new SCOREXLINE();
+    scorex.push(sxgap);
+
+
+
+
     let tp = calcTimePenalty();
     let tpP = tp[0]; // Points
     let tpM = tp[1]; // Multipliers
 
+    let multDeduct = 0;
     if (tpM != 0 || tpP != 0) {
         console.log('xxMultipliers+='+tpM+' multipliers is '+multipliers);
-        multipliers += parseFloat(tpM);
+        if (tpM != 0) {
+            multDeduct = parseInt(tpM * bonusPoints);
+            bonusPoints += multDeduct;
+        }
         console.log('Multipliers is now '+multipliers);
         bonusPoints += tpP;
         let sx = new SCOREXLINE();
@@ -753,11 +773,11 @@ function recalcScorecard() {
         if (tpxx) {
             tpx = tpxx.value;
         }
-        sx.id = tpx;
+        sx.desc = tpx+' ';
         if (tp[2].length > 1 && (tp[2].substring(0,10) == tp[3].substring(0,10))) {
-            sx.desc = tp[3].substring(11,16)+' &#8805; '+tp[2].substring(11,16);
+            sx.pointsDesc = tp[3].substring(11,16)+' &#8805; '+tp[2].substring(11,16);
         } else {
-            sx.desc = tp[3].replace('T',' ')+' &#8805; '+tp[2].replace('T',' ').substring(0,16);
+            sx.pointsDesc = tp[3].replace('T',' ')+' &#8805; '+tp[2].replace('T',' ').substring(0,16);
         }
         if (tpM != 0) {
             sx.points = ''+(tpM*100)+'%';
@@ -766,15 +786,27 @@ function recalcScorecard() {
         }
         sx.totalPoints = bonusPoints;
         scorex.push(sx);
+        if (tpM != 0) {
+            sx = new SCOREXLINE();
+            sx.pointsDesc = (bonusPoints-multDeduct)+" x "+(tpM*100*-1)+"% =";
+            sx.points = multDeduct;
+            scorex.push(sx);
+        }
+
     }
 
     let mp = calcMileagePenalty();
     let mpP = mp[0]; // Points
     let mpM = mp[1]; // Multipliers
 
+    multDeduct = 0;
+
     if (mpM != 0 || mpP != 0) {
         console.log('xyMultipliers+='+mpM);
-        multipliers += parseFloat(mpM);
+        if (mpM !=0) {
+            multDeduct = parseInt(mpM * bonusPoints);
+            bonusPoints += multDeduct;
+        }
         bonusPoints += mpP;
         let sx = new SCOREXLINE();
         let tpx = RPT_MPenalty;
@@ -783,15 +815,22 @@ function recalcScorecard() {
         if (tpxx) {
             tpx = tpxx.value;
         }
-        sx.id = tpx;
-        sx.desc = mp[3]+' '+document.getElementById('bduText').value+' > '+mp[2];
+        sx.desc = tpx+' ';
+        sx.pointsDesc = mp[3]+' '+document.getElementById('bduText').value+' > '+mp[2];
         if (mpM != 0) {
-            sx.points = ''+mpM+' x';
+            sx.points = ''+(mpM*100)+'%';
         } else {
             sx.points = mpP;
         }
         sx.totalPoints = bonusPoints;
         scorex.push(sx);
+        if (mpM != 0) {
+            sx = new SCOREXLINE();
+            sx.pointsDesc = (bonusPoints-multDeduct)+" x "+(mpM*100*-1)+"% =";
+            sx.points = multDeduct;
+            scorex.push(sx);
+        }
+
     }
 
     calcAvgSpeed();
@@ -814,15 +853,6 @@ function recalcScorecard() {
         scorex.push(sx);
     }
     
-
-    if (multipliers != 1) {
-        let sx = new SCOREXLINE();
-        sx.desc = "= "+bonusPoints+' x '+multipliers;
-        sx.points = parseInt(bonusPoints * multipliers);
-        sx.totalPoints = sx.points;
-        scorex.push(sx);
-        bonusPoints = sx.points;
-    }
 
 
 
@@ -1087,7 +1117,7 @@ function setFinisherStatusx()
 
 	var DT = document.getElementById('FinishTimeDNF').value;
 	var FT = document.getElementById('FinishDate').value + 'T' + document.getElementById('FinishTime').value;
-	if (FT != 'T' && FT > DT) {
+	if (FT != 'T' && document.getElementById('autoLateDNF').value=='true' && FT > DT) {
         if (FT.substring(0,10) == DT.substring(0,10))
             return SFSx(EntrantDNF,FT.substring(11)+' > '+DT.substring(11));
         else

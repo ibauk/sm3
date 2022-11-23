@@ -950,7 +950,8 @@ function checkApplySequences($bonv,$catcounts,$bonusPoints) {
         
             
         //'&#x2713; == checkmark
-        $bonusDesc = '&#x2713; '.$catlabels[$ccr->axis][$catcounts[$ccr->axis]->lastcat]. " x ".$ccr->min;
+//        $bonusDesc = '&#x2713; '.$catlabels[$ccr->axis][$catcounts[$ccr->axis]->lastcat]. " x ".$ccr->min;
+        $bonusDesc = $catlabels[$ccr->axis][$catcounts[$ccr->axis]->lastcat]. "(&#8752;&ge;".$ccr->min.")&#x2713;";
         if ($catcounts[$ccr->axis]->samecount > $ccr->min) {
             $bonusDesc .= '+';
         }
@@ -965,6 +966,7 @@ function checkApplySequences($bonv,$catcounts,$bonusPoints) {
             }
         }
 
+        error_log('Sequence: bp='.$bonusPoints.' xbp='.$extraBonusPoints);
         $bonusPoints += $extraBonusPoints;
 
         $sx = new SCOREXLINE();
@@ -1321,7 +1323,7 @@ function recalcScorecard($entrant,$intransaction) {
         if (intval($points) <= 0 && $lastmin != '')
             $sx->desc .= '&lt; '.$lastmin;
         else
-            $sx->desc .= '&gt;= '.$ccr->min;
+            $sx->desc .= '&ge; '.$ccr->min;
         //$sx->desc .= $ccr->min;
         $sx->pointsDesc = "";
         $sx->points = $pbx.$points;
