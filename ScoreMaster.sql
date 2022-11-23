@@ -124,7 +124,9 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"showPicklistStatus": "true",
 	"multStepValue": "0.01",
 	"rankPointsPerMile": "false",
-	"decimalsPPM": "1"
+	"decimalsPPM": "1",
+	"restBonusStartGroup": "RBStart",
+	"restBonusGroups": "RBClaims"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com
@@ -511,7 +513,8 @@ DELETE FROM "themes";
 DELETE FROM "magicwords";
 DELETE FROM "classes";
 
-
+INSERT INTO "sgroups" (GroupName,GroupType) VALUES('RBStart','C');
+INSERT INTO "sgroups" (GroupName,GroupType) VALUES('RBClaims','C');
 INSERT INTO "classes" (Class,BriefDesc,AutoAssign) VALUES(0,'Default',0);
 INSERT INTO "teams" (TeamID,BriefDesc) VALUES(0,'No team');
 INSERT INTO "cohorts" (Cohort,FixedStart) VALUES(0,0);

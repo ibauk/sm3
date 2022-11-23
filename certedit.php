@@ -69,9 +69,6 @@ function editCertificateW() {
 	
 	startHtmlW($rd['css']);
 	
-	//echo('<p>'.$TAGS['CertExplainerW'][0].'<br>');
-	//echo($TAGS['CertExplainerW'][1].'</p>');
-
 	echo('<form id="certform" method="post" action="certedit.php" ');
 	echo('onsubmit="return document.querySelector('."'#savehtml'".').value=document.querySelector('."'#area_editor'".').value;">');
 	
@@ -91,8 +88,6 @@ function editCertificateW() {
 		$pv = "document.getElementById('Class').value=this.value;";
 		$pv .= "var T=this.options[this.selectedIndex].text;";
 		$pv .= "document.getElementById('Title').value=T.split(' - ')[1];";
-		//$pv .= "document.getElementById('certcss').disabled=true;";
-		//$pv .= "document.getElementById('certhtml').disabled=true;";
 		$pv .= "document.getElementById('fetchcert').disabled=false;";
 		$pv .= "document.getElementById('fetchcert').click();";
 	
@@ -109,13 +104,11 @@ function editCertificateW() {
 	}
 
 	
-		//echo('<label for="Class">'.$TAGS['Class'][0].' </label>');
 		$x = ' onchange="document.getElementById('."'".'fetchcert'."'".').disabled=false;"';
 		echo('<input title="'.$TAGS['Class'][1].'" type="hidden" min="0" name="Class" id="Class" value="'.$class.'" '.$x.' class="smallnumber"> ');
 	
 		if ($MC > 1)
 			echo('<input type="submit" style="display:none;" disabled id="fetchcert" name="fetchcert" value="'.$TAGS['FetchCert'][0].'" title="'.$TAGS['FetchCert'][1].'"> ');
-		//echo('<label for="Title">'.$TAGS['CertTitle'][0].' </label>');
 		echo('<input title="'.$TAGS['CertTitle'][1].'" type="hidden" name="Title" id="Title" value="'.$rd['Title'].'" > ');
 	
 	
@@ -133,7 +126,6 @@ function editCertificateW() {
 	emitContainers($rd['html']);
 	echo('</body></html>');
 	
-	//showFooter();
 }
 
 

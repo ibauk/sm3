@@ -229,8 +229,6 @@ function show_tagmenu($tag)
 {
 	global $TAGS,$DB;
 	
-	pushBreadcrumb('');
-	emitBreadcrumbs();
 
 	echo('<div id="adminMM">');
 	echo('<h4 title="'.$TAGS['AdmShowTagMatches'][1].$tag.'">'.$TAGS['AdmShowTagMatches'][0].$tag.'</h4>');
@@ -369,9 +367,6 @@ if (isset($_REQUEST['c']) && $_REQUEST['c']=='editcert') {
 	exit;
 }
 
-if (isset($_REQUEST['step']))
-	gotoBreadcrumbStep($_REQUEST['step']);
-
 if (isset($_REQUEST['c']) && $_REQUEST['c']=='applytheme' && isset($_REQUEST['theme'])) 
 	applyTheme();
 
@@ -389,9 +384,11 @@ if (isset($_REQUEST['c'])) {
 		case 'bonus':
 			show_menu('bonus');
 			break;
+		/*
 		case 'offerzap':
 			showInitialisationOffer();
 			break;
+		*/
 		case 'themes':
 			show_theme_chooser();
 			break;

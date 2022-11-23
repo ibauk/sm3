@@ -607,7 +607,7 @@ function recalcScorecard() {
             bonusPoints += points;
         } else { // multipliers
             console.log('multipliers+='+points);
-            multipliers += points;
+            multipliers += (points - 1);
             bpx = 'x ';
         }
 

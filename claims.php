@@ -1240,8 +1240,10 @@ function applyClaims()
 	}
 	
 	$sqlW .= " AND Leg=".$CurrentLeg;
+	/*
 	$sqlW .= " AND ClaimTime>='".$loclaimtime."'";
 	$sqlW .= " AND ClaimTime<='".$hiclaimtime."'";
+	*/
 	$sqlW .= " AND Decision IN (".$_REQUEST['decisions'].") ";
 	
 	$sqlW .= " AND SpeedPenalty=0 AND FuelPenalty=0 AND MagicPenalty=0"; // Penalties applied by hand

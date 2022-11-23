@@ -338,7 +338,7 @@ if (isset($_REQUEST['c']))
 			exit;
 		case 'getcats':
 			if (isset($_REQUEST['a'])) {
-				echo(listCategories($_REQUEST['a']));
+				echo(listCategories($_REQUEST['a'],false));
 				exit;
 			}
 			break;

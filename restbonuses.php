@@ -163,7 +163,7 @@ function ajaxNewRBClaim() {
     // Definitely have an attempt at claiming a rest bonus now. Start claims don't count.
 
     error_log('ajaxNewClaim continuing');
-    $restBonusStartGroup = getSetting('restBonusStartGroup','RB0');
+    $restBonusStartGroup = getSetting('restBonusStartGroup','REST');
     $startBonusCodes = bonusCodes($restBonusStartGroup);
     if (count($startBonusCodes) < 1) {
         echo('{"result":"error3"}');

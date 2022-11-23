@@ -256,7 +256,7 @@ function putScore()
 	if (putScoreTeam($confirmed)) {
 	
 		if ($AUTORANK)
-			rankEntrants();
+			rankEntrants(false);
 		
 		updateClass();
 		

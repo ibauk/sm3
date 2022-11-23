@@ -409,7 +409,7 @@ function calcMileagePenalty($correctedMiles) {
 	if ($PenaltyMiles <= 0) // No penalty
 		return [0,0,$PMM,$PenaltyMiles]; 
 		
-	
+	error_log("calcMileagePenalty returning penalty");
 	switch ($PMMethod) 	{
 		case $KONSTANTS['MMM_PointsPerMile']:
 			return [0 - $PMPoints * $PenaltyMiles,0,$PMM,$PenaltyMiles];
@@ -1069,7 +1069,7 @@ function recalcScorecard($entrant,$intransaction) {
         parseBonusClaim($bonus,$bon,$points,$minutes,$xp,$pp);
         error_log('PBC:='.$bonus.': '.$bon.', '.$points.', '.$minutes);
 
-        $bonv = '';
+        $bonv = new stdClass(); // avoid intellisense warning
         foreach($bonusValues as $bv) {
             if ($bv->bid == $bon) {
                 $bv->scored = true;
@@ -1306,14 +1306,14 @@ function recalcScorecard($entrant,$intransaction) {
         } else if ($ccr->pm == $KONSTANTS['CAT_ResultPoints']) {
             $bonusPoints += $points;
         } else { // multipliers
-            $multipliers += $points;
+            $multipliers += ($points - 1);
             //$points = "x $points";
             $pbx = 'x ';
         }
 
         $sx = new SCOREXLINE();
         $sx->id = '';
-        $sx->desc = $axisLabels[$ccr->axis].': n';
+        $sx->desc = $axisLabels[$ccr->axis].': <em>n</em>='.$nzCount;
         if ($ccr->cat != 0)
             $sx->desc .= '['.$catlabels[$ccr->axis][$ccr->cat].'] ';
         else
@@ -1389,9 +1389,9 @@ function recalcScorecard($entrant,$intransaction) {
 
         $sx = new SCOREXLINE();
         $sx->id = '';
-        $sx->desc = $axisLabels[$ccr->axis].': n';
+        $sx->desc = $axisLabels[$ccr->axis].': <em>n</em>';
         if ($ccr->cat != 0)
-            $sx->desc .= '['.$catlabels[$ccr->axis][$ccr->cat].'] ';
+            $sx->desc .= '['.$catlabels[$ccr->axis][$ccr->cat].']='.$catcount.' ';
         else
             $sx->desc .= ' ';
         if ($basicPoints <= 0 && $lastmin != '')
@@ -1408,13 +1408,28 @@ function recalcScorecard($entrant,$intransaction) {
     } // Bonus per cat axis
 
 
+    if ($multipliers != 1) {
+        $sx = new SCOREXLINE();
+        $sx->desc = "= ".$bonusPoints.' x '.$multipliers;
+        $sx->points = intval($bonusPoints * $multipliers);
+        $sx->totalPoints = $sx->points;
+        $scorex[] = $sx;
+        $bonusPoints = $sx->points;
+    }
+
+    $sx = new SCOREXLINE();
+    $scorex[] = $sx;
 
     $tp = calcTimePenalty($rd['StartTime'],$rd['FinishTime']);
     $tpP = $tp[0]; // Points
     $tpM = $tp[1]; // Multipliers
 
+    $multDeduct = 0; // Might be used below
     if ($tpM != 0 || $tpP != 0) {
-        $multipliers += $tpM;
+        if ($tpM != 0) {
+            $multDeduct = intval($tpM * $bonusPoints);
+            $bonusPoints += $multDeduct;
+        }
         $bonusPoints += $tpP;
         $sx = new SCOREXLINE();
         if (substr($tp[2],0,10) == substr($tp[3],0,10) && substr($tp[3],11,5) >= substr($tp[2],11,5)) {
@@ -1422,8 +1437,8 @@ function recalcScorecard($entrant,$intransaction) {
         } else {
             $y = ''.str_replace('T',' ',substr($tp[3],0,16)).' &#8805; '.str_replace('T',' ',$tp[2]);
         }
-        $sx->id = getSetting('RPT_TPenalty',$KONSTANTS['RPT_TPenalty']);
-        $sx->desc = $y;
+        $sx->desc = getSetting('RPT_TPenalty',$KONSTANTS['RPT_TPenalty']);
+        $sx->pointsDesc = " $y";
         if ($tpM != 0) {
             $sx->points = ($tpM*100)."%";
         } else {
@@ -1431,14 +1446,25 @@ function recalcScorecard($entrant,$intransaction) {
         }
         $sx->totalPoints = $bonusPoints;
         $scorex[] = $sx;
+        if ($tpM != 0) {
+            $sx = new SCOREXLINE();
+            $sx->pointsDesc = ($bonusPoints-$multDeduct)." x ".($tpM*100*-1)."% =";
+            $sx->points = $multDeduct;
+            $scorex[] = $sx;
+        }
     }
 
     $tp = calcMileagePenalty($rd['CorrectedMiles']);
     $tpP = $tp[0]; // Points
     $tpM = $tp[1]; // Multipliers
 
+    $multDeduct = 0;
     if ($tpM != 0 || $tpP != 0) {
-        $multipliers += $tpM;
+        error_log('Applying MileagePenalty');
+        if ($tpM !=0) {
+            $multDeduct = intval($tpM * $bonusPoints);
+            $bonusPoints += $multDeduct;
+        }
         $bonusPoints += $tpP;
         $sx = new SCOREXLINE();
         //$sx->desc = getSetting('RPT_MPenalty',$KONSTANTS['RPT_MPenalty']); //."m=$tpM, $p=$tpP";
@@ -1446,15 +1472,22 @@ function recalcScorecard($entrant,$intransaction) {
             $bdu = $TAGS['OdoKmsK'][0];
         else
             $bdu = $TAGS['OdoKmsM'][0];
-        $sx->id = getSetting('RPT_MPenalty',$KONSTANTS['RPT_MPenalty']);
-        $sx->desc = $tp[3]." $bdu > ".$tp[2];
+        $sx->desc = getSetting('RPT_MPenalty',$KONSTANTS['RPT_MPenalty']);
+        $sx->pointsDesc = " ".$tp[3]." $bdu > ".$tp[2];
         if ($tpM != 0) {
-            $sx->points = "$tpM x";
+            $sx->points = ($tpM*100)."%";
         } else {
             $sx->points = $tpP;
         }
         $sx->totalPoints = $bonusPoints;
         $scorex[] = $sx;
+        if ($tpM != 0) {
+            $sx = new SCOREXLINE();
+            $sx->pointsDesc = ($bonusPoints-$multDeduct)." x ".($tpM*100*-1)."% =";
+            $sx->points = $multDeduct;
+            $scorex[] = $sx;
+        }
+
     }
 
     $rd['RestMinutes'] = $restMinutes;
@@ -1472,14 +1505,6 @@ function recalcScorecard($entrant,$intransaction) {
         $scorex[] = $sx;
     }
 
-    if ($multipliers != 1) {
-        $sx = new SCOREXLINE();
-        $sx->desc = "= ".$bonusPoints.' x '.$multipliers;
-        $sx->points = intval($bonusPoints * $multipliers);
-        $sx->totalPoints = $sx->points;
-        $scorex[] = $sx;
-        $bonusPoints = $sx->points;
-    }
 
 
     $rd['TotalPoints'] = $bonusPoints;

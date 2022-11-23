@@ -84,6 +84,7 @@ $PROGRAM = array("version" => "3.2.1",	"title"	=> "ScoreMaster");
  *  3.1.4		Time/distance/speed penalties
  *  3.2			Sequences ready for BBL22
  *  3.2.1		Rest bonuses, ready for BBR22
+ *  3.3			Multi-Legs, fractional mults, points per mile
  */
 
 $MIT = <<<'EOT'

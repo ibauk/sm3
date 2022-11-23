@@ -25,6 +25,8 @@
 - [Entrants / riders](help:entrants)
 - [Import / export](help:importexport) - how do I get stuff in and out of here?
 
+- [Multi-Leg rallies](help:legs)
+
 - [Penalties](help:penalties)
 - [Question/answer pairs](help:questions)
 - [Rally params: settings](help:rpsettings)

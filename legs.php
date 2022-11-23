@@ -75,12 +75,14 @@ ini_set('display_errors', 1);
 
         for ($ix = 0; $ix < $NLegs; $ix++) {
             if ($ix == 0) {
+                $entrantRecord['ScoreX']        = $lda[0]->ScoreX;
                 $entrantRecord['StartTime']     = $lda[0]->StartTime;
                 $entrantRecord['OdoRallyStart']  = $lda[0]->OdoRallyStart;
                 $entrantRecord['TotalPoints']   = $lda[0]->TotalPoints;
                 $entrantRecord['RestMinutes']   = $lda[0]->RestMinutes;
                 $entrantRecord['CorrectedMiles'] = $lda[0]->CorrectedMiles;
             } else {
+                $entrantRecord['ScoreX']        .= $lda[$ix]->ScoreX;
                 $entrantRecord['TotalPoints']   += $lda[$ix]->TotalPoints;
                 $entrantRecord['RestMinutes']   += $lda[$ix]->RestMinutes;
                 $entrantRecord['FinishTime']    = $lda[$ix]->FinishTime;

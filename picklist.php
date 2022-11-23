@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2021 Bob Stammers
+ * Copyright (c) 2022 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.

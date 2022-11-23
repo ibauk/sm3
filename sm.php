@@ -246,7 +246,7 @@ function saveRallyConfig()
 	$sql .= ",MinPoints=".intval($_REQUEST['MinPoints']);
 	$sql .= ",PenaltyMaxMiles=".intval($_REQUEST['PenaltyMaxMiles']);
 	$sql .= ",MaxMilesMethod=".intval($_REQUEST['MaxMilesMethod']);
-	$sql .= ",MaxMilesPoints=".intval($_REQUEST['MaxMilesPoints']);
+	$sql .= ",MaxMilesPoints=".floatval($_REQUEST['MaxMilesPoints']);
 	$sql .= ",PenaltyMilesDNF=".intval($_REQUEST['PenaltyMilesDNF']);
 	$sql .= ",ScoringMethod=".intval($_REQUEST['ScoringMethod']);
 	$sql .= ",ShowMultipliers=".intval($_REQUEST['ShowMultipliers']);
@@ -846,6 +846,8 @@ function showRallyConfig($showAdvanced)
 	global $DB, $TAGS, $KONSTANTS, $DBVERSION;
 	
 	$rankMethod = getSetting('rankPointsPerMile','false') == 'false' ? 0 : 1;
+	$mstep = getSetting('multStepValue','1');
+	$pstep = '1';
 
 	$R = $DB->query('SELECT * FROM rallyparams');
 	if (!$rd = $R->fetchArray())
@@ -1160,7 +1162,7 @@ function setRankMethod(sel) {
 
 	echo('<span class="vlabel">');
 	echo('<label for="MaxMilesPoints" class="vlabel wide">'.$TAGS['MaxMilesPoints'][0].' </label> ');
-	echo('<input type="number" name="MaxMilesPoints" id="MaxMilesPoints" value="'.$rd['MaxMilesPoints'].'" title="'.$TAGS['MaxMilesPoints'][1].'" oninput="enableSaveButton();"> ');
+	echo('<input type="number" step="0.01" name="MaxMilesPoints" id="MaxMilesPoints" value="'.$rd['MaxMilesPoints'].'" title="'.$TAGS['MaxMilesPoints'][1].'" oninput="enableSaveButton();"> ');
 	echo('</span>');
 
 	echo('<span class="vlabel">');

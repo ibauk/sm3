@@ -588,6 +588,7 @@ function listEBClaims() {
     echo('<h2>'.$TAGS['clg_EbcLogHdr'][0].'</h2>');
     if ($claims > 0) {
         echo('<button autofocus onclick="showFirstClaim()">'.$TAGS['clg_EbcJudge1'][0].'</button>');
+        echo(' 1/'.$claims);
     } else {
         echo('<p>'.$TAGS['clg_EbcNoLog'][0].'</p>');
     }
