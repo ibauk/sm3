@@ -28,7 +28,7 @@ $HOME_URL = "setup.php";
 require_once("common.php");
 require_once("legs.php");
 
-$LAST_WIZARD_PAGE = 5;
+$LAST_WIZARD_PAGE = 6;
 
 function InitializeLegData() {
 
@@ -58,17 +58,30 @@ function savePage($page_number)
 {
 	global $DB;
 	
+	$SETTINGSLIT = "settings";
+
 	$R = $DB->query("SELECT * FROM rallyparams");
 	$rd = $R->fetchArray(SQLITE3_ASSOC);
+	$settings = json_decode($rd['settings'],true);
 	$sql = "UPDATE rallyparams SET ";
 	$sql_fields = '';
 	foreach ($_REQUEST as $rq => $rv)
 	{
-		if (!array_key_exists($rq,$rd))
+		if (substr($rq,0,strlen($SETTINGSLIT)) != $SETTINGSLIT) {
+			if (!array_key_exists($rq,$rd))
+				continue;
+		
+			if ($sql_fields != '')
+				$sql_fields .= ',';
+			$sql_fields .= $rq.'=';
+		} else {
+			error_log('Setting '.$rq.' == '.$rv);
+			$p = strpos($rq,":") + 1;
+			$key = substr($rq,$p);
+			$settings[$key] = $rv;
 			continue;
-		if ($sql_fields != '')
-			$sql_fields .= ',';
-		$sql_fields .= $rq.'=';
+		}
+		error_log('Looking at '.$rq);
 		switch($rq)
 		{
 			case 'RallyTitle':
@@ -98,11 +111,17 @@ function savePage($page_number)
 				$sql_fields .= $rv;
 		}
 	}
+
 	//echo($sql.$sql_fields);
 	if ($DB->exec($sql.$sql_fields)==FALSE)
 	{
 		echo("OMG! - ".$DB->lastErrorMsg());
 	}
+
+	$sql = "UPDATE rallyparams SET settings=:settings";
+	$stmt = $DB->prepare($sql);
+	$stmt->bindValue("settings",json_encode($settings));
+	$stmt->execute();
 
 	if (isset($_REQUEST['StartOption'])) {
 		updateCohort(0,$_REQUEST['StartOption']);
@@ -133,6 +152,9 @@ function showPage($page_number)
 	showPageHeader($page2show);
 	$R = $DB->query("SELECT * FROM rallyparams");
 	if ($rd = $R->fetchArray()) ; // Should complain or do something
+
+	$settings = json_decode($rd['settings'],true);
+
 	switch($page2show)
 	{
 		case 1:
@@ -276,9 +298,54 @@ function chgregion() {
 			echo('</div>');
 			break;
 		case 4:
+
+			$sm = $rd['StartOption'];
+			echo('<div class="wizitem"><p>'.$TAGS['WizStartOption'.$sm][1].'</p>');
+			echo('<label for="StartOption">'.$TAGS['WizStartOption'][0].'</label> ');
+			echo('<select name="StartOption" id="StartOption" onchange="this.parentNode.firstChild.innerHTML=this.options[this.selectedIndex].getAttribute(\'data-help\');">');
+			echo('<option data-help="'.$TAGS['WizStartOption0'][1].'" value="0"'.isSelected($sm==0).'>'.$TAGS['WizStartOption0'][0].'</option>');
+			echo('<option data-help="'.$TAGS['WizStartOption1'][1].'" value="1"'.isSelected($sm==1).'>'.$TAGS['WizStartOption1'][0].'</option>');
+			echo('<option data-help="'.$TAGS['WizStartOption2'][1].'" value="2"'.isSelected($sm==1).'>'.$TAGS['WizStartOption2'][0].'</option>');
+			echo('</select>');
+			echo('</div>');
+
+
+			$sm = $settings['autoFinisher'];
+			echo('<div class="wizitem"><p>'.$TAGS['WizAutoFinisher'][1].'</p>');
+			echo('<label for="settings:autoFinisher">'.$TAGS['WizAutoFinisher'][0].'</label> ');
+			echo('<select name="settings:autoFinisher" id="settings:autoFinisher" onchange="this.parentNode.firstChild.innerHTML=this.options[this.selectedIndex].getAttribute(\'data-help\');">');
+			echo('<option data-help="'.$TAGS['WizAutoFinisherTrue'][1].'" value="true"'.isSelected($sm=='true').'>'.$TAGS['WizAutoFinisherTrue'][0].'</option>');
+			echo('<option data-help="'.$TAGS['WizAutoFinisherFalse'][1].'" value="false"'.isSelected($sm=='false').'>'.$TAGS['WizAutoFinisherFalse'][0].'</option>');
+			echo('</select>');
+			echo('</div>');
+
+
+			$sm = $settings['autoLateDNF'];
+			echo('<div class="wizitem"><p>'.$TAGS['WizAutoLateDNF'][1].'</p>');
+			echo('<label for="settings:autoLateDNF">'.$TAGS['WizAutoLateDNF'][0].'</label> ');
+			echo('<select name="settings:autoLateDNF" id="settings:autoLateDNF" onchange="this.parentNode.firstChild.innerHTML=this.options[this.selectedIndex].getAttribute(\'data-help\');">');
+			echo('<option data-help="'.$TAGS['WizAutoLateDNFTrue'][1].'" value="true"'.isSelected($sm=='true').'>'.$TAGS['WizAutoLateDNFTrue'][0].'</option>');
+			echo('<option data-help="'.$TAGS['WizAutoLateDNFFalse'][1].'" value="false"'.isSelected($sm=='false').'>'.$TAGS['WizAutoLateDNFFalse'][0].'</option>');
+			echo('</select>');
+			echo('</div>');
+
+
+
+
+
+
+			echo('<div class="wizitem"><p>'.$TAGS['WizNumLegs'][1].'</p>');
+			echo('<label for="NumLegs">'.$TAGS['WizNumLegs'][0].'</label> ');
+			echo('<input type="number" class="smallnumber" id="NumLegs" min="1" name="NumLegs" value="'.$rd['NumLegs'].'">');
+			echo('</div>');
+	
+
+			break;
+
+	case 5:
 		// Virtual rallies only
 			if ($rd['isvirtual'] != 0) {
-				echo('<h2>'.$TAGS['WizVirtualPage'][0].'</h2>');
+				//echo('<h2>'.$TAGS['WizVirtualPage'][0].'</h2>');
 				echo('<div class="wizitem"><p>'.$TAGS['WizTankRange'][1].'</p>');
 				echo('<label for="tankrange">'.$TAGS['WizTankRange'][0].'</label> ');
 				echo('<input autofocus type="number" name="tankrange" id="tankrange" value="'.$rd['tankrange'].'">');
@@ -310,22 +377,15 @@ function chgregion() {
 			echo('</select>');
 			echo('</div>');
 
-			$sm = $rd['StartOption'];
-			echo('<div class="wizitem"><p>'.$TAGS['WizStartOption'.$sm][1].'</p>');
-			echo('<label for="StartOption">'.$TAGS['WizStartOption'][0].'</label> ');
-			echo('<select name="StartOption" id="StartOption" onchange="this.parentNode.firstChild.innerHTML=this.options[this.selectedIndex].getAttribute(\'data-help\');">');
-			echo('<option data-help="'.$TAGS['WizStartOption0'][1].'" value="0"'.isSelected($sm==0).'>'.$TAGS['WizStartOption0'][0].'</option>');
-			echo('<option data-help="'.$TAGS['WizStartOption1'][1].'" value="1"'.isSelected($sm==1).'>'.$TAGS['WizStartOption1'][0].'</option>');
-			echo('<option data-help="'.$TAGS['WizStartOption2'][1].'" value="2"'.isSelected($sm==1).'>'.$TAGS['WizStartOption2'][0].'</option>');
+
+			$sm = $settings['rankPointsPerMile'];
+			echo('<div class="wizitem"><p>'.$TAGS['WizRankPPM'][1].'</p>');
+			echo('<label for="settings:rankPointsPerMile">'.$TAGS['WizRankPPM'][0].'</label> ');
+			echo('<select name="settings:rankPointsPerMile" id="settings:rankPointsPerMile" onchange="this.parentNode.firstChild.innerHTML=this.options[this.selectedIndex].getAttribute(\'data-help\');">');
+			echo('<option data-help="'.$TAGS['WizRankPPMTrue'][1].'" value="true"'.isSelected($sm=='true').'>'.$TAGS['WizRankPPMTrue'][0].'</option>');
+			echo('<option data-help="'.$TAGS['WizRankPPMFalse'][1].'" value="false"'.isSelected($sm=='false').'>'.$TAGS['WizRankPPMFalse'][0].'</option>');
 			echo('</select>');
 			echo('</div>');
-
-			echo('<div class="wizitem"><p>'.$TAGS['WizNumLegs'][1].'</p>');
-			echo('<label for="NumLegs">'.$TAGS['WizNumLegs'][0].'</label> ');
-			echo('<input type="number" class="smallnumber" id="NumLegs" min="1" name="NumLegs" value="'.$rd['NumLegs'].'">');
-			echo('</div>');
-	
-
 
 			break;
 
@@ -358,7 +418,7 @@ function chgregion() {
 			
 			break;
 			
-		case 5:
+		case 6:
 			echo('<div><p>'.$TAGS['WizFinishText'][0].'</p>');
 			echo('<div><p>'.$TAGS['WizFinishText'][1].'</p>');
 			echo('<input type="hidden" name="DBState" value="1">');

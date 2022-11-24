@@ -302,7 +302,7 @@ function saveRallyConfig()
 		updateCohort(0,$_REQUEST['StartOption']);
 		
 	error_log('not retrace');
-	if (isset($_REQUEST['menu'])) 
+	if (isset($_REQUEST['menu']) && false) 
 	{
 		$_REQUEST['c'] = $_REQUEST['menu'];
 		include("admin.php");
@@ -1162,7 +1162,7 @@ function setRankMethod(sel) {
 
 	echo('<span class="vlabel">');
 	echo('<label for="MaxMilesPoints" class="vlabel wide">'.$TAGS['MaxMilesPoints'][0].' </label> ');
-	echo('<input type="number" step="0.01" name="MaxMilesPoints" id="MaxMilesPoints" value="'.$rd['MaxMilesPoints'].'" title="'.$TAGS['MaxMilesPoints'][1].'" oninput="enableSaveButton();"> ');
+	echo('<input type="number" name="MaxMilesPoints" id="MaxMilesPoints" value="'.$rd['MaxMilesPoints'].'" title="'.$TAGS['MaxMilesPoints'][1].'" oninput="enableSaveButton();"> ');
 	echo('</span>');
 
 	echo('<span class="vlabel">');
@@ -1658,8 +1658,12 @@ function callbackCheckBonusid($b)
 if (isset($_REQUEST['c']))
 	switch($_REQUEST['c']) {
 		case 'rallyparams':
-			if (isset($_REQUEST['savedata']))
+			if (isset($_REQUEST['savedata'])) {
 				saveRallyConfig();
+				error_log('saveRallyConfig returned');
+				header('Location: '.$HOME_URL);
+				exit;
+			}
 			break;
 			
 			

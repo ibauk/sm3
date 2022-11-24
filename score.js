@@ -342,7 +342,8 @@ function calcMileagePenalty()
 		case MMM_PointsPerMile:
 			return [0 - PMPoints * PenaltyMiles,0,PMM,PenaltyMiles];
 		case MMM_Multipliers:
-			return [0,0 - PMPoints,PMM,PenaltyMiles];
+			// Multipliers here are actuall penalties
+			return [0,0 - PMPoints/100,PMM,PenaltyMiles];
 		default:
 			return [0 - PMPoints,0,PMM,PenaltyMiles];
 	}
@@ -431,11 +432,12 @@ function calcTimePenalty()
 			switch(PM)
 			{
 				case TPM_MultPerMin:
-					return [0,0 - PF * Mins,DTx,FTx];
+					// Multipliers here are actually percentages
+					return [0,0 - (PF/100) * Mins,DTx,FTx];
 				case TPM_PointsPerMin:
 					return [0 - PF * Mins,0,DTx,FTx];
 				case TPM_FixedMult:
-					return [0,0 - PF,DTx,FTx];
+					return [0,0 - (PF/100),DTx,FTx];
 				default:
 					return [0 - PF,0,DTx,FTx];
 			}

@@ -522,12 +522,12 @@ $TAGS = array(
 	'MarkConfirmed'		=> array('Mark as confirmed','Mark all bonus claim decisions as having been confirmed'),
 	'MarkConfirmedFull'	=> array('Mark scorecards as confirmed/reconciled.','Normally carried out by two people comparing the claims log or other evidence to the details recorded on the scorecards.'),
 	'MaxHours'			=> array('Rideable hours','The maximum rideable hours available. Used to calculate DNF time, may show on certificates'),
-	'MaxMilesFixedM'	=> array('Multiplier','Excess distance incurs deduction of multipliers'),							// Miles/Kms
+	'MaxMilesFixedM'	=> array('Percentage','Excess distance incurs deduction of percentage of score'),					// Miles/Kms
 	'MaxMilesFixedP'	=> array('Fixed points','Excess distance incurs fixed points deduction'),							// Miles/Kms
 	
 	'MaxMilesPerMile'	=> array('Points per mile/km','Excess distance incurs points deduction per excess mile/km'),				// Miles/Kms
 	
-	'MaxMilesPoints'	=> array('Points or Multipliers deducted','Number of points or multipliers for excess distance'),	// Miles/Kms
+	'MaxMilesPoints'	=> array('Points or Percentage deducted','Number of points or percentage for excess distance'),	// Miles/Kms
 	'MaxMilesUsed'		=> array('Tick if maximum distance used','Will entrants be DNF if they exceed a maximum distance?'),	// Miles/Kms
 	'MilesPenaltyText'	=> array('Distance penalty deduction',''),															// Miles/Kms
 	'MinimumTicks'		=> array('Minimum Ticks','Minimum bonus ticks for this combo; 0=all'),
@@ -788,9 +788,9 @@ $TAGS = array(
 	'tpFactorLit'		=> array('Number','Number of points/mults'),
 	'tpFinishLit'		=> array('Finish time','Time this penalty ends'),
 	'tpMethod0'			=> array('tpMethod0','Deduct points'),
-	'tpMethod1'			=> array('tpMethod1','Deduct multipliers'),
+	'tpMethod1'			=> array('tpMethod1','Deduct percentage'),
 	'tpMethod2'			=> array('tpMethod2','Points per minute'),
-	'tpMethod3'			=> array('tpMethod3','Mults per minute'),
+	'tpMethod3'			=> array('tpMethod3','Percentage per minute'),
 	'tpMethodLit'		=> array('Penalty method','Which penalty method applies'),
 	'tpStartLit'		=> array('Start time','Time this penalty starts from'),
 	'tpTimeSpec0'		=> array('DateTime','Absolute date/time'),
@@ -855,6 +855,20 @@ $TAGS = array(
 	'vr_RefuelStops'	=> array('Refuel stops','Comma separated list of ordinary bonuses acting as refuel stops'),
 	'vr_TankRange'		=> array('Tank range','Virtual tank range (miles/kilometres)'),
 	'vr_StopMins'		=> array('Mins/stop','Number of minutes for each virtual stop'),
+
+
+	'WizAutoFinisher'	=> array('Formal check-in?','Is there a formal check-in process or should all starters be treated as Finishers automatically?'),
+	'WizAutoFinisherFalse'
+						=> array('Yes, Formal check-in needed','Finisher status is only granted at check-in.'),
+	'WizAutoFinisherTrue'
+						=> array('No, Starters are automatically Finishers','All starters are treated as Finishers unless they are marked DNF'),
+
+	'WizAutoLateDNF'	=> array('Automatic late DNF?','Are entrants flagged DNF if they submit claims too late or fail to complete check-in?'),
+	'WizAutoLateDNFFalse'
+						=> array('No, DNF awarded manually','Entrants are only flagged DNF by the rally team or by triggering a DNF rule.'),
+	'WizAutoLateDNFTrue'
+						=> array('Yes, Late claims = DNF','DNF is awarded automatically for late rally completion'),
+
 	
 	'WizNextPage'		=> array('Next','Save and move to the next page of the wizard'),
 	'WizPrevPage'		=> array('Previous','Save and return to the previous wizard page'),
@@ -874,15 +888,23 @@ $TAGS = array(
 	'WizMaxHours'		=> array('Maximum hours','The maximum time available to individual entrants before becoming DNF. May be less than the number of hours between the rally start and finish times. For example, where a staggered start is used.'),
 	'WizMilesKms'		=> array('Miles/Kms','Unit of distance for this rally. All reporting will use this unit. Individual odometers may use either miles or kilometres.'),
 	'WizRallyTitle'		=> array('Rally title','What\'s the name of this rally? This will appear on all screens and finisher certificates. It can be refined later if necessary.'),
+
+	'WizRankPPM'	=> array('Rank Finishers by:','What value is used to rank Finishers by?'),
+	'WizRankPPMFalse'
+						=> array('Total points value','The winner is the entrant with the most points'),
+	'WizRankPPMTrue'
+						=> array('Points per mile/km','The winner is the entrant with the best points/distance ratio'),
+
+
 	'WizRealVirtual'	=> array('Rally type','Is this a real rally, involving actual motorbikes, or a virtual rally involving only computers?'),
 
 	'WizRegion'			=> array('Region','Whereabouts will this rally be run - chooses miles/kms, timezone, etc'),
-	'WizStartOption'	=> array('Rally start option','How will the entrants check-outs at the start be organised'),
+	'WizStartOption'	=> array('Rally start option:','How will the entrants check-outs at the start be organised'),
 	'WizStartOption0'	=> array('Single mass start','All entrants start at the official rally start time'),
 	'WizStartOption1'	=> array('First claim starts','Each entrant is checked-out on receipt of his first bonus claim'),
 	'WizStartOption2'	=> array('Staggered start','Entrants are split into cohorts for starting purposes'),
 	'WizStopMins'		=> array('Minutes per stop','The number of minutes stopped at each bonus stop'),
-	'WizTiedPoints'		=> array('Split ties by distance travelled','In the event of a tie, entrants can be left tied, or those riding further are ranked lower'),	// Miles/Kms
+	'WizTiedPoints'		=> array('Split ties by distance travelled?','In the event of a tie, entrants can be left tied, or those riding further are ranked lower'),	// Miles/Kms
 	'WizTiedPoints0'	=> array('Leave tied','Entrants tied on points are assigned the same rank'),
 	'WizTiedPoints1'	=> array('Split','When entrants are tied on points, the one with lower distance travelled will be ranked higher'),
 	'WizTitle'			=> array('This rally needs to be configured, please fill in the blanks',''),

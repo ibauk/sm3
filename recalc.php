@@ -1424,7 +1424,7 @@ function recalcScorecard($entrant,$intransaction) {
 
     $tp = calcTimePenalty($rd['StartTime'],$rd['FinishTime']);
     $tpP = $tp[0]; // Points
-    $tpM = $tp[1]; // Multipliers
+    $tpM = $tp[1] / 100; // Percentage
 
     $multDeduct = 0; // Might be used below
     if ($tpM != 0 || $tpP != 0) {
@@ -1458,7 +1458,7 @@ function recalcScorecard($entrant,$intransaction) {
 
     $tp = calcMileagePenalty($rd['CorrectedMiles']);
     $tpP = $tp[0]; // Points
-    $tpM = $tp[1]; // Multipliers
+    $tpM = $tp[1] / 100; // Percentage
 
     $multDeduct = 0;
     if ($tpM != 0 || $tpP != 0) {

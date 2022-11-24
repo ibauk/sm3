@@ -4,7 +4,7 @@ I am delighted to announce the release of ScoreMaster v3.3 incorporating the fol
 
 - Multi-leg rallies
 - Rank by points per mile(km) rather than total points
-- Fractional multipliers
+- Percentage penalties
 - Scorecard reviews
 - Rest bonus start/finish handling
 - Offline odo capture
@@ -23,7 +23,7 @@ The software has facilities to flag bonuses, combos and penalties as being avail
 ## Rank by Points per mile(km)
 Finisher ranking can now be based on points per mile(km) rather than absolute total points value. Many consider this to be the better measure of rallying skill.
 
-## Fractional multipliers
+## Percentage penalties
 The multiplier logic has been completely overhauled and now caters for fractional multipliers as well as integers. This enables features such as 25% (of total points scored) penalties. It continues to be possible to apply a multiplication factor to total points yielding final scores.
 
 ## Scorecard reviews

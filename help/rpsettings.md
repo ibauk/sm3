@@ -19,7 +19,7 @@ autoLateDNF
 : If true, any timed odo or claim past time results in DNF
 
 multStepValue
-: The value of 'step' on HTML INPUT tag for multipliers. Default is '1'. Use '0.1' or .'0.01' to allow decimals
+: The value of 'step' on HTML INPUT tag for multipliers. Default is '1'. DO NOT USE
 
 rankPointsPerMile
 : Rank finishers by points per mile(km) rather than simple points value
