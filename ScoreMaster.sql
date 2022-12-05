@@ -92,7 +92,7 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 '{
     "SMTPAuth": "TRUE",
     "SMTPSecure": "tls",
-    "Port": "587",
+    "Port": 587,
     "Host": "smtp.gmail.com",
     "Username": "ibaukebc@gmail.com",
     "Password": "",

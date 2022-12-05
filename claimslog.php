@@ -264,12 +264,9 @@ function emitEBCjs() {
         let decider = document.getElementById('ebc_decide');
         let log = document.getElementById('ebc_log');
         let img = document.getElementById('imgdiv').firstChild;
-        let is =  tr.getAttribute('data-photo');
-        if (is == '') {
-            img.src = "ebcimg/img-7-NARM-51.jpg";
-        } else {
-            img.src = is;
-        }
+        let photos = tr.getAttribute('data-photo').split(',');
+        let is =  photos[0];
+        img.src = is; // Might be empty
         let bis = tr.getAttribute('data-bphoto');
         if (bis != '') {
             let bimg = document.getElementById('bimgdiv').firstChild;
@@ -565,13 +562,14 @@ function listEBClaims() {
     $valQA = intval(getSetting('valBonusQuestions','0'));
 
     $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,xbonus.BonusID,xbonus.BriefDesc";
-    $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,ebcphotos.Image,Notes,Flags,TeamID";
+    $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,xphoto.Image,Notes,Flags,TeamID";
     $sql .= ",ebclaims.AttachmentTime As PhotoTS, ebclaims.DateTime As EmailTS,ebclaims.LoggedAt,ebclaims.Subject";
     $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes,xbonus.Image as BImage,Question,Answer";
     $sql .= " FROM ebclaims LEFT JOIN entrants ON ebclaims.EntrantID=entrants.EntrantID";
     $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,Flags,Points,AskPoints,RestMinutes,AskMinutes,Image,Question,Answer FROM bonuses";
     $sql .= " ) AS xbonus";
-    $sql .= " ON ebclaims.BonusID=xbonus.BonusID  LEFT JOIN ebcphotos ON ebclaims.PhotoID=ebcphotos.rowid WHERE Processed=0 ORDER BY FinalTime;";
+    $sql .= " ON ebclaims.BonusID=xbonus.BonusID  LEFT JOIN ";
+    $sql .= " (SELECT EmailID,Group_concat(Image) As Image from ebcphotos GROUP BY EmailID) AS xphoto ON ebclaims.EmailID=xphoto.EmailID WHERE Processed=0 ORDER BY FinalTime;";
 
     $R = $DB->query($sql);
     $claims = 0;
@@ -603,6 +601,7 @@ function listEBClaims() {
     }
     echo('</thead><tbody>');
     while ($rs = $R->fetchArray()) {
+        error_log($rs['rowid'].' == ['.$rs['Image'].']');
         echo('<tr data-claimid="'.$rs['rowid'].'" ');
         echo('data-entrant="'.$rs['EntrantID'].'" data-photo="'.$rs['Image'].'" ');
         echo('data-bphoto="'.rawurlencode($rs['BImage']).'" ');
