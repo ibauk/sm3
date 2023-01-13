@@ -65,7 +65,17 @@ function listCompoundCalcs() {
 	echo('<div class="stickytop">'.$TAGS['CalcMaintHead'][1]);
 	echo(' <input title="Help!" type="button" value=" ? " onclick="showHelp('."'compound'".');">');
 	$url = "cats.php?c=newcc";
-	echo('<br><button value="+" autofocus onclick="window.location='."'".$url."'".'">+</button>');
+	echo('<br>');
+	$numAxes = 0;
+	foreach($AxisLabels as $al => $av) {
+		if ($av != '')
+			$numAxes++;
+	}
+	if ($numAxes < 1) {
+		echo (' <label class="link" for="newcc_button">' . $TAGS['ccNoAxesAvail'][0] . '</label> ');
+	}
+
+	echo('<button value="+" autofocus id="newcc_button" onclick="window.location='."'".$url."'".'">+</button>');
 	echo('</div>');
 
 	echo('<table id="catcalcs">');

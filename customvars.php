@@ -245,6 +245,7 @@ $TAGS = array(
 	'CatExplainer'		=> array('CatExplainer','You can amend the description of categories or delete them entirely. New entries must have a category number which is unique within the set.'),
 	'CatNotUsed'		=> array('(not used)',''),
 	'ccApplyToAll'		=> array('&#8721;cats','applies to all cats'),
+	'ccNoAxesAvail'		=> array('Categories must be set up before rules','Click to maintain catgories'),
 	'ccRuletype'		=> array('Rule type','What is the effect of this rule if triggered'),
 	'ccRuletype0'		=> array('Scoring','Ordinary scoring rule'),
 	'ccRuletype1'		=> array('Untrig=DNF','DNF unless this rule triggered'),
