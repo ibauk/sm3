@@ -671,6 +671,10 @@ $TAGS = array(
 	'RiderName'			=> array('Rider name','The full name of the rider'),
 	'ROUseScore'		=> array('ReadOnly','These fields may not be changed here, use Scoring instead'),
 	'ReviewedByTeam'	=> array('Team is happy!','Mark as Reviewed by Rally Team'),
+	'ReviewStatus0'		=> array('Awaiting review','Awaiting review'),
+	'ReviewStatus1'		=> array('Team is happy','Team is happy'),
+	'ReviewStatus2'		=> array('Team is NOT happy','Team is NOT happy'),
+	'ReviewStatus3'		=> array('Entrant is happy','Entrant is happy'),
 	'ReviewThis'		=> array('Review this entrant',''),
 
 	'rp_ebcsettings'	=> array('EBC','EBC settings: These fields control the use of EBCFetch which processes compliant bonus claims from an email account. Any changes here require the system to be restarted before becoming effective.'),

@@ -252,8 +252,26 @@ function reviewEntrant($entrant) {
 
 	echo('</span> ');
 
-    echo('<span title="'.$TAGS['LastReviewedHint'][1].'">'.logtime($rd['LastReviewed']).'</span> ');
+    $striptitle = '/title="[^"]*"/i';
+    echo('<span title="'.$TAGS['LastReviewedHint'][1].'">'.preg_replace($striptitle,'',logtime($rd['LastReviewed'])).'</span> ');
 
+    $reviewStatus = 0;
+    if ($rd['AcceptedByEntrant'] != 0) {
+        $reviewStatus = 3;
+    } else {
+        $reviewStatus = $rd['ReviewedByTeam'];
+    }
+    echo(' <select name="ReviewStatus" onchange="this.form.submit();">');
+    for ($i = 0; $i <= 3; $i++) {
+        echo('<option value="'.$i.'"');
+        if ($i == $reviewStatus) {
+            echo(' selected ');
+        }
+        echo('>'.$TAGS['ReviewStatus'.$i][0].'</option>');
+    }
+    echo('</select>');
+
+    /*******
     echo('<input type="checkbox" onchange="flipReviewQuery();" title="'.$TAGS['FlipReviewQuery'][1].'"> ');
 	echo('<input type="submit" class="noprint" title="'.$TAGS['ReviewedByTeam'][1].'" id="savescorebutton" data-triggered="1" ');
 	echo(' value="'.$TAGS['ReviewedByTeam'][0].'"');
@@ -262,7 +280,7 @@ function reviewEntrant($entrant) {
 	echo('<input type="submit" class="noprint" title="'.$TAGS['AcceptedByEntrant'][1].'" data-triggered="1" ');
 	echo(' value="'.$TAGS['AcceptedByEntrant'][0].'"');
 	echo(' accesskey="S" name="AcceptedByEntrant" data-altvalue="'.$TAGS['AcceptedByEntrant'][0].'"  /> ');
-
+    **********/
     echo('</div>'); // End scorecardtop
 
     $rr = explode("\n",str_replace("\r","",getValueFromDB("SELECT RejectReasons FROM rallyparams","RejectReasons","1=1")));
@@ -378,6 +396,16 @@ function markReviewedStatus() {
         $sql .= ",ReviewedByTeam=2";
     if (isset($_REQUEST['AcceptedByEntrant']))
         $sql .= ",AcceptedByEntrant=1";
+    if (isset($_REQUEST['ReviewStatus'])) {
+        $reviewStatus = $_REQUEST['ReviewStatus'];
+        if ($reviewStatus == 3) {
+            $sql .= ",AcceptedByEntrant=1";
+            $sql .= ",ReviewedByTeam=1";
+        } else {
+            $sql .= ",AcceptedByEntrant=0";
+            $sql .= ",ReviewedByTeam=".$reviewStatus;
+        }
+    }
     $sql .= " WHERE EntrantID=".$_REQUEST['EntrantID'];
     error_log($sql);
     $DB->exec($sql);
@@ -385,7 +413,8 @@ function markReviewedStatus() {
 
 }
 if (isset($_REQUEST['EntrantID'])) {
-    if (isset($_REQUEST['ReviewedByTeam']) || isset($_REQUEST['AcceptedByEntrant']) || isset($_REQUEST['QueriedByTeam']))
+    //if (isset($_REQUEST['ReviewedByTeam']) || isset($_REQUEST['AcceptedByEntrant']) || isset($_REQUEST['QueriedByTeam']))
+    if (isset($_REQUEST['ReviewStatus']))
         markReviewedStatus();
 }
 $e = 7; // Random default value for testing
