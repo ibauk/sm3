@@ -141,7 +141,7 @@ function emitDecisionsTable() {
 
     echo('<div>');
     echo('<span title="'.$TAGS['ebc_DoCancel'][1].'">');
-    echo('<input type="button" name="cancel" value="'.$TAGS['ebc_DoCancel'][0].'" onclick="cancelClaimDecision()" class="judge"> ');
+    echo('<input type="button" name="cancel" value="'.$TAGS['ebc_DoCancel'][0].'" onclick="submitClaimDecision(this)" class="judge" data-value="-2"> ');
     echo('</span>');
 
     echo('<span class="hide" title="'.$TAGS['BonusPoints'][1].'">');
@@ -525,11 +525,16 @@ function saveEBClaim($inTransaction) {
     $sqlx .= ")";
     if (!$inTransaction)
         $DB->exec("BEGIN IMMEDIATE TRANSACTION");
-    $DB->exec($sqlx);
-    $claimid = $DB->lastInsertRowID();
-    $DB->exec("UPDATE ebclaims SET Processed=1, Decision=".$_REQUEST['decision']." WHERE rowid=".$_REQUEST['claimid']);
 
-    if (true) {
+    if ($_REQUEST['decision'] >= 0) {
+
+        $DB->exec($sqlx);
+        $claimid = $DB->lastInsertRowID();
+    }
+    $processed = ($_REQUEST['decision'] < 0 ? 0 : 1);
+    $DB->exec("UPDATE ebclaims SET Processed=".$processed.", Decision=".$_REQUEST['decision']." WHERE rowid=".$_REQUEST['claimid']);
+
+    if ($processed) {
         applyClaim($claimid,!$inTransaction);
 	    updateTeamScorecards($_REQUEST['EntrantID']);
         rankEntrants(true);
@@ -569,7 +574,7 @@ function listEBClaims() {
     $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,Flags,Points,AskPoints,RestMinutes,AskMinutes,Image,Question,Answer FROM bonuses";
     $sql .= " ) AS xbonus";
     $sql .= " ON ebclaims.BonusID=xbonus.BonusID  LEFT JOIN ";
-    $sql .= " (SELECT EmailID,Group_concat(Image) As Image from ebcphotos GROUP BY EmailID) AS xphoto ON ebclaims.EmailID=xphoto.EmailID WHERE Processed=0 ORDER BY FinalTime;";
+    $sql .= " (SELECT EmailID,Group_concat(Image) As Image from ebcphotos GROUP BY EmailID) AS xphoto ON ebclaims.EmailID=xphoto.EmailID WHERE Processed=0 ORDER BY Decision DESC,FinalTime;";
 
     $R = $DB->query($sql);
     $claims = 0;
