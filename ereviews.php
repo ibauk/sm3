@@ -370,7 +370,13 @@ function reviewEntrant($entrant) {
         echo('<td class="BriefDesc">'.$s1.$rd['BriefDesc'].$s2.'<br><span class="NotesFlags">'.$nf.'</span></td>');
         echo('<td class="OdoReading">'.$s1.$rd['OdoReading'].$s2.'</td>');
         echo('<td class="ClaimTime">'.$s1.logtime(str_replace('T',' ',$rd['ClaimTime'])).$s2.'</td>');
-        echo('<td class="Decision">'.$s1.$decisions[$rd['Decision']].$s2.'</td>');
+        echo('<td class="Decision">'.$s1);
+        if ($rd['Decision'] < 0)  {
+            echo($TAGS['BonusClaimUndecided'][0]);
+        } else {
+            echo($decisions[$rd['Decision']]);
+        }
+        echo($s2.'</td>');
         echo('<td class="JudgesNotes">'.$rd['JudgesNotes'].'</td>');
         echo('</tr>');
 

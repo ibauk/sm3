@@ -1032,6 +1032,8 @@ function recalcScorecard($entrant,$intransaction) {
         return;
     }
 
+    error_log('recalcScorecard for '.$entrant);
+
     // Rejected claims
     $rejectedClaims = [];
     if ($rd['RejectedClaims'] != '') {

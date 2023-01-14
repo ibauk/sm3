@@ -1137,8 +1137,8 @@ function applyClaimsEntrant($entrantid) {
 	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
 
 	$sqlW = "Leg=".$CurrentLeg;
-	$sqlW .= " AND ClaimTime>='".$cfg['lodatetime']."'";
-	$sqlW .= " AND ClaimTime<='".$cfg['hidatetime']."'";
+	//$sqlW .= " AND ClaimTime>='".$cfg['lodatetime']."'";
+	//$sqlW .= " AND ClaimTime<='".$cfg['hidatetime']."'";
 	
 	$sqlW .= " AND EntrantID = $entrantid";
 
@@ -1170,6 +1170,7 @@ function applyClaimsEntrant($entrantid) {
 		foreach($eclaims as $claimid => $bonusid) {
 			applyClaim($claimid,true);
 		}
+
 
 		updateTeamScorecards($entrant);
 
@@ -1436,7 +1437,7 @@ if (isset($_REQUEST['deleteclaim']) && isset($_REQUEST['claimid']) && $_REQUEST[
 	listclaims();
 	exit;
 }
-//print_r($_REQUEST);
+//print_r($_REQUEST);exit;
 if (isset($_REQUEST['savemw'])) {
 	saveMagicWords();
 }	
