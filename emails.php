@@ -6,7 +6,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2020 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -341,7 +341,7 @@ function buildMailQ()
 
 	}
 
-	$sql = "SELECT EntrantID, RiderName, Email, ScoreX, EntrantStatus FROM entrants WHERE ".$_REQUEST['wheresql'];
+	$sql = "SELECT * FROM entrants WHERE ".$_REQUEST['wheresql'];
 	$R = $DB->query($sql);
 	while ($rd = $R->fetchArray()) {
 		$sql = "INSERT INTO emailq (EntrantID) VALUES(".$rd['EntrantID'].")";
@@ -405,7 +405,7 @@ function replaceVars($txt,$rd)
 	preg_match_all("/(#[\\w]*#)/",$res,$mt,PREG_SET_ORDER);
 	foreach ($mt as $fld) {
 		$fldname = substr($fld[0],1,strlen($fld[0])-2);
-		//echo (" [ $fldname ] ");
+		error_log("replaceVars: [ $fldname ] ".(isset($rd[$fldname]) ? 1 : 0));
 		try {
 			$res = str_replace($fld,formattedField($fldname,(isset($rd[$fldname]) ? $rd[$fldname] : '')),$res);
 		} catch(Exception $e) {
@@ -454,9 +454,11 @@ function sendMail()
 		}
 	}
 
-	$sql = "SELECT EntrantID, RiderName, Email, ScoreX, EntrantStatus FROM entrants WHERE ".$_REQUEST['wheresql'];
+	$sql = "SELECT * FROM entrants WHERE ".$_REQUEST['wheresql'];
 	$R = $DB->query($sql);
 	while ($rd = $R->fetchArray()) {
+
+		error_log("rd: ".implode(", ",array_keys($rd)));
 		$mail->clearAddresses();
 		$mail->clearAttachments();		
 		try {
@@ -530,7 +532,7 @@ function sendNextMail()
 
 	$uploads = explode('|',$et['AttachFiles']);
 	$filenames = explode('|',$et['AttachNames']);
-	$sql = "SELECT EntrantID, RiderName, Email, ScoreX, EntrantStatus FROM entrants WHERE EntrantID=".$entrant;
+	$sql = "SELECT * FROM entrants WHERE EntrantID=".$entrant;
 	$R = $DB->query($sql);
 	if ($rd = $R->fetchArray()) {
 		$mail->clearAddresses();
