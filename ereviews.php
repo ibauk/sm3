@@ -327,10 +327,15 @@ function reviewEntrant($entrant) {
 
     echo('<div id="tab_claims" class="tabContent ereviews">');
 
+    $bonusReclaims = getSetting('bonusReclaims',"0");
+    $ignoreDecision = getSetting('ignoreDecision',"9");
+
+
     $sql = "SELECT claims.*,bonuses.BriefDesc,bonuses.Notes,bonuses.Flags,bonuses.GroupName,claims.rowid";
     $sql .= " FROM claims LEFT JOIN bonuses ON claims.BonusID=bonuses.BonusID WHERE claims.EntrantID=$entrant";
     if ($RP['CurrentLeg'] > 0)
         $sql .= " AND claims.Leg=".$RP['CurrentLeg'];
+
     $sql .= " ORDER BY ClaimTime";
     $R = $DB->query($sql);
 
@@ -346,21 +351,28 @@ function reviewEntrant($entrant) {
     while ($rd = $R->fetchArray()) {
         $bonusid = str_replace('-','',$rd['BonusID']);
         $nclaims++;
-        if (!isset($bonusesclaimed[$bonusid]) || ($RP['RestBonusStartGroup'] != '' && $rd['GroupName']==$RP['RestBonusStartGroup'])) {
-            $nbonuses++;
-            $bonusesclaimed[$bonusid] = 1;
-        } else 
-            $bonusesclaimed[$bonusid]++;
+        if ($bonusReclaims == 0 || $rd['Decision'] != $ignoreDecision) {
+            if (!isset($bonusesclaimed[$bonusid]) || ($RP['RestBonusStartGroup'] != '' && $rd['GroupName']==$RP['RestBonusStartGroup'])) {
+                $nbonuses++;
+                $bonusesclaimed[$bonusid] = 1;
+            } else 
+                $bonusesclaimed[$bonusid]++;
+        }
     }
     reset($R);
 
     while ($rd = $R->fetchArray()) {
         $bonusid = str_replace('-','',$rd['BonusID']);
         $s1 = ''; $s2 = '';
-        if (--$bonusesclaimed[$bonusid] > 0) {
+        if ($bonusReclaims == 0 || $rd['Decision'] != $ignoreDecision) {
+            if (--$bonusesclaimed[$bonusid] > 0) {
+                $s1 = '<s>';
+                $s2 = '</s>';
+            }
+        } elseif ($bonusReclaims != 0 && $rd['Decision'] == $ignoreDecision) {
             $s1 = '<s>';
             $s2 = '</s>';
-        }
+    }
         $lnk = 'claims.php?c=showclaim&claimid='.$rd['rowid'].'&returnshow=picklist.php?review&EntrantID=1&c=score';
         $lnk = 'claims.php?c=showclaim&claimid='.$rd['rowid'].'&returnshow='.htmlentities('ereviews.php?EntrantID='.$entrant.'&amp;c=score');
         echo('<tr class="link"');

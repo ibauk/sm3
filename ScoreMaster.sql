@@ -126,7 +126,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"rankPointsPerMile": "false",
 	"decimalsPPM": "1",
 	"restBonusStartGroup": "RBStart",
-	"restBonusGroups": "RBClaims"
+	"restBonusGroups": "RBClaims",
+	"bonusReclaims": "0"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com

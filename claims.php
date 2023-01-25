@@ -593,6 +593,7 @@ function showClaim($claimid = 0)
 	$refuelstops = 'NONE'; // re matching nothing
 	$stopmins = 0;
 
+	$bonusReclaims = getSetting('bonusReclaims','0');
 	$sql = "SELECT * FROM rallyparams";
 	$R = $DB->query($sql);
 	if ($rd = $R->fetchArray()) 
@@ -607,6 +608,7 @@ function showClaim($claimid = 0)
 	echo('<input type="hidden" id="tankrange" value="'.$rd['tankrange'].'">'); 
 	echo('<input type="hidden" id="refuelstops" value="'.$rd['refuelstops'].'">');
 	echo('<input type="hidden" id="stopmins" value="'.$rd['stopmins'].'">');
+	echo('<input type="hidden" id="bonusReclaims" value="'.$bonusReclaims.'">');
 
 	if ($claimid == 0 && $virtualrally) {		//Only use magic words to validate new claims
 		$sql = "SELECT * FROM magicwords ORDER BY asfrom";
@@ -713,7 +715,11 @@ echo("</script>\n");
 	$oc = ($claimid == 0 ? ' onchange="checkSpeeding('.$virtualrally.');"' : '');
 	echo('<input type="date" name="ClaimDate" id="ClaimDate" value="'.$ct[0].'" oninput="checkEnableSave();" tabindex="8"'.$oc.'> ');
 	$ctz = substr(str_replace(".",":",trim($ct[1])),0,5);
-	echo('<input type="time" name="ClaimTime" id="ClaimTime" value="'.$ctz.'" oninput="checkEnableSave();" tabindex="4"'.$oc.'> ');
+	echo('<input type="time" name="ClaimTime" id="ClaimTime" value="'.$ctz.'" oninput="checkEnableSave();" ');
+	if ($claimid == 0) {
+		echo(' onchange="checkBonusReclaimNG();" ');
+	}
+	echo('tabindex="4"'.$oc.'> ');
 	$ds = ($claimid > 0 && $rd['SpeedPenalty'] != 0 ? 'inline' : 'none');
 	$oc = ($claimid > 0 && $rd['SpeedPenalty'] != 0 ? '&dzigrarr; <input type="checkbox" value="1" name="SpeedPenalty" oninput="checkEnableSave();" checked>' : '');
 	echo('<span id="SpeedWarning" style="display:'.$ds.';">'.$oc.'</span>');
@@ -813,7 +819,7 @@ echo("</script>\n");
 
 	echo('<span class="vlabel" title="'.$TAGS['ebc_JudgesNotes'][1].'">');
 	echo('<label for="JudgesNotes">'.$TAGS['ebc_JudgesNotes'][0].'</label> ');
-	echo('<input type="text" tabindex="7" name="JudgesNotes" style="width:30em; max-width:100vw;" value="'.$rd['JudgesNotes'].'" oninput="checkEnableSave();">');
+	echo('<input type="text" tabindex="7" id="JudgesNotes" name="JudgesNotes" style="width:30em; max-width:100vw;" value="'.$rd['JudgesNotes'].'" oninput="checkEnableSave();">');
 	echo('</span>');
 
 
@@ -1429,6 +1435,21 @@ function zapScorecard($entrant) {
 
 }
 
+function ajaxReclaimNG() {
+
+	if (!isset($_REQUEST['b']) || !isset($_REQUEST['e']) || !isset($_REQUEST['ct'])) {
+		return '{ "res": "ok" }';
+	}
+	if (getSetting('bonusReclaims','0') != '0') {
+		return '{ "res": "ok" }';
+	}
+	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams", "CurrentLeg","1");
+	if (bonusReclaimOK($_REQUEST['e'],$_REQUEST['b'],$_REQUEST['ct'],$CurrentLeg)) {
+		return '{ "res": "ok" }';
+	}
+	return '{ "res": "NG" }';
+
+}
 
 if (isset($_REQUEST['deleteclaim']) && isset($_REQUEST['claimid']) && $_REQUEST['claimid']>0) {
 	deleteClaim();
@@ -1506,6 +1527,11 @@ if (isset($_REQUEST['c'])) {
 		$val = $_REQUEST['val'];
 		$_SESSION['fd'] = $val;
 		echo('ok');
+		exit;
+	}
+
+	if ($_REQUEST['c']=='reclaims') {
+		echo(ajaxReclaimNG());
 		exit;
 	}
 	

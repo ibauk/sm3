@@ -73,6 +73,10 @@ function applyClaim($claimid,$intransaction) {
 	global $DB, $KONSTANTS;
 
     error_log('applying claim # '.$claimid);
+    
+    $bonusReclaims = getSetting('bonusReclaims',"0");
+    $ignoreDecision = getSetting('ignoreDecision',"9");
+
 	$sql = "SELECT * FROM claims WHERE rowid=".$claimid;
 	$R = $DB->query($sql);
 	if (!$rc = $R->fetchArray())
@@ -85,7 +89,7 @@ function applyClaim($claimid,$intransaction) {
 		}
 	}
 
-    $resetTeamHappiness = $rc['Decision'] > 0;
+    $resetTeamHappiness = $rc['Decision'] > 0 && ($bonusReclaims == 0 || $rc['Decision'] != $ignoreDecision);
 
     initScorecardVariables();
 
@@ -105,19 +109,21 @@ function applyClaim($claimid,$intransaction) {
 	$fo = $rd['OdoRallyFinish'];
 	$cm = $rd['CorrectedMiles'];
 	
-	$rcd = explode(',',$rd['RejectedClaims']);
-    $handled = false;
-    for($i = 0; $i < count($rcd); $i++) {
-        $x = explode('=',$rcd[$i]);
-        if ($x[0] === $rc['BonusID']) {
-            $handled = true;
-            if ($rc['Decision'] < 1) { // Was rejected but isn't now
-                unset($rcd[$i]);
+    if ($bonusReclaims == 0 || $rc['Decision'] != $ignoreDecision) {
+    	$rcd = explode(',',$rd['RejectedClaims']);
+        $handled = false;
+        for($i = 0; $i < count($rcd); $i++) {
+            $x = explode('=',$rcd[$i]);
+            if ($x[0] === $rc['BonusID']) {
+                $handled = true;
+                if ($rc['Decision'] < 1) { // Was rejected but isn't now
+                    unset($rcd[$i]);
+                }
             }
         }
-    }
-    if (!$handled && $rc['Decision'] > 0) {
-        array_push($rcd,$rc['BonusID'].'='.$rc['Decision']);
+        if (!$handled && $rc['Decision'] > 0) {
+            array_push($rcd,$rc['BonusID'].'='.$rc['Decision']);
+        }
     }
 
 	$bv = explode(',',$rd['BonusesVisited']);
@@ -1062,6 +1068,7 @@ function recalcScorecard($entrant,$intransaction) {
 
     // Ordinary bonuses
 
+    error_log("Bonuses visited = ".$rd['BonusesVisited']);
     $BA = explode(',',$rd['BonusesVisited']); 
         
     foreach($BA as $bonus) {

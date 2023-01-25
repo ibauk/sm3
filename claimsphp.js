@@ -130,6 +130,35 @@ function formatDatetime(dt) {
 	
 }
 
+
+function checkBonusReclaimNG() {
+	console.log("xxx checkBonusReclaim");
+
+	// Do I care about bonus reclaim sequence?
+	let chk = document.getElementById('bonusReclaims').value != 0;
+	if (!chk) return false;
+	
+	let ent = document.getElementById('EntrantID').value;
+	let bon = document.getElementById('BonusID').value;
+	let ct = document.getElementById('ClaimDate').value+'T'+document.getElementById('ClaimTime').value;
+
+	let xhttp;
+	xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			let r = JSON.parse(this.responseText);
+			let jn = document.getElementById('JudgesNotes');
+			if (r.result != 'ok')
+				jn.value = BonusReclaimNG;
+			}
+	}
+	
+	xhttp.open("GET", "claims.php?c=reclaims&e="+ent+"&b="+bon+"ct="+ct, true);
+	xhttp.send();
+}
+
+
+
 function checkEnableSave()
 {
 	if (validateClaim(false))

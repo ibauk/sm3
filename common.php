@@ -185,6 +185,41 @@ function bonusesPresent()
 	return getValueFromDB("SELECT count(*) As Rex FROM bonuses","Rex",-1);
 }
 
+
+// This is called to check whether this bonus claim is denied because of being out of sequence with
+// and earlier claim for the same bonus. The flag setting bonusReclaims is checked. A value of 0
+// permits out of sequence reclaims, 1 prevents out of sequence reclaims.
+//
+// Time | Bonus | bonusReclaimOK(0) | bonusReclaimOK(1)
+// ---- | ----- | ----------------- | -----------------
+// 1301 |  A1   |		true		| 		true
+// 1331 |  B1   |		true		|		true
+// 1401 |  B1   |		true		|		true
+// 1421 |  C1   |		true		|		true
+// 1431 |  A1   |		true		|		false
+// 1441 |  B1	|		true		|		false
+
+function bonusReclaimOK($entrantid,$bonusid,$claimtime,$leg) {
+
+	global $DB;
+
+	$bonusReclaims = getSetting('bonusReclaims',"0");
+	if ($bonusReclaims == "0")
+		return true;
+
+	$sql = "SELECT * FROM claims WHERE EntrantID=".$entrantid." AND Leg=".$leg." AND ClaimTime < '".$claimtime."'  ORDER BY ClaimTime DESC";
+	error_log('BRC: '.$sql);
+	$R = $DB->query($sql);
+	// Looking for earlier claims for this bonus
+	$lastBonusid = $bonusid;
+	while ($rd = $R->fetchArray()) {
+		if ($rd['BonusID'] == $bonusid && $lastBonusid != $bonusid) return FALSE;
+		$lastBonusid = $rd['BonusID'];
+	}
+	return TRUE;
+
+}
+
 function calcCorrectedMiles($entrantOdoKms,$entrantOdoStart,$entrantOdoFinish,$entrantOdoScaleFactor)
 // This is here because it might be needed from multiple locations throughout the application
 // ASSUMPTIONS:

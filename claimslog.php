@@ -162,7 +162,7 @@ function emitDecisionsTable() {
 
     echo('<input type="button" id="goodclaim" name="decision" data-value="0" value="'.$TAGS['ebc_DoAccept'][0].'" onclick="submitClaimDecision(this)" class="judge">' );
 
-    echo(' <input type="text" title="'.$TAGS['ebc_JudgesNotes'][1].'" placeholder="'.$TAGS['ebc_JudgesNotes'][0].'" name="JudgesNotes" style="width:30em; max-width:100vw;">');
+    echo(' <input type="text" title="'.$TAGS['ebc_JudgesNotes'][1].'" placeholder="'.$TAGS['ebc_JudgesNotes'][0].'" id="JudgesNotes" name="JudgesNotes" style="width:30em; max-width:100vw;">');
     echo('<input type="hidden" id="ebc_Evidence" name="Evidence">');
 
     	// This block is concerned with individual bonus percentage penalty, not 'magic' penalties.
@@ -288,6 +288,11 @@ function emitEBCjs() {
             ebcmins.parentNode.classList = '';
         else
             ebcmins.parentNode.classList = 'hide';
+        
+        if (tr.getAttribute('data-reclaimok') == '0') {
+            document.getElementById('JudgesNotes').value = BonusReclaimNG;
+        }
+
         document.getElementById('ebc_Evidence').value = tr.getAttribute('data-evidence');
         document.getElementById('ebc_photo').value = is;
         document.getElementById('ebc_claimid').value = claimid;
@@ -565,6 +570,7 @@ function listEBClaims() {
 
     $useQA = getSetting('useBonusQuestions','false')=='true';
     $valQA = intval(getSetting('valBonusQuestions','0'));
+    $currentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg",1);
 
     $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,xbonus.BonusID,xbonus.BriefDesc";
     $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,xphoto.Image,Notes,Flags,TeamID";
@@ -619,6 +625,8 @@ function listEBClaims() {
         preg_match('/<span[^>]*>([^<]+)/',logtime($rs['ClaimTime']),$lt);
         //logtime($rs['ClaimTime']);
         echo('data-claimtime-show="'.$lt[1].'" ');
+
+        echo(' data-reclaimok="'.(bonusReclaimOK($rs['EntrantID'],$rs['BonusID'],$rs['ClaimTime'],$currentLeg) ? 1 : 0).'"');
 
         // Now store some timestamp evidence
         $ev = "Photo: ".fmtEvidenceDate($rs['PhotoTS']);
