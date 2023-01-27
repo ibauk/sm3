@@ -88,7 +88,7 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 6=Flag not in photo
 7=Missing rider/pillion
 8=Missing receipt
-9=Bad information',
+9=Disallowed',
 '{
     "SMTPAuth": "TRUE",
     "SMTPSecure": "tls",
@@ -127,7 +127,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"decimalsPPM": "1",
 	"restBonusStartGroup": "RBStart",
 	"restBonusGroups": "RBClaims",
-	"bonusReclaims": "0"
+	"bonusReclaims": "0",
+	"bonusReclaimNG": "Bonus claimed earlier, reclaim out of sequence"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com

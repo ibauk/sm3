@@ -594,6 +594,7 @@ function showClaim($claimid = 0)
 	$stopmins = 0;
 
 	$bonusReclaims = getSetting('bonusReclaims','0');
+	$bonusReclaimNG = getSetting('bonusReclaimNG','Bonus claimed earlier, reclaim out of sequence');
 	$sql = "SELECT * FROM rallyparams";
 	$R = $DB->query($sql);
 	if ($rd = $R->fetchArray()) 
@@ -609,6 +610,7 @@ function showClaim($claimid = 0)
 	echo('<input type="hidden" id="refuelstops" value="'.$rd['refuelstops'].'">');
 	echo('<input type="hidden" id="stopmins" value="'.$rd['stopmins'].'">');
 	echo('<input type="hidden" id="bonusReclaims" value="'.$bonusReclaims.'">');
+	echo('<input type="hidden" id="bonusReclaimNG" value="'.$bonusReclaimNG.'">');
 
 	if ($claimid == 0 && $virtualrally) {		//Only use magic words to validate new claims
 		$sql = "SELECT * FROM magicwords ORDER BY asfrom";

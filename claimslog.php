@@ -186,7 +186,7 @@ function emitDecisionsTable() {
     foreach($rejects as $ln) {
         $xx = explode("=",$ln);
         if (isset($xx[1])) {
-            echo('<input type="button" data-value="'.$xx[0].'" value="'.$xx[1].'" onclick="submitClaimDecision(this)" class="judge"> ');
+            echo('<input type="button" id="badclaim'.$xx[0].'" data-value="'.$xx[0].'" value="'.$xx[1].'" onclick="submitClaimDecision(this)" class="judge"> ');
         }
     }
     echo('</span>');
@@ -289,8 +289,10 @@ function emitEBCjs() {
         else
             ebcmins.parentNode.classList = 'hide';
         
+        let default_button = 'goodclaim';
         if (tr.getAttribute('data-reclaimok') == '0') {
-            document.getElementById('JudgesNotes').value = BonusReclaimNG;
+            document.getElementById('JudgesNotes').value = document.getElementById('bonusReclaimNG').value;
+            default_button = 'badclaim'+document.getElementById('bonusReclaims').value;
         }
 
         document.getElementById('ebc_Evidence').value = tr.getAttribute('data-evidence');
@@ -396,7 +398,7 @@ function emitEBCjs() {
         }
         log.style.display = "none";
         decider.style.display = "block";
-        document.getElementById('goodclaim').focus();
+        document.getElementById(default_button).focus();
     }
     function showFirstClaim() {
 
@@ -570,6 +572,9 @@ function listEBClaims() {
 
     $useQA = getSetting('useBonusQuestions','false')=='true';
     $valQA = intval(getSetting('valBonusQuestions','0'));
+    $bonusReclaimNG = getSetting('bonusReclaimNG','Bonus claimed earlier, reclaim out of sequence');
+    $bonusReclaims = getSetting('bonusReclaims','0');
+
     $currentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg",1);
 
     $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,xbonus.BonusID,xbonus.BriefDesc";
@@ -606,6 +611,8 @@ function listEBClaims() {
 
     echo('<input type="hidden" id="useBonusQuestions" value="'.$useQA.'">');
     echo('<input type="hidden" id="valBonusQuestions" value="'.$valQA.'">');
+    echo('<input type="hidden" id="bonusReclaimNG" value="'.$bonusReclaimNG.'">');
+    echo('<input type="hidden" id="bonusReclaims" value="'.$bonusReclaims.'">');
     echo('<table><thead>');
     if ($claims > 0) {
         echo('<tr><th>Entrant</th><th>Bonus</th><th>Odo</th><th>Claimtime</th></tr>');

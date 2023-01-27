@@ -56,8 +56,6 @@ const EBC_FlagN     = "Night only";
 const EBC_FlagR     = "Restricted access";
 const EBC_FlagT     = "Need a receipt (ticket)";
 
-const BonusReclaimNG = 'Bonus claimed earlier, reclaim out of sequence';
-
 const CFGERR_MethodNIY = "Error: compoundCalcRuleMethod {0} not implemented yet";
 const CFGERR_NotBonuses = "Error: compoundCalcRuleType {0} not applicable to bonuses";
 

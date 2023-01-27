@@ -6,57 +6,67 @@ The fields are generally self-explanatory but if in doubt as to their exact use,
 
 
 ### Scoring
-useBonusQuestions / valBonusQuestions
+*useBonusQuestions* / *valBonusQuestions*
 : Control the use of bonus "extra points" questions
 
-usePercentPenalty / valPercentPenalty
+*usePercentPenalty* / *valPercentPenalty*
 : Specifies the use of percentage penalties
 
-autoFinisher
+*autoFinisher*
 : If true, no formal 'rally complete' process needed; if false, must supply final odo reading
 
-autoLateDNF
+*autoLateDNF*
 : If true, any timed odo or claim past time results in DNF
 
-multStepValue
+*multStepValue*
 : The value of 'step' on HTML INPUT tag for multipliers. Default is '1'. DO NOT USE
 
-rankPointsPerMile
+*rankPointsPerMile*
 : Rank finishers by points per mile(km) rather than simple points value
 
+*bonusReclaims*
+: Each bonus may be claimed several times by an entrant and the normal rule is that only the last one submitted is considered. Reclaims are always limited by time constraints and may also be disallowed once a different bonus has been claimed.
+
+0 = reclaims of bonuses are limited only by time. 
+
+1-9 = reclaims of bonuses disallowed after next bonus claimed. The number used is the reject code to be applied. When a non-zero code is used here, all claims with that decision code will be disregarded by the scoring system.
+
 ### Presentation
-claimsReloadEBC
+*claimsReloadEBC*
 : Number of seconds between refreshes of EBC list
 
-autoAdjustBonusWidth
+*autoAdjustBonusWidth*
 : Make all bonus codes occupy the same width on scorecards
 
-showPicklistStatus
+*showPicklistStatus*
 : Show entrant status and points in scorecard picklist
 
-decimalsPPM
+*decimalsPPM*
 : Number of decimal places to show for points per mile(km)
 
 ---
 ### Language
 
-clgHeader
+*clgHeader*
 : "Schedule of claims received"
 
-clgClaimsCount
+*clgClaimsCount*
 : "Number of claims received"
 
-clgBonusCount
+*clgBonusCount*
 : "Number of bonuses claimed"
 
-RPT_TPenalty
+*RPT_TPenalty*
 : "&#x23F0;Late arrival penalty"
 
-RPT_MPenalty
+*RPT_MPenalty*
 : "Excess distance penalty"
 
-RPT_SPenalty
+*RPT_SPenalty*
 : "Excess speed penalty"
+
+*bonusReclaimNG*
+: The text used to indicate that a claim has been rejected because it's out of sequence
 
 ---
 ### Debug settings

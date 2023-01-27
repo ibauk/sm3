@@ -135,8 +135,8 @@ function checkBonusReclaimNG() {
 	console.log("xxx checkBonusReclaim");
 
 	// Do I care about bonus reclaim sequence?
-	let chk = document.getElementById('bonusReclaims').value != 0;
-	if (!chk) return false;
+	let chk = document.getElementById('bonusReclaims').value;
+	if (chk == 0) return false;
 	
 	let ent = document.getElementById('EntrantID').value;
 	let bon = document.getElementById('BonusID').value;
@@ -148,9 +148,11 @@ function checkBonusReclaimNG() {
 		if (this.readyState == 4 && this.status == 200) {
 			let r = JSON.parse(this.responseText);
 			let jn = document.getElementById('JudgesNotes');
-			if (r.result != 'ok')
-				jn.value = BonusReclaimNG;
+			if (r.result != 'ok') {
+				jn.value = document.getElementById('bonusReclaimNG').value;
+				document.getElementById('Decision').value = chk;
 			}
+		}
 	}
 	
 	xhttp.open("GET", "claims.php?c=reclaims&e="+ent+"&b="+bon+"ct="+ct, true);
