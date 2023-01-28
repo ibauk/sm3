@@ -51,7 +51,7 @@ function showPicklist($ord)
 	$minEntrant = getValueFromDB("SELECT min(EntrantID) as MaxID FROM entrants","MaxID",1);
 	$maxEntrant = getValueFromDB("SELECT max(EntrantID) as MaxID FROM entrants","MaxID",$minEntrant);
 
-    $showCurrentStatus = getSetting('showPicklistStatus','false') == 'true';
+    $showCurrentStatus = getSetting('showPicklistStatus','false') == 'true' && !isset($_REQUEST['s']);
 
 	$R = $DB->query('SELECT * FROM entrants ORDER BY '.$ord);
 	
@@ -98,20 +98,42 @@ sb.click();
 
 }
 
+function flipshowstatus() {
+
+    let r = document.getElementById('is_review').value == 1;
+    let s = document.getElementById('is_s').value != 1; // Flip it
+    let url = "picklist.php?";
+    if (r)
+        url += 'review';
+    else
+        url += 'score';
+    if (s)
+        url += '&s';
+    window.location.replace(url);
+
+}
 
 </script>
 <?php	
     echo('<div style="height: 5vh;">');
+    
+    echo('<input type="hidden" id="is_review" value="'.($showReview ? 1 : 0).'">');
+    echo('<input type="hidden" id="is_s" value="'.(isset($_REQUEST['s']) ? 1 : 0).'">');
+
     if ($showScoring) {
         echo('<p>'.$TAGS['accessScorecards'][1].'</p>');
     }
-    echo('<h4>'.$TAGS['PickAnEntrant'][1].'</h4>');
+    echo('<h4 onclick="flipshowstatus();" style="cursor:pointer;" title="'.$TAGS['PL_hdr_flipstatus'][1].'">');
+    echo($TAGS['PickAnEntrant'][1]);
+    echo('</h4>');
 	echo('<div id="pickentrant">');
 
 	echo('<form id="entrantpick" method="get" action="'.$action.'">');
 	echo('<label for="EntrantID">'.$TAGS['EntrantID'][0].'</label> ');
 	echo('<input oninput="choosePickedName();" type="number" autofocus id="EntrantID" name="EntrantID" min="'.$minEntrant.'" max="'.$maxEntrant.'"> '); 
 	echo('<input type="hidden" name="c" value="score">');
+    
+
 	echo('<label for="NameFilter">'.$TAGS['NameFilter'][0].' </label>');
 
     echo('<select id="picklistNames" onchange="setEntrantFromList(this);">');
@@ -143,10 +165,10 @@ sb.click();
             if ($showReview) {
                 $sql = "SELECT count(DISTINCT BonusID) As Rex FROM claims WHERE EntrantID=".$rd['EntrantID'];
                 $nc = getValueFromDB($sql,"Rex",0);
-                echo('<td class="NumClaims">'.$nc.'</td>');
+                echo('<td class="NumClaims" title="'.$TAGS['PL_hdr_claims'][1].'">'.$nc.'</td>');
                 $sql .= " AND Decision > 0";
                 $nr = getValueFromDB($sql,"Rex",0);
-                echo('<td class="NumRejects">'.($nr > 0 ? $nr : '').'</td>');
+                echo('<td class="NumRejects" title="'.$TAGS['PL_hdr_rejects'][1].'">'.($nr > 0 ? $nr : '').'</td>');
                 $reviewed = '';
                 if (isset($rd['ReviewedByTeam']) && $rd['ReviewedByTeam'] > 0) {
                     $chk = "&#10003;"; //Regular checkmark

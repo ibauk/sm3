@@ -598,6 +598,11 @@ $TAGS = array(
 	'PillionFirst'		=> array('Informal name',"Used for repeat mentions on finisher's certificate"),
 	'PillionIBA'		=> array('IBA #',"Pillion's IBA number if known"),
 	'PillionName'		=> array('Pillion','Full name of the pillion rider'),
+
+	// Column header,hint for picklist
+	'PL_hdr_claims'		=> array('Claims','Claims'),
+	'PL_hdr_rejects'	=> array('Rejects','Rejects'),
+	'PL_hdr_flipstatus'	=> array('Hide/show status','Hide/show status info'),
 	'PointsMults'		=> array('Score value type','Worth points or multipliers'),
 	'PointsMults0'		=> array('PointsMults0','Points'),
 	'PointsMults1'		=> array('PointsMults1','Multipliers'),
