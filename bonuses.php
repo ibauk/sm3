@@ -497,6 +497,11 @@ function triggerNewRow()
 
 	echo('<div class="stickytop">'.$TAGS['BonusMaintHead'][1]);
 	echo('<br><button autofocus value="+" onclick="return triggerNewRow();">+</button>');
+
+	echo('<form style="display:inline"; action="bonuses.php" method="get"><input type="hidden" name="c" value="bonus">');
+	echo(' <input type="text" name="bonus" class="BonusID" title="'.$TAGS['BonusFetch'][1].'" onchange="this.form.submit();">');
+	echo('</form>');
+
 	echo('</div>');
 
 ?>

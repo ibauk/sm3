@@ -205,6 +205,7 @@ $TAGS = array(
 	'BonusClaimUndecided'
 						=> array('undecided',''),
 	'BonusCoords'		=> array('Coords','Location of this bonus'),
+	'BonusFetch'		=> array('BonusID','BonusID to display'),
 	'BonusFlags'		=> array('Scoring flags','Scoring flags'),
 	'BonusesLit'		=> array('Bonuses','Ordinary bonuses'),
 	'BonusIDLit'		=> array('Code','Unique identifier for this bonus, Uppercase only'),
