@@ -118,8 +118,14 @@ function emitDecisionFrame() {
     emitDecisionsTable();
 
     echo('<div id="imgdiv" style="text-align: center; float: left; cursor: se-resize; border: solid;" title="'.$TAGS['ebc_JudgeThis'][1].'">');
-    echo('<img onclick="cycleImageSize(this);" data-size="0" style="width:512px; ">');
+    echo('<img id="imgdivimg" onclick="cycleImageSize(this);" data-size="0" style="width:512px; ">');
+
+    echo('<div id="imgdivs" style="width: 512px; cursor: pointer;">'); // Same as width above
+    //echo('<img style="width:96px;" src="ebcimg\img-6-B1-56.jpg">');
     echo('</div>');
+
+    echo('</div>');
+
     echo('<div id="bimgdiv" style="text-align: center; float:right;" title="'.$TAGS['ebc_RallyPhoto'][1].'">');
     echo('<img style="width:512px;">');
     echo('</div>');
@@ -257,6 +263,29 @@ function emitEBCjs() {
         qa.value = 1;
     }
 
+    function swapimg(event) {
+
+        console.log('Swapping img '+event.currentTarget.id);
+        let img = document.getElementById(event.currentTarget.id);
+        let main = document.getElementById('imgdivimg');
+        main.src = img.src;
+    }
+    function showPhotoArray(photos) {
+
+        let iadiv = document.getElementById('imgdivs');
+        iadiv.innerHTML = '';
+        let plen = photos.length;
+        if (plen < 2) return;
+        let imgwidth = (100 / plen);
+        for (let i = 0; i < plen; i++) {
+            let img = document.createElement('img');
+            img.id = "ephoto"+i;
+            img.src = photos[i];
+            img.style = "width:"+imgwidth+"%;";
+            img.addEventListener('click',swapimg,false);
+            iadiv.appendChild(img);
+        }
+    }
     function showClaimEBC(tr) {
         RELOADOK = false;
         let claimid = tr.getAttribute('data-claimid');
@@ -266,7 +295,9 @@ function emitEBCjs() {
         let img = document.getElementById('imgdiv').firstChild;
         let photos = tr.getAttribute('data-photo').split(',');
         let is =  photos[0];
+        let iss = tr.getAttribute('data-photo');
         img.src = is; // Might be empty
+        showPhotoArray(photos);
         let bis = tr.getAttribute('data-bphoto');
         if (bis != '') {
             let bimg = document.getElementById('bimgdiv').firstChild;
@@ -296,7 +327,7 @@ function emitEBCjs() {
         }
 
         document.getElementById('ebc_Evidence').value = tr.getAttribute('data-evidence');
-        document.getElementById('ebc_photo').value = is;
+        document.getElementById('ebc_photo').value = iss;
         document.getElementById('ebc_claimid').value = claimid;
         document.getElementById('ebc_entrant').value = entrant;
         document.getElementById('ebc_entrant_name').innerHTML = tr.firstChild.innerHTML;
