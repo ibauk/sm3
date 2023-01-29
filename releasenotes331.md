@@ -21,4 +21,4 @@ When choosing the "Leave undecided" option, the claim is now moved to the bottom
 It is now possible to accept multiple photos for a claim. The standard is and should remain that only a single photo is permitted but the system will now present all submitted photos for judging purposes.
 
 ## Bonus table maintenance
-It is now possible to enter the BonusID to show directly rather than having to scroll the full list.
+It is now possible to enter the BonusID to show directly rather than having to scroll the full list. The list can also be filtered by category, for example: Country=Belgium, Type=Statue.

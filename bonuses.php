@@ -454,7 +454,7 @@ function triggerNewRow()
 	tab = document.getElementById('bonuses').getElementsByTagName('tbody')[0];
 	var row = tab.insertRow(0);
 	row.innerHTML = oldnewrow.innerHTML;
-	row.firstChild.firstChild.focus();
+	row.firstChild.firstChild.firstChild.focus();
 	return false;
 }
 </script>
@@ -502,6 +502,29 @@ function triggerNewRow()
 	echo(' <input type="text" name="bonus" class="BonusID" title="'.$TAGS['BonusFetch'][1].'" onchange="this.form.submit();">');
 	echo('</form>');
 
+
+	echo('<form style="display:inline"; action="bonuses.php" method="get"><input type="hidden" name="c" value="bonuses">');
+	foreach($catlabels as $cat => $catdesc) {
+		if ($catdesc != '') {
+			echo(' <select name="cat'.$cat.'" title="'.$catdesc.'" onchange="this.form.submit();">');
+			echo('<option value="0"');
+			$selcat = (isset($_REQUEST['cat'.$cat]) ? $_REQUEST['cat'.$cat] : 0);
+			if ($selcat==0)
+				echo(' selected ');
+			echo('>'.$catdesc.' = *</option>');
+			$R = $DB->query("SELECT * FROM categories WHERE Axis=".$cat);
+			while ($rd = $R->fetchArray()) {
+				echo('<option value="'.$rd['Cat'].'"');
+				if ($selcat==$rd['Cat'])
+					echo(' selected ');
+				echo('>'.$rd['BriefDesc'].'</option>');
+			}
+			echo('</select> ');
+		}
+	}
+	echo('</form>');
+
+
 	echo('</div>');
 
 ?>
@@ -537,7 +560,18 @@ function triggerNewRow()
 	echo('</thead><tbody>');
 	
 	
-	$sql = 'SELECT * FROM bonuses ORDER BY BonusID';
+	$sql = 'SELECT * FROM bonuses ';
+	$sqlw = '';
+	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) {
+		if (isset($_REQUEST['cat'.$i]) && $_REQUEST['cat'.$i] != 0) {
+			if ($sqlw != '') 
+				$sqlw .= ' AND ';
+			$sqlw .= 'Cat'.$i.'='.$_REQUEST['cat'.$i];
+		}
+	}
+	if ($sqlw != '')
+		$sql .= ' WHERE '.$sqlw;
+	$sql .= ' ORDER BY BonusID';
 	$R = $DB->query($sql);
 	if ($DB->lastErrorCode() <> 0)
 		echo($DB->lastErrorMsg().'<br>'.$sql.'<hr>');
