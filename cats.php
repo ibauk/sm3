@@ -594,7 +594,7 @@ function listAxes() {
 			$cls = 'hide';
 		$cls = $rd[$lbl] != '' ? 'show' : 'hide';
 		echo('<tr class="'.$cls.'" data-axis="'.$i.'"><td onclick="showAxisCats(this);" style="padding-right:.5em; cursor:pointer;">'.$TAGS[$lbl][0].'</td><td style="padding-right:.5em;"  title="'.$TAGS[$lbl][1].'" >');
-		echo('<input oninput="lineHasChanged(this);" type="text" placeholder="'.$TAGS['unset'][0].'" name="Cat'.$i.'Label" value="'.htmlspecialchars($rd[$lbl]).'" onchange="saveAxis(this);">');
+		echo('<input oninput="lineHasChanged(this);" type="text" placeholder="'.$TAGS['unset'][0].'" name="Cat'.$i.'Label" value="'.htmlspecialchars(''.$rd[$lbl]).'" onchange="saveAxis(this);">');
 		echo('</td><td><input type="button" disabled data-value="'.$TAGS['SaveRecord'][0].'" value="'.$TAGS['RecordSaved'][0].'" onclick="saveAxis(this);">');
 		echo('</td></tr>');
 	}

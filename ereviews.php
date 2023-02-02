@@ -118,7 +118,7 @@ function fmtFlags($flgs,$isTeam) {
     if ($isTeam) {
         $flags .= '2';
     }
-    for ($i = 0; $i < strlen($flags); $i++) {
+    for ($i = 0; $i < strlen(''.$flags); $i++) {
         $alt = '';
          switch(substr($flags,$i,1)) {
              case '2':
@@ -359,7 +359,7 @@ function reviewEntrant($entrant) {
                 $bonusesclaimed[$bonusid]++;
         }
     }
-    reset($R);
+    $R->reset();
 
     while ($rd = $R->fetchArray()) {
         $bonusid = str_replace('-','',$rd['BonusID']);

@@ -22,3 +22,28 @@ It is now possible to accept multiple photos for a claim. The standard is and sh
 
 ## Bonus table maintenance
 It is now possible to enter the BonusID to show directly rather than having to scroll the full list. The list can also be filtered by category, for example: Country=Belgium, Type=Statue.
+
+## Bonus claim formatting
+The specification of acceptable bonus claims retrieved from emails has been tightened slightly. 
+
+- All four fields (Entrant, Bonus, Odo, Time) must now always be present, Odo and Time are no longer optional. 
+- Commas ( , ) are no longer accepted as field separators, only spaces must be used.
+- Entrant numbers may include letters but those will be removed before processing. Entrant numbers continue to be numeric only.
+- Bonus codes may include digits, letters and hyphen ( - ). Letters are forced to uppercase before processing.
+- Odo readings must be integers only, no decimal point or fraction is permitted.
+- Time may be specified either as a 24 hour time only or as a fullly qualified RFC3339 *datetime*. 24 hour times may be specified as *hhmm*, *hh*:*mm* or *hh*.*mm* and must use the rally's timezone. It is assumed that RFC3339 entries will be generated automatically, not keyed by entrants.
+
+## EBCFetch v1.7
+This release includes the latest upgrade of the electronic bonus claim fetcher with these improvements:-
+
+### Reconfigure without restart
+Changes made to the configuration settings are now implemented immediately without the need to restart the server.
+
+### Multiple photos
+Claims can now be processed with any number of photos attached.
+
+### Claim test mode
+The server can now be placed in test mode prior to the start of an event. In test mode all claims received will generate a response to the sender detailing whether or not the claim is valid. In this mode, no claims or photos are passed to the scoring database. Responses are not generated or sent when operating in live rally mode.
+
+### All claims forwarded
+All claims received are forwarded to the scoring database, regardless of the claim's correctness or the number of photos. If it is not possible to positively identify the entrant, they are assigned to entrant zero and either recorded against that entrant in the database (if a record exists) or are marked as unread and left in the email account for manual handling.

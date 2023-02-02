@@ -152,7 +152,10 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusNotes'][1].'">');
 	echo('<label for="Notes">'.$TAGS['BonusNotes'][0].'</label> ');
-	echo('<textarea name="Notes" id="Notes" cols="80" rows="1" oninput="enableSaveButton();">'.str_replace('"','&quot;',$rd['Notes']).'</textarea>');
+	$notes = '';
+	if ($rd['Notes'] != '')
+		$notes = $rd['Notes'];
+	echo('<textarea name="Notes" id="Notes" cols="80" rows="1" oninput="enableSaveButton();">'.str_replace('"','&quot;',"".$notes).'</textarea>');
 	echo('</span>');
 	
 	echo('<span class="vlabel" title="'.$TAGS['BonusFlags'][1].'">');
@@ -173,7 +176,7 @@ function showBonus($bonusid) {
 		}
 		echo('" alt="'.$flg.'"/></label> ');
 		echo('<input type="checkbox" onchange="enableSaveButton();" name="BonusScoringFlag'.$flg.'"');
-		if (!(strpos($rd['Flags'],$flg)===false))
+		if (!(strpos(''.$rd['Flags'],$flg)===false))
 			echo(' checked ');
 		echo('> ');
 		echo('</span>');
@@ -239,12 +242,12 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusCoords'][1].'">');
 	echo('<label for="Coords">'.$TAGS['BonusCoords'][0].'</label> ');
-	echo('<input type="text" class="wider" name="Coords" id="Coords" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Coords']).'">');
+	echo('<input type="text" class="wider" name="Coords" id="Coords" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',''.$rd['Coords']).'">');
 	echo('</span>');
 	
 	echo('<span class="vlabel" title="'.$TAGS['BonusWaffle'][1].'">');
 	echo('<label for="Waffle">'.$TAGS['BonusWaffle'][0].'</label> ');
-	echo('<textarea name="Waffle" id="Waffle" cols="80" rows="1" oninput="enableSaveButton();">'.str_replace('"','&quot;',$rd['Waffle']).'</textarea>');
+	echo('<textarea name="Waffle" id="Waffle" cols="80" rows="1" oninput="enableSaveButton();">'.str_replace('"','&quot;',''.$rd['Waffle']).'</textarea>');
 	echo('</span>');
 
 	if (getSetting('useBonusQuestions',"false")=="true") {

@@ -149,7 +149,7 @@ function flipshowstatus() {
 
     $R = $DB->query('SELECT * FROM entrants ORDER BY EntrantID');
 
-    reset($R);
+    $R->reset();
 
     echo('<div id="picklistdiv">');
     echo('<table><tbody>');

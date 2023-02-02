@@ -167,8 +167,8 @@ notbefore: 2021-07-01
 selectflags: ["\\Flagged", "\\Seen"]
 
 
-# Acceptable subject line RE. This accepts decorated entrant number, commas as separators, various time formats, optional odo/time
-subject: ''\s*[A-Za-z]*(\d+)[A-Za-z]*\s*\,?\s*([a-zA-Z0-9\-]+)\s*\,?\s*(\d+)?\.*\d*\s*\,?\s*(\d\d?[.:]*\d\d)?\s*(.*)''
+# Acceptable subject line RE. This accepts decorated entrant numbers, various time formats. Must have four fields.
+subject: ''(\w+)\s+([\w\-]+\-?)\s+(\d+)\s+([\d:\.\-\+TZ]+)\s*(.*)''
 
 # Subject line RE to measure strict adherence to standard
 strict: ''^\s*(\d+)\s+([a-zA-Z0-9\-]+)\s+(\d+)\s+(\d\d\d\d)''

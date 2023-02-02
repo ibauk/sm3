@@ -389,12 +389,12 @@ function logtime($stamp)
 /* We're really only interested in the time of day and which of a few days it's on */
 {
 	try {
-		$dt = new DateTime($stamp);
+		$dt = new DateTime(''.$stamp);
 		$dtf = $dt->format('D H:i');
 	} catch (Exception $e) {
 		$dtf = $stamp;
 	}
-	if (strpos($stamp,'+00:00') > 0)
+	if (strpos(''.$stamp,'+00:00') > 0)
 		$dtf .= "z";
 	return '<span title="'.$stamp.'">'.$dtf.'</span>';
 }
@@ -452,9 +452,9 @@ function properName($enteredName)
 function splitDatetime($dt)
 /* Accept either 'T' or space as splitting date/time */
 {
-	if (strpos($dt,'T'))
+	if (strpos(''.$dt,'T'))
 		$S = 'T';
-	else if (strpos($dt,' '))
+	else if (strpos(''.$dt,' '))
 		$S = ' ';
 	else
 		return ['','']; 

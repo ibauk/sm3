@@ -327,13 +327,11 @@ function saveEntrantRecord()
 		$wishid = $newid;
 		if (isset($_REQUEST['EntrantID']) && $_REQUEST['EntrantID'] != '') {
 			$wishid = intval($_REQUEST['EntrantID']);
-			if ($wishid > 0) {
-				$sql = "SELECT EntrantStatus FROM entrants WHERE EntrantID=$wishid";
-				$res = getValueFromDB($sql,"EntrantStatus",-1);
-				if ($res >= 0)	// already exists
-					$wishid = $newid;
-			} else
-				$wishid = $newid;
+			$sql = "SELECT EntrantStatus FROM entrants WHERE EntrantID=$wishid";
+			$res = getValueFromDB($sql,"EntrantStatus",-1);
+			if ($res >= 0)	// already exists
+
+			$wishid = $newid;
 		}
 	}
 	

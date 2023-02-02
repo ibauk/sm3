@@ -653,7 +653,10 @@ function listEBClaims() {
         error_log($rs['rowid'].' == ['.$rs['Image'].']');
         echo('<tr data-claimid="'.$rs['rowid'].'" ');
         echo('data-entrant="'.$rs['EntrantID'].'" data-photo="'.$rs['Image'].'" ');
-        echo('data-bphoto="'.rawurlencode($rs['BImage']).'" ');
+        $bphoto = '';
+        if ($rs['BImage'] != '')
+            $bphoto = rawurlencode($rs['BImage']);
+        echo('data-bphoto="'.$bphoto.'" ');
         echo('data-team="'.$rs['TeamID'].'" ');
         echo('data-bonus="'.$rs['BonusID'].'" data-odo="'.$rs['OdoReading'].'" ');
         echo('data-points="'.$rs['Points'].'" data-askpoints="'.$rs['AskPoints'].'"');
@@ -674,9 +677,9 @@ function listEBClaims() {
         $ev .= "&amp;#10;&amp;#10;Subject: ".htmlspecialchars($rs['Subject']);
         echo('data-evidence="'.$ev.'" ');
 
-        echo('data-bonusdesc="'.str_replace('"','&quot;',$rs['BriefDesc']).'" data-rider="'.str_replace('"','&quot;',$rs['RiderName']).'" ');
-        echo('data-notes="'.str_replace('"','&quot;',$rs['Notes']).'" data-flags="'.$rs['Flags'].'" ');
-        echo('data-extra="'.str_replace('"','&quot;',$rs['ExtraField']).'" ');
+        echo('data-bonusdesc="'.str_replace('"','&quot;',''.$rs['BriefDesc']).'" data-rider="'.str_replace('"','&quot;',$rs['RiderName']).'" ');
+        echo('data-notes="'.str_replace('"','&quot;',''.$rs['Notes']).'" data-flags="'.$rs['Flags'].'" ');
+        echo('data-extra="'.str_replace('"','&quot;',''.$rs['ExtraField']).'" ');
         echo('class="link ebc" ');
         echo('onkeydown="testkey(this)" ');
         echo('onclick="showClaimEBC(this)" ');
