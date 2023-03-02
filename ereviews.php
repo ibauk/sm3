@@ -328,7 +328,7 @@ function reviewEntrant($entrant) {
     echo('<div id="tab_claims" class="tabContent ereviews">');
 
     $bonusReclaims = getSetting('bonusReclaims',"0");
-    $ignoreDecision = getSetting('ignoreDecision',"9");
+    $ignoreClaimDecisionCode = getSetting('ignoreClaimDecisionCode',"9");
 
 
     $sql = "SELECT claims.*,bonuses.BriefDesc,bonuses.Notes,bonuses.Flags,bonuses.GroupName,claims.rowid";
@@ -351,7 +351,7 @@ function reviewEntrant($entrant) {
     while ($rd = $R->fetchArray()) {
         $bonusid = str_replace('-','',$rd['BonusID']);
         $nclaims++;
-        if ($bonusReclaims == 0 || $rd['Decision'] != $ignoreDecision) {
+        if ($bonusReclaims == 0 || $rd['Decision'] != $ignoreClaimDecisionCode) {
             if (!isset($bonusesclaimed[$bonusid]) || ($RP['RestBonusStartGroup'] != '' && $rd['GroupName']==$RP['RestBonusStartGroup'])) {
                 $nbonuses++;
                 $bonusesclaimed[$bonusid] = 1;
@@ -364,12 +364,12 @@ function reviewEntrant($entrant) {
     while ($rd = $R->fetchArray()) {
         $bonusid = str_replace('-','',$rd['BonusID']);
         $s1 = ''; $s2 = '';
-        if ($bonusReclaims == 0 || $rd['Decision'] != $ignoreDecision) {
+        if ($bonusReclaims == 0 || $rd['Decision'] != $ignoreClaimDecisionCode) {
             if (--$bonusesclaimed[$bonusid] > 0) {
                 $s1 = '<s>';
                 $s2 = '</s>';
             }
-        } elseif ($bonusReclaims != 0 && $rd['Decision'] == $ignoreDecision) {
+        } elseif ($bonusReclaims != 0 && $rd['Decision'] == $ignoreClaimDecisionCode) {
             $s1 = '<s>';
             $s2 = '</s>';
     }

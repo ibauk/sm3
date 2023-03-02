@@ -75,7 +75,7 @@ function applyClaim($claimid,$intransaction) {
     error_log('applying claim # '.$claimid);
     
     $bonusReclaims = getSetting('bonusReclaims',"0");
-    $ignoreDecision = getSetting('ignoreDecision',"9");
+    $ignoreClaimDecisionCode = getSetting('ignoreClaimDecisionCode',"9");
 
 	$sql = "SELECT * FROM claims WHERE rowid=".$claimid;
 	$R = $DB->query($sql);
@@ -89,7 +89,7 @@ function applyClaim($claimid,$intransaction) {
 		}
 	}
 
-    $resetTeamHappiness = $rc['Decision'] > 0 && ($bonusReclaims == 0 || $rc['Decision'] != $ignoreDecision);
+    $resetTeamHappiness = $rc['Decision'] > 0 && ($bonusReclaims == 0 || $rc['Decision'] != $ignoreClaimDecisionCode);
 
     initScorecardVariables();
 
@@ -109,7 +109,7 @@ function applyClaim($claimid,$intransaction) {
 	$fo = $rd['OdoRallyFinish'];
 	$cm = $rd['CorrectedMiles'];
 	
-    if ($bonusReclaims == 0 || $rc['Decision'] != $ignoreDecision) {
+    if ($bonusReclaims == 0 || $rc['Decision'] != $ignoreClaimDecisionCode) {
     	$rcd = explode(',',$rd['RejectedClaims']);
         $handled = false;
         for($i = 0; $i < count($rcd); $i++) {

@@ -31,6 +31,10 @@ The fields are generally self-explanatory but if in doubt as to their exact use,
 
 1-9 = reclaims of bonuses disallowed after next bonus claimed. The number used is the reject code to be applied. When a non-zero code is used here, all claims with that decision code will be disregarded by the scoring system.
 
+*ignoreClaimDecisionCode*
+: Default is '9'. Claims with a Decision of this value will be excluded from scoring. It's used where claims are disallowed (perhaps for being out of time) rather than scored as rejected.
+
+
 ### Presentation
 *claimsReloadEBC*
 : Number of seconds between refreshes of EBC list

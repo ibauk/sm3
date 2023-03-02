@@ -6,7 +6,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -101,6 +101,8 @@ function showBonus($bonusid) {
 	echo('  '.$lnk.'&amp;prev">&Ll;</a> ');
 	echo($lnk.'&amp;next">&Gg;</a> ');
 
+	echo('&nbsp;&nbsp;<a class="link navlink" style="text-decoration:none;" title="'.$TAGS['BonusNavUp'][1].'" href="bonuses.php?c=bonuses">&#8613;&#9776;&#8613;</a>');
+
 	echo('</span>');
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusIDLit'][1].'">');
@@ -120,7 +122,7 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BriefDescLit'][1].'">');
 	echo('<label for="BriefDesc">'.$TAGS['BriefDescLit'][0].'</label> ');
-	echo('<input type="text" name="BriefDesc" id="BriefDesc"  oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'">');
+	echo('<input type="text" style="width:30em;" name="BriefDesc" id="BriefDesc"  oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'">');
 	echo('</span>');
 
 	echo('<span class="vlabel">');
@@ -188,15 +190,6 @@ function showBonus($bonusid) {
 	echo('<input type="text" name="Image" id="Image" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Image']).'"> ');
 ?>
 <script>
-	function thumbimg(img) {
-		if (img.getAttribute('data-t')==1) {
-			img.setAttribute('data-t',0);
-			img.classList.remove('thumbnail');
-		} else {
-			img.setAttribute('data-t',1);
-			img.classList.add('thumbnail');
-		}
-	}
 	function setTriggered(obj) {
 
 		obj.setAttribute('data-triggered','1');
@@ -204,7 +197,7 @@ function showBonus($bonusid) {
 
 </script>
 <?php
-	echo('<img style="vertical-align: middle;" src="images/bonuses/'.rawurlencode($rd['Image']).'" alt="**" class="thumbnail" onclick="thumbimg(this);" data-t="1" loading="lazy"/>');
+	echo('<img style="vertical-align: middle;" src="images/bonuses/'.rawurlencode($rd['Image']).'" alt="**"  data-t="0" loading="lazy"/>');
 	echo('</span>');
 	
 	

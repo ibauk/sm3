@@ -88,7 +88,7 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 6=Flag not in photo
 7=Missing rider/pillion
 8=Missing receipt
-9=Disallowed',
+9=Claim excluded',
 '{
     "SMTPAuth": "TRUE",
     "SMTPSecure": "tls",
@@ -128,7 +128,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"restBonusStartGroup": "RBStart",
 	"restBonusGroups": "RBClaims",
 	"bonusReclaims": "0",
-	"bonusReclaimNG": "Bonus claimed earlier, reclaim out of sequence"
+	"bonusReclaimNG": "Bonus claimed earlier, reclaim out of sequence",
+	"ignoreClaimDecisionCode": "9"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com
@@ -182,6 +183,35 @@ path2sm: sm
 
 # Path from ScoreMaster folder to EBC image folder
 imagefolder: ebcimg
+
+################ Testmode settings below here
+
+# testmode = true = respond to emails with analysis; false = pass emails to ScoreMaster
+testmode: false
+
+# Setting this to true turns on debugging level log entries
+verbose: false
+
+# Literals used in testmode response emails
+
+TestResponseGood: Good bonus claim received / Guter Bonusanspruch erhalten
+TestResponseBad: Bad bonus claim received / Ungültiger Bonusanspruch erhalten
+TestResponseBadEmail: 🇬🇧 Ok for testing but in the rally you MUST use your registered email address.<br>🇩🇪 Zum Testen okay, aber bei der Rally MÜSSEN Sie Ihre registrierte E-Mail-Adresse verwenden
+TestResponseAdvice: |
+  <p>🇬🇧 Good/bad here means that the email did/did not contain a
+  valid bonus claim. It does not mean that the claim will succeed (maybe the
+  photo is the wrong one) or fail, it just means that it will be processed
+  correctly.<br>🇩🇪 Gut/schlecht bedeutet hier, dass die E-Mail einen gültigen Bonusanspruch enthielt/enthielt. Dies bedeutet nicht, dass der Anspruch erfolgreich ist (vielleicht ist das Foto das falsche) oder fehlschlägt, es bedeutet nur, dass er korrekt verarbeitet wird.</p>
+
+  <p>🇬🇧 You are receiving this because we''re operating in test mode. YOU WILL NOT RECEIVE ANY RESPONSES DURING THE RALLY.<br>🇩🇪 Sie erhalten diese, weil wir uns im Testmodus befinden. WÄHREND DER RALLYE ERHALTEN SIE KEINE ANTWORTEN.</p>
+
+TestModeLiteral: TEST MODE
+
+
+# Can be used to expressly permit more than 1 photo
+# MaxExtraPhotos: 1
+
+TestResponseBCC:
 
 
 ');
