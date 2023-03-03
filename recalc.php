@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -273,9 +273,10 @@ function ccTestFail($ccr) {
         $catx = '['.$catlabels[$ccr->axis][$ccr->cat].']';
     }
     $msg .= $catx;
-    if ($ccr->triggered != $KONSTANTS['COMPULSORYBONUS'])
+    if ($ccr->triggered != $KONSTANTS['COMPULSORYBONUS']) {
+        $msg .= '='.$ccr->value;
         $msg .= ' &lt; ';
-    else
+    } else
         $msg .= ' &#8805; ';
     $msg .= $ccr->min;
 
@@ -767,6 +768,7 @@ function initRallyVariables() {
         $ccr->cat   = $rd['Cat'];
         $ccr->method= $rd['NMethod'];
         $ccr->target= $rd['ModBonus'];
+        $ccr->value = 0;
         $ccr->min   = $rd['NMin'];
         $ccr->pm    = $rd['PointsMults'];
         $ccr->pwr   = $rd['NPower'];
@@ -1248,7 +1250,9 @@ function recalcScorecard($entrant,$intransaction) {
         $sx = new SCOREXLINE();
         $sx->id = $c->cid;
         $sx->desc = $c->desc;
-        $sx->pointsDesc = " ( $numbids / $c->max ) ";
+        if ($numbids < $c->max) {
+            $sx->pointsDesc = " ( $numbids / $c->max ) ";
+        }
         if ($c->pm == $KONSTANTS['ComboScoreMethodMults']) {
             $sx->points = "x $mults";
         } else {
@@ -1296,6 +1300,7 @@ function recalcScorecard($entrant,$intransaction) {
             for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) 
                 $nzCount += $nzAxisCounts[$i];
 
+        $ccr->value = $nzCount;
         if ($nzCount < $ccr->min) {
             $lastmin = $ccr->min;
             continue;

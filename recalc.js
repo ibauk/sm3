@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -134,8 +134,10 @@ function initScorecardVariables() {
 
     zapCats();
 
-    for(let c of document.getElementsByName('catCompoundRules'))
+    for(let c of document.getElementsByName('catCompoundRules')) {
         c.setAttribute('data-triggered',RULE_NOT_TRIGGERED);
+        c.setAttribute('data-value',0);
+    }
 
     for(let b of document.getElementsByName('BonusID[]'))
         b.setAttribute('data-scored',false);
@@ -513,7 +515,9 @@ function recalcScorecard() {
         let sx = new SCOREXLINE();
         sx.id = c.value;
         sx.desc = c.getAttribute('data-desc');
-        sx.pointsDesc = " ( "+numbids+" / "+c.getAttribute('data-maxticks')+" ) ";
+        if (numbids < c.getAttribute('data-maxticks')) {
+            sx.pointsDesc = " ( "+numbids+" / "+c.getAttribute('data-maxticks')+" ) ";
+        }
         if (c.getAttribute('data-pm') == CMB_ScoreMults) {
             sx.points = 'x '+mults;
         } else {
@@ -585,6 +589,7 @@ function recalcScorecard() {
                 nzCount += nzAxisCounts[i];
 
         console.log('Comparing count '+nzCount+' to min '+ccr_min);
+        ccr.setAttribute('data-value',nzCount);
         if (nzCount < ccr_min) {
             lastmin = ccr_min;
             continue;
@@ -1077,9 +1082,11 @@ function ccTestFail(ccr) {
         catx = '['+catd.parentElement.firstChild.innerText+']';
     }
     msg += catx;
-    if (ccr.getAttribute('data-triggered')!=RULE_TRIGGERED)
+    
+    if (ccr.getAttribute('data-triggered')!=RULE_TRIGGERED) {
+        msg += '='+ccr.getAttribute('data-value');
         msg += ' &lt; '
-    else
+    } else
         msg += ' &#8805; ';
     msg += ccr.getAttribute('data-min');
 
@@ -1167,8 +1174,9 @@ function setFinisherStatusx()
 	
 	let af = document.querySelector('#autoFinisher');
     if (af && af.value == 'true')
-	    SFSx(EntrantFinisher,'');
+	    return SFSx(EntrantFinisher,'');
 	
+    SFSx(EntrantOK,'');
 }
 
 function setManualStatus() {

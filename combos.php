@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -59,23 +59,18 @@ function showCombinations()
 
 
 
-	echo('<form method="post" action="combos.php">');
-
-
-	echo('<input type="hidden" name="c" value="list">');
-	echo('<input type="hidden" name="menu" value="setup">');
 	
-	echo('<div class="stickyhead">'.$TAGS['ComboMaintHead'][1]);
+	echo('<div class="stickytop">'.$TAGS['ComboMaintHead'][1]);
 	$url = "combos.php?c=edit";
 	echo('<br><button value="+" autofocus onclick="window.location.href='."'".$url."'; return false;".'">+</button>');
     echo('</div>');
 	
-	echo('<table id="bonuses">');
+	echo('<table id="comboslist">');
 //	echo('<caption title="'.htmlentities($TAGS['ComboMaintHead'][1]).'">'.htmlentities($TAGS['ComboMaintHead'][0]).'</caption>');
 	echo('<thead class="listhead"><tr><th class="left">'.$TAGS['ComboIDLit'][0].'</th>');
 	echo('<th class="left">'.$TAGS['BriefDescLit'][0].'</th>');
-	echo('<th class="left">'.$TAGS['BonusListLit'][0].'</th>');
 	echo('<th class="left">'.$TAGS['ValueHdr'][0].'</th>');
+	echo('<th class="left">'.$TAGS['BonusListLit'][0].'</th>');
 	if ($showclaimsbutton)
 		echo('<th class="ClaimsCount">'.$TAGS['ShowClaimsCount'][0].'</th>');
 	echo('</tr>');
@@ -89,14 +84,16 @@ function showCombinations()
 	while ($rd = $R->fetchArray())
 	{
 		echo('<tr class="hoverlite" onclick="window.location=\'combos.php?c=edit&amp;combo='.$rd['ComboID'].'\'">');
-		echo('<td><input class="ComboID" type="text" name="ComboID[]" readonly value="'.$rd['ComboID'].'"></td>');
-		echo('<td><input readonly class="BriefDesc" type="text" name="BriefDesc[]" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'"></td>');
-		echo('<td><input readonly title="'.$TAGS['BonusListLit'][1].'" class="Bonuses" type="text" name="Bonuses[]" value="'.$rd['Bonuses'].'" ></td>');
+		echo('<td>'.$rd['ComboID'].'</td>');
+		echo('<td>'.str_replace('"','&quot;',$rd['BriefDesc']).'</td>');
         if ($rd['ScoreMethod'] == $KONSTANTS['ComboScoreMethodMults'] )
             $m = " x ";
         else
             $m = '';
-		echo('<td><input readonly title="'.$TAGS['ValueHdr'][1].'" class="ScorePoints" type="text" name="ScorePoints[]" value="'.$m.$rd['ScorePoints'].'"></td> ');
+		echo('<td>'.$m.$rd['ScorePoints'].'</td> ');
+		echo('<td>'.$rd['Bonuses'].'</td>');
+
+
 		if ($showclaimsbutton)
 		{
 			$rex = getValueFromDB("SELECT count(*) As rex FROM entrants WHERE ',' || CombosTicked || ',' LIKE '%,".$rd['ComboID'].",%'","rex",0);
@@ -108,9 +105,9 @@ function showCombinations()
 		echo('</tr>');
 	}
 	echo('</tbody></table>');
-	echo('</form>');
+	echo("<br>\n\n"); // To help me debug!
 
-	//showFooter();
+	showFooter();
 	
 }
 
@@ -416,7 +413,7 @@ function hideBonusList() {
 	echo('<button id="addubonus" value="+" onclick="hideBonusList();return insertRow();">+</button> ');
     echo($TAGS['BonusListLit'][0]);
 	echo(' ');
-	echo('<input type="text" id="Bonuses" name="Bonuses" value="'.$rd['Bonuses'].'" oninput="editBonusList();" title="'.$TAGS['BonusListLit'][1].'">');
+	echo('<input type="text" id="Bonuses" style="width:30em;"  name="Bonuses" value="'.$rd['Bonuses'].'" oninput="editBonusList();" title="'.$TAGS['BonusListLit'][1].'">');
     echo('</div>');
 
     $bonuses = getBonusList(true);
@@ -478,7 +475,7 @@ function hideBonusList() {
     // values
 	echo('<span class="'.$spclass.'" title="'.$TAGS['ScoreValue'][1].'"><label class="wide" for="scorepoints">'.$TAGS['ScoreValue'][0].'</label> ');
 	echo('<input type="hidden" name="ScorePoints" id="scorepoints" value="'.$rd['ScorePoints'].'" onchange="refreshValues();">');
-	echo('<input type="number" id="scorepointsnum" value="'.intval($rd['ScorePoints']).'" onchange="updateScorePoints();">');
+	echo('<input type="number" id="scorepointsnum" class="bignumber" value="'.intval($rd['ScorePoints']).'" onchange="updateScorePoints();">');
 	echo('</span>');
 
 //    echo('<p>--- nt='.$nt.' == '.$maxt.' --</p>');

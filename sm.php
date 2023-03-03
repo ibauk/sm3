@@ -1145,7 +1145,7 @@ function setRankMethod(sel) {
 
 	echo('<span class="vlabel">');
 	echo('<label for="PenaltyMaxMiles" class="vlabel wide">'.$TAGS['PenaltyMaxMiles'][0].' </label> ');
-	echo('<input type="number" name="PenaltyMaxMiles" id="PenaltyMaxMiles" value="'.$rd['PenaltyMaxMiles'].'" title="'.$TAGS['PenaltyMaxMiles'][1].'" oninput="enableSaveButton();"> ');
+	echo('<input type="number" class="bignumber" name="PenaltyMaxMiles" id="PenaltyMaxMiles" value="'.$rd['PenaltyMaxMiles'].'" title="'.$TAGS['PenaltyMaxMiles'][1].'" oninput="enableSaveButton();"> ');
 	echo('</span>');
 
 	echo('<span class="vlabel">');
@@ -1167,7 +1167,7 @@ function setRankMethod(sel) {
 
 	echo('<span class="vlabel">');
 	echo('<label for="PenaltyMilesDNF" class="vlabel wide">'.$TAGS['PenaltyMilesDNF'][0].' </label> ');
-	echo('<input type="number" name="PenaltyMilesDNF" id="PenaltyMilesDNF" value="'.$rd['PenaltyMilesDNF'].'" title="'.$TAGS['PenaltyMilesDNF'][1].'" oninput="enableSaveButton();"> ');
+	echo('<input type="number" class="bignumber" name="PenaltyMilesDNF" id="PenaltyMilesDNF" value="'.$rd['PenaltyMilesDNF'].'" title="'.$TAGS['PenaltyMilesDNF'][1].'" oninput="enableSaveButton();"> ');
 	echo('</span>');
 
 	echo('</fieldset>');

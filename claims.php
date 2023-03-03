@@ -1015,7 +1015,7 @@ function fetchEntrantDetail($e)
 		$tankrange = getValueFromDB("SELECT tankrange FROM rallyparams","tankrange",0);
 		
 		$sql = "SELECT * FROM claims WHERE EntrantID=".$e." AND Leg=".$CurrentLeg;
-		$sql .= " ORDER BY ClaimTime DESC";
+		$sql .= " ORDER BY ClaimTime DESC,LoggedAt DESC";
 		$R = $DB->query($sql);
 		$lastodo = 0;
 		$lastct = '';

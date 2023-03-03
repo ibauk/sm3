@@ -710,19 +710,19 @@ function startHtml($pagetitle,$otherInfo = '',$showNav=true)
 <?php
 echo('<title>'.$pagetitle.'</title>');
 ?>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8" >
+<meta name="viewport" content="width=device-width, initial-scale=1" >
 <link rel="stylesheet" type="text/css" href="reboot.css?ver=<?= filemtime('reboot.css')?>">
 <link rel="stylesheet" type="text/css" href="score.css?ver=<?= filemtime('score.css')?>">
-<?php if ($DBVERSION>=4) echo('<style>:root {'.getThemeCSS($rd['Theme']).'}</style>');?>
+<?php if ($DBVERSION>=4) echo('<style><!-- :root {'.getThemeCSS($rd['Theme']).'} --></style>');?>
 <script src="custom.js?ver=<?= filemtime('custom.js')?>" defer></script>
 <script src="score.js?ver=<?= filemtime('score.js')?>" defer></script>
 <script src="recalc.js?ver=<?= filemtime('recalc.js')?>" defer></script>
 </head>
 <body onload="bodyLoaded();">
-<?php echo('<input type="hidden" id="BasicDistanceUnit" value="'.$KONSTANTS['BasicDistanceUnit'].'"/>'); ?>
-<?php echo('<input type="hidden" id="DBVERSION" value="'.$DBVERSION.'"/>'); ?>
-<?php echo('<input type="hidden" id="DefaultLocale" value="'.$KONSTANTS['DefaultLocale'].'"/>'); ?>
+<?php echo('<input type="hidden" id="BasicDistanceUnit" value="'.$KONSTANTS['BasicDistanceUnit'].'">'); ?>
+<?php echo('<input type="hidden" id="DBVERSION" value="'.$DBVERSION.'">'); ?>
+<?php echo('<input type="hidden" id="DefaultLocale" value="'.$KONSTANTS['DefaultLocale'].'">'); ?>
 <div id="header">
 <?php	
 	echo(' <input title="Help!" style="padding-top:0; padding-bottom: 0;margin-left: 1em;" type="button" value=" ? " onclick="showHelp('."'index'".');"> ');
