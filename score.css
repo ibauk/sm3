@@ -601,7 +601,7 @@ td.sxtotalpoints { text-align: right; }
 	*			{ background-color: white; color: black !important; }
 .noprint		{ display: none !important; }
 #navbar			{ display: none !important; }
-.scorex			{ font-size: 0.7em; page-break-after: always; }
+.scorex			{ font-size: 1.0em; page-break-after: always; }
 #ScoreSheet		{ background-image: none !important; font-size: 1.2em; font-family: monospace;}
 input[type="checkbox"] {
     -webkit-appearance:none;
