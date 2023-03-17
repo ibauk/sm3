@@ -317,10 +317,10 @@ function reviewEntrant($entrant) {
     $style .= 'td.sxtotalpoints { text-align: right; }';
 
     echo('<div id="scorex" class="scorex" data-show="0" oncontextmenu="return false;" ondblclick="printscorex();" ');
-    echo('data-title="'.htmlspecialchars($RP['RallyTitle']).'" ');
+    echo('data-title="'.htmlspecialchars(''.$RP['RallyTitle']).'" ');
     echo('data-style="'.$style.'" >');
     echo($rd['ScoreX'].'</div>');
-    echo('<input type="hidden" id="scorexText" value="'.htmlspecialchars($rd['ScoreX']).'">');
+    echo('<input type="hidden" id="scorexText" value="'.htmlspecialchars(''.$rd['ScoreX']).'">');
 	echo('<div id="ddarea" class="hide"><p> </p></div>');	// Used for drag/drop operations
 
     echo('</div>'); // End tab_scorex

@@ -192,7 +192,7 @@ function showCertificate(obj) {
 		echo('</td>');
 
 		echo('<td  class="rowcol" title="'.$TAGS['cls_BonusesReqd'][1].'">');
-		echo('<input type="text" value="'.htmlspecialchars($dr['BonusesReqd']).'" oninput="flipSave(this,true);">');
+		echo('<input type="text" value="'.htmlspecialchars(''.$dr['BonusesReqd']).'" oninput="flipSave(this,true);">');
 		echo('</td>');
 
 		echo('<td  class="rowcol" title="'.$TAGS['cls_LowestRank'][1].'">');

@@ -404,7 +404,7 @@ function hideBonusList() {
 	echo('<span id="badbonusid" style="display:none;" class="red" title="'.$TAGS['DuplicateRecord'][1].'">'.$TAGS['DuplicateRecord'][0].'</span>');
 	echo('<span id="bonuscheck" style="display:none;"></span>');
 	
-	echo(' <input type="text" '.$afdesc.' name="BriefDesc" id="briefdesc" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'" oninput="enableSaveButton();"> </span>');
+	echo(' <input type="text" '.$afdesc.' name="BriefDesc" id="briefdesc" value="'.str_replace('"','&quot;',''.$rd['BriefDesc']).'" oninput="enableSaveButton();"> </span>');
 	echo('</span>');
 	
 
@@ -421,7 +421,7 @@ function hideBonusList() {
     //print_r($bonuses);
     $maxt = 0;
     echo('<table id="ubonuses">');
-    $rows = explode(',',$rd['Bonuses']);
+    $rows = explode(',',''.$rd['Bonuses']);
     $rows[] = '';
     foreach ($rows as $bid) {
         if ($bid=='') {

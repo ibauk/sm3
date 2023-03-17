@@ -73,12 +73,12 @@ function showRallytime($stamp) {
     else
         $dtfmt = 'D H:i';
 	try {
-		$dt = new DateTime($stamp);
+		$dt = new DateTime(''.$stamp);
 		$dtf = $dt->format($dtfmt);
 	} catch (Exception $e) {
 		$dtf = $stamp;
 	}
-	if (strpos($stamp,'+00:00') > 0)
+	if (strpos(''.$stamp,'+00:00') > 0)
 		$dtf .= "z";
 	return '<span title="'.$stamp.'">'.$dtf.'</span>';
 }
@@ -326,7 +326,7 @@ function showScorecard($entrant) {
 
     // Rejected claims
     //echo('<input type="hidden" id="RejectedClaims" value="'.$rd['RejectedClaims'].'">');
-    $tmp = explode(',',$rd['RejectedClaims']);
+    $tmp = explode(',',''.$rd['RejectedClaims']);
     $rejectedClaims = [];
     foreach ($tmp as $r) {
         // Format is (code)=(reason)
@@ -338,7 +338,7 @@ function showScorecard($entrant) {
 
     $catcounts = [];
     
-    $tmp = explode(',',$rd['BonusesVisited']);
+    $tmp = explode(',',''.$rd['BonusesVisited']);
     //echo('<input type="hidden" id="BonusesVisited" value="'.$rd['BonusesVisited'].'">');
     $bonusesScored = [];
     $bc = [];
@@ -451,7 +451,7 @@ function showScorecard($entrant) {
     if ($lastGroupStarted)
         echo('</fieldset>');
 
-    $combosTicked = explode(',',$rd['CombosTicked']);
+    $combosTicked = explode(',',''.$rd['CombosTicked']);
     //echo('<input type="hidden" id="CombosTicked" value="'.$rd['CombosTicked'].'" >');
     $sql = "SELECT * FROM combinations WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY ComboID";
     $R = $DB->query($sql);
@@ -540,7 +540,7 @@ function showScorecard($entrant) {
     echo('data-title="'.htmlspecialchars($RP['RallyTitle']).'" ');
     echo('data-style="'.$style.'" >');
     echo($rd['ScoreX'].'</div>');
-    echo('<input type="hidden" name="ScoreX" id="scorexText" value="'.htmlspecialchars($rd['ScoreX']).'">');
+    echo('<input type="hidden" name="ScoreX" id="scorexText" value="'.htmlspecialchars(''.$rd['ScoreX']).'">');
 	echo('<div id="ddarea" class="hide"><p> </p></div>');	// Used for drag/drop operations
 
     echo('</div>'); // End tab_scorex

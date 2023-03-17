@@ -159,7 +159,7 @@ function fetchLists()
 	$R = $DB->query($sql);
 	$res = [];
 	while ($rd = $R->fetchArray()) {
-		$bv = explode(',',$rd['BonusesVisited']);
+		$bv = explode(',',''.$rd['BonusesVisited']);
 		$bvv = [];
 		for($i = 0; $i < count($bv); $i++) {
 			if ($bv[$i] != '') {

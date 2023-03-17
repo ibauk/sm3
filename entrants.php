@@ -1169,7 +1169,7 @@ function showEntrantRecord($rd,$showPN)
 	else
 		$ro = ' readonly ';
 	echo('<input type="text" onchange="enableSaveButton();"  class="number"  '.$ro.' name="EntrantID" id="EntrantID" value="'.$rd['EntrantID'].'">');
-	echo(' <label class="wide">'.htmlspecialchars($rd['RiderName']).'</label> ');
+	echo(' <label class="wide">'.htmlspecialchars(''.$rd['RiderName']).'</label> ');
 	if (!$is_new_record)
 	{
 		if ($showPN) {
@@ -1225,15 +1225,15 @@ echo('</span> ');
 	echo('<fieldset class="tabContent" id="tab_basic"><legend>'.$TAGS['BasicDetails'][0].'</legend>');
 	echo('<span class="xlabel" title="'.$TAGS['RiderName'][1].'"><label for="RiderName">'.$TAGS['RiderName'][0].' </label> ');
 	$blurJS = "var f=document.getElementById('RiderFirst');if (f.value=='') {var n=document.getElementById('RiderName').value.split(' ');f.value=n[0];}";
-	echo('<input autofocus type="text" onchange="enableSaveButton();" onblur="'.$blurJS.'" name="RiderName" id="RiderName" value="'.htmlspecialchars($rd['RiderName']).'"> </span>');
+	echo('<input autofocus type="text" onchange="enableSaveButton();" onblur="'.$blurJS.'" name="RiderName" id="RiderName" value="'.htmlspecialchars(''.$rd['RiderName']).'"> </span>');
 	echo('<span  title="'.$TAGS['RiderFirst'][1].'"><label for="RiderFirst">'.$TAGS['RiderFirst'][0].' </label> ');
-	echo('<input type="text" onchange="enableSaveButton();"  name="RiderFirst" id="RiderFirst" value="'.htmlspecialchars($rd['RiderFirst']).'"> </span>');
+	echo('<input type="text" onchange="enableSaveButton();"  name="RiderFirst" id="RiderFirst" value="'.htmlspecialchars(''.$rd['RiderFirst']).'"> </span>');
 	
 	echo('<span  title="'.$TAGS['RiderIBA'][1].'"><label for="RiderIBA">'.$TAGS['RiderIBA'][0].' </label> ');
 	echo('<input type="number"  onchange="enableSaveButton();" name="RiderIBA" id="RiderIBA" value="'.$rd['RiderIBA'].'"> </span>');
 	
 	echo('<span class="xlabel" title="'.$TAGS['Bike'][1].'"><label for="Bike">'.$TAGS['Bike'][0].' </label> ');
-	echo('<input type="text"  onchange="enableSaveButton();" name="Bike" id="Bike" value="'.str_replace('"','&quot;',$rd['Bike']).'"> </span>');
+	echo('<input type="text"  onchange="enableSaveButton();" name="Bike" id="Bike" value="'.str_replace('"','&quot;',''.$rd['Bike']).'"> </span>');
 	
 	echo('<span title="'.$TAGS['BikeReg'][1].'"><label for="BikeReg">'.$TAGS['BikeReg'][0].' </label> ');
 	echo('<input type="text"  onchange="enableSaveButton();" name="BikeReg" id="BikeReg" value="'.$rd['BikeReg'].'"> </span>');
@@ -1241,9 +1241,9 @@ echo('</span> ');
 	
 	
 	echo('<span  class="xlabel" title="'.$TAGS['PillionName'][1].'"><label for="PillionName">'.$TAGS['PillionName'][0].' </label> ');
-	echo('<input type="text"  onchange="enableSaveButton();" name="PillionName" id="PillionName" value="'.htmlspecialchars($rd['PillionName']).'"> </span>');
+	echo('<input type="text"  onchange="enableSaveButton();" name="PillionName" id="PillionName" value="'.htmlspecialchars(''.$rd['PillionName']).'"> </span>');
 	echo('<span  title="'.$TAGS['PillionFirst'][1].'"><label for="PillionFirst">'.$TAGS['PillionFirst'][0].' </label> ');
-	echo('<input type="text"  onchange="enableSaveButton();" name="PillionFirst" id="PillionFirst" value="'.htmlspecialchars($rd['PillionFirst']).'"> </span>');
+	echo('<input type="text"  onchange="enableSaveButton();" name="PillionFirst" id="PillionFirst" value="'.htmlspecialchars(''.$rd['PillionFirst']).'"> </span>');
 	
 	echo('<span  title="'.$TAGS['PillionIBA'][1].'"><label for="PillionIBA">'.$TAGS['PillionIBA'][0].' </label> ');
 	echo('<input type="number"  onchange="enableSaveButton();" name="PillionIBA" id="PillionIBA" value="'.$rd['PillionIBA'].'"> </span>');
