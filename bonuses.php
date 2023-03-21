@@ -177,7 +177,7 @@ function showBonus($bonusid) {
 			case 'T':	echo('alertreceipt.png'); break;
 		}
 		echo('" alt="'.$flg.'"/></label> ');
-		echo('<input type="checkbox" onchange="enableSaveButton();" name="BonusScoringFlag'.$flg.'"');
+		echo('<input type="checkbox" onchange="enableSaveButton();" id="BonusScoringFlag'.$flg.'" name="BonusScoringFlag'.$flg.'"');
 		if (!(strpos(''.$rd['Flags'],$flg)===false))
 			echo(' checked ');
 		echo('> ');

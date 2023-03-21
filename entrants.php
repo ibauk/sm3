@@ -1311,7 +1311,8 @@ echo('</span> ');
 	echo('</select>');
 	echo('</span>');
 
-	echo('<span class="vlabel" title="'.$TAGS['BCMethod'][1].'"><label for="BCMethod">'.$TAGS['BCMethod'][0].' </label> ');
+	// Everybody does EBC now so let's just hide this
+	echo('<span class="hide" title="'.$TAGS['BCMethod'][1].'"><label for="BCMethod">'.$TAGS['BCMethod'][0].' </label> ');
 	echo('<select name="BCMethod" id="BCMethod" onchange="enableSaveButton();">');
 	for ($bcm = $KONSTANTS['BCM_UNKNOWN']; $bcm <= $KONSTANTS['BCM_PAPER']; $bcm++)
 	{
