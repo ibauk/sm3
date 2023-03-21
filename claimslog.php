@@ -263,6 +263,11 @@ function emitEBCjs() {
         qa.value = 1;
     }
 
+    async function bonusCountOK(e,b) {
+        await new Promise(resolve => setTimeout(resolve,1000));
+        console.log('returning bcok = false');
+        return false;
+    }
     function swapimg(event) {
 
         console.log('Swapping img '+event.currentTarget.id);
@@ -286,6 +291,12 @@ function emitEBCjs() {
             iadiv.appendChild(img);
         }
     }
+
+    function sleep(ms) {
+        setTimeout(sleepnot,ms);   
+    }
+    function sleepnot() {}
+
     function showClaimEBC(tr) {
         RELOADOK = false;
         let claimid = tr.getAttribute('data-claimid');
@@ -321,6 +332,13 @@ function emitEBCjs() {
             ebcmins.parentNode.classList = 'hide';
         
         let default_button = 'goodclaim';
+        let bcok = tr.getAttribute('data-bonuscountok') == '1';
+        console.log("bcok is "+bcok);
+        if (!bcok) {
+            document.getElementById('JudgesNotes').value = document.getElementById('bonusClaimsExceeded').value;
+            default_button = 'badclaim'+document.getElementById('ignoreClaimDecision').value;
+        }
+        
         if (tr.getAttribute('data-reclaimok') == '0') {
             document.getElementById('JudgesNotes').value = document.getElementById('bonusReclaimNG').value;
             default_button = 'badclaim'+document.getElementById('bonusReclaims').value;
@@ -605,6 +623,8 @@ function listEBClaims() {
     $valQA = intval(getSetting('valBonusQuestions','0'));
     $bonusReclaimNG = getSetting('bonusReclaimNG','Bonus claimed earlier, reclaim out of sequence');
     $bonusReclaims = getSetting('bonusReclaims','0');
+    $ignoreClaimDecision = getSetting('ignoreClaimDecisionCode','9');
+    $bonusClaimsExceeded = getSetting('bonusClaimsExceeded','Claim limit exceeded');
 
     $currentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg",1);
 
@@ -644,6 +664,8 @@ function listEBClaims() {
     echo('<input type="hidden" id="valBonusQuestions" value="'.$valQA.'">');
     echo('<input type="hidden" id="bonusReclaimNG" value="'.$bonusReclaimNG.'">');
     echo('<input type="hidden" id="bonusReclaims" value="'.$bonusReclaims.'">');
+    echo('<input type="hidden" id="ignoreClaimDecision" value="'.$ignoreClaimDecision.'">');
+    echo('<input type="hidden" id="bonusClaimsExceeded" value="'.$bonusClaimsExceeded.'">');
     echo('<table><thead>');
     if ($claims > 0) {
         echo('<tr><th>Entrant</th><th>Bonus</th><th>Odo</th><th>Claimtime</th></tr>');
@@ -668,6 +690,7 @@ function listEBClaims() {
         echo('data-claimtime-show="'.$lt[1].'" ');
 
         echo(' data-reclaimok="'.(bonusReclaimOK($rs['EntrantID'],$rs['BonusID'],$rs['ClaimTime'],$currentLeg) ? 1 : 0).'"');
+        echo(' data-bonuscountok="'.(bonusCountOK($rs['EntrantID'],$rs['BonusID']) ? 1 : 0).'"');
 
         // Now store some timestamp evidence
         $ev = "Photo: ".fmtEvidenceDate($rs['PhotoTS']);

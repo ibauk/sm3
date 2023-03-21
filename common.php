@@ -186,6 +186,42 @@ function bonusesPresent()
 }
 
 
+
+// Called to check that, if a limit on the number of bonuses which may be claimed is active,
+// this claim is within the limit.
+function bonusCountOK($entrantid,$bonusid) {
+
+	global $DB;
+
+	$mbc = getSetting('bonusClaimsLimit',0);
+	if ($mbc < 1) {
+		return true;
+	}
+	$icdc = getSetting('ignoreClaimDecisionCode','9');
+	$sql = "SELECT DISTINCT BonusID FROM claims WHERE EntrantID=".$entrantid. " AND Decision <> ".$icdc;
+	$R = $DB->query($sql);
+	$BonusesClaimed = 0;
+	while ($rd = $R->fetchArray()) {
+		$BonusesClaimed++;
+		if ($BonusesClaimed > $mbc) {
+			return false;
+		}
+		if ($bonusid == $rd['BonusID']) { // Already claimed so still good
+			return true;
+		}
+
+	}
+	$BonusesClaimed++;
+	if ($BonusesClaimed > $mbc) {
+		return false;
+	} 
+	return true;
+
+}
+
+
+
+
 // This is called to check whether this bonus claim is denied because of being out of sequence with
 // and earlier claim for the same bonus. The flag setting bonusReclaims is checked. A value of 0
 // permits out of sequence reclaims, 1 prevents out of sequence reclaims.

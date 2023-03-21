@@ -34,6 +34,10 @@ The fields are generally self-explanatory but if in doubt as to their exact use,
 *ignoreClaimDecisionCode*
 : Default is '9'. Claims with a Decision of this value will be excluded from scoring. It's used where claims are disallowed (perhaps for being out of time) rather than scored as rejected.
 
+*bonusClaimsLimit*
+: It is possible to impose a limit on the number of bonuses claimed with excess claims automatically ignored.
+
+0 = No limit on the number of bonuses claimed. Any other value is the maximum number of allowable claims. This restricts the number of different bonuses claimed, not the number of claims itself (each bonus may be claimed more than once).
 
 ### Presentation
 *claimsReloadEBC*
@@ -71,6 +75,9 @@ The fields are generally self-explanatory but if in doubt as to their exact use,
 
 *bonusReclaimNG*
 : The text used to indicate that a claim has been rejected because it's out of sequence
+
+*bonusClaimsExceeded*
+: The text used to indicate that a claim has been rejected because the claim limit is exceeded.
 
 ---
 ### Debug settings
