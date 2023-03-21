@@ -4,3 +4,6 @@ I am delighted to announce the release of ScoreMaster v3.3.2 incorporating the f
 
 ## Bonus claims limit
 It is now possible to impose a limit on the number of bonuses claimed by an entrant. Where a limit is applied, claims exceeding the limit will be flagged as excluded
+
+## Distance limited claims
+It is now possible to exclude bonus claims beyond a specified riding distance limit.

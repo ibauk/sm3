@@ -79,6 +79,9 @@ The fields are generally self-explanatory but if in doubt as to their exact use,
 *bonusClaimsExceeded*
 : The text used to indicate that a claim has been rejected because the claim limit is exceeded.
 
+*distanceLimitExceeded*
+: The text used to indicate that a claim has been rejected because excessive distance ridden.
+
 ---
 ### Debug settings
 claimsShowPost, claimsAutopostAll, singleuserMode

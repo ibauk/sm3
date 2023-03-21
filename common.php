@@ -44,6 +44,7 @@ require_once('customvars.php');
 $KONSTANTS['MaxMilesFixedP'] = 0;
 $KONSTANTS['MaxMilesFixedM'] = 1;
 $KONSTANTS['MaxMilesPerMile'] = 2;
+$KONSTANTS['MaxMilesExclude'] = 3;
 $KONSTANTS['ManualScoring'] = 0;
 $KONSTANTS['SimpleScoring'] = 1;
 $KONSTANTS['CompoundScoring'] = 2;
@@ -356,6 +357,7 @@ function defaultRecord($table)
 	
 }
 
+
 function emitChooseTZ($name,$id)
 /*
  * This contructs and emits a SELECT to show/choose
@@ -393,6 +395,24 @@ function entrantsPresent()
 	return getValueFromDB("SELECT count(*) As Rex FROM entrants","Rex",-1);
 }
 
+
+// excludeTooFar checks whether this claim is to be excluded for being beyond the threshold.
+function excludeTooFar($entrantid,$odo) {
+
+	global $DB, $KONSTANTS;
+
+	$maxMiles = getValueFromDB("SELECT PenaltyMaxMiles FROM rallyparams","PenaltyMaxMiles",0);
+	if ($maxMiles < 1) { return false; }
+	$method = getValueFromDB("SELECT MaxMilesMethod FROM rallyparams","MaxMilesMethod",$KONSTANTS['MaxMilesFixedP']); // NOT MaxMilesExclude!
+	if ($method != $KONSTANTS['MaxMilesExclude']) { return false; }
+
+	$sql = "SELECT OdoKms,OdoRallyStart,OdoScaleFactor FROM entrants WHERE EntrantID=$entrantid";
+	$R = $DB->query($sql);
+	if (!$rd = $R->fetchArray()) { return false; }
+	$cm = calcCorrectedMiles($rd['OdoKms'],$rd['OdoRallyStart'],$odo,$rd['OdoScaleFactor']);
+	return $cm >$maxMiles;
+
+}
 
 function getSetting($setting,$default)
 {

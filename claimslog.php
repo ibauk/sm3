@@ -334,12 +334,14 @@ function emitEBCjs() {
         let default_button = 'goodclaim';
         let bcok = tr.getAttribute('data-bonuscountok') == '1';
         console.log("bcok is "+bcok);
-        if (!bcok) {
+        let tooFar = tr.getAttribute('data-toofar') == '1';
+        if (tooFar) {
+            document.getElementById('JudgesNotes').value = document.getElementById('distanceLimitExceeded').value;
+            default_button = 'badclaim'+document.getElementById('ignoreClaimDecision').value;
+        } else if (!bcok) {
             document.getElementById('JudgesNotes').value = document.getElementById('bonusClaimsExceeded').value;
             default_button = 'badclaim'+document.getElementById('ignoreClaimDecision').value;
-        }
-        
-        if (tr.getAttribute('data-reclaimok') == '0') {
+        } else if (tr.getAttribute('data-reclaimok') == '0') {
             document.getElementById('JudgesNotes').value = document.getElementById('bonusReclaimNG').value;
             default_button = 'badclaim'+document.getElementById('bonusReclaims').value;
         }
@@ -625,6 +627,7 @@ function listEBClaims() {
     $bonusReclaims = getSetting('bonusReclaims','0');
     $ignoreClaimDecision = getSetting('ignoreClaimDecisionCode','9');
     $bonusClaimsExceeded = getSetting('bonusClaimsExceeded','Claim limit exceeded');
+    $distanceLimitExceeded = getSetting('distanceLimitExceeded','Distance limit exceeded');
 
     $currentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg",1);
 
@@ -666,6 +669,7 @@ function listEBClaims() {
     echo('<input type="hidden" id="bonusReclaims" value="'.$bonusReclaims.'">');
     echo('<input type="hidden" id="ignoreClaimDecision" value="'.$ignoreClaimDecision.'">');
     echo('<input type="hidden" id="bonusClaimsExceeded" value="'.$bonusClaimsExceeded.'">');
+    echo('<input type="hidden" id="distanceLimitExceeded" value="'.$distanceLimitExceeded.'">');
     echo('<table><thead>');
     if ($claims > 0) {
         echo('<tr><th>Entrant</th><th>Bonus</th><th>Odo</th><th>Claimtime</th></tr>');
@@ -691,6 +695,7 @@ function listEBClaims() {
 
         echo(' data-reclaimok="'.(bonusReclaimOK($rs['EntrantID'],$rs['BonusID'],$rs['ClaimTime'],$currentLeg) ? 1 : 0).'"');
         echo(' data-bonuscountok="'.(bonusCountOK($rs['EntrantID'],$rs['BonusID']) ? 1 : 0).'"');
+        echo(' data-toofar="'.(excludeTooFar($rs['EntrantID'],$rs['OdoReading']) ? 1 : 0).'"');
 
         // Now store some timestamp evidence
         $ev = "Photo: ".fmtEvidenceDate($rs['PhotoTS']);

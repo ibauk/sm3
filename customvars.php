@@ -531,7 +531,7 @@ $TAGS = array(
 	'MaxMilesFixedP'	=> array('Fixed points','Excess distance incurs fixed points deduction'),							// Miles/Kms
 	
 	'MaxMilesPerMile'	=> array('Points per mile/km','Excess distance incurs points deduction per excess mile/km'),				// Miles/Kms
-	
+	'MaxMilesExclude'	=> array('Exclude claims','Exclude claims beyond the limit'),
 	'MaxMilesPoints'	=> array('Points or Percentage deducted','Number of points or percentage for excess distance'),	// Miles/Kms
 	'MaxMilesUsed'		=> array('Tick if maximum distance used','Will entrants be DNF if they exceed a maximum distance?'),	// Miles/Kms
 	'MilesPenaltyText'	=> array('Distance penalty deduction',''),															// Miles/Kms

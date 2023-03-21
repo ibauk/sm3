@@ -131,7 +131,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"bonusReclaimNG": "Bonus claimed earlier, reclaim out of sequence",
 	"ignoreClaimDecisionCode": "9",
 	"bonusClaimsLimit": "0",
-	"bonusClaimsExceeded": "Claim limit exceeded"
+	"bonusClaimsExceeded": "Claim limit exceeded",
+	"distanceLimitExceeded": "Distance limit exceeded"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com

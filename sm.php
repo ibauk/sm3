@@ -1157,6 +1157,8 @@ function setRankMethod(sel) {
 	echo('<option '.$chk.' value="'.$KONSTANTS['MaxMilesFixedM'].'">'.$TAGS['MaxMilesFixedM'][0].'</option>');	
 	$chk = ($rd['MaxMilesMethod']==$KONSTANTS['MaxMilesPerMile']) ? ' selected ' : '';
 	echo('<option '.$chk.' value="'.$KONSTANTS['MaxMilesPerMile'].'">'.$TAGS['MaxMilesPerMile'][0].'</option>');
+	$chk = ($rd['MaxMilesMethod']==$KONSTANTS['MaxMilesExclude']) ? ' selected ' : '';
+	echo('<option '.$chk.' value="'.$KONSTANTS['MaxMilesExclude'].'">'.$TAGS['MaxMilesExclude'][0].'</option>');
 	echo('</select>');
 	echo('</span>');
 
