@@ -34,6 +34,9 @@ The fields are generally self-explanatory but if in doubt as to their exact use,
 *ignoreClaimDecisionCode*
 : Default is '9'. Claims with a Decision of this value will be excluded from scoring. It's used where claims are disallowed (perhaps for being out of time) rather than scored as rejected.
 
+*missingPhotoDecisionCode*
+: Default is '1'. Used to preselect the decision for claims received with no photo.
+
 *bonusClaimsLimit*
 : It is possible to impose a limit on the number of bonuses claimed with excess claims automatically ignored.
 

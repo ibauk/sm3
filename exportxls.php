@@ -116,14 +116,23 @@ function exportFinishers()
 	
 
 
+	$xacopy = [];
+	$emptyxa = false;
 	// loop over the rows, outputting them
 	while ($rd = $R->fetchArray(SQLITE3_ASSOC))
 	{
-		$xa = explode("\n",$rd['ExtraData']);
+		if ($rd['ExtraData'] == "" && $hdrDone) {
+			$xa = $xacopy;
+			$emptyxa = true;
+		} else {
+			$xa = explode("\n",str_replace("\r","",$rd['ExtraData']));
+			$xacopy = $xa;
+			$emptyxa = false;
+		}
 		unset($rd['ExtraData']);
 		if (!$hdrDone)
 		{
-			//var_dump($xa);
+			// var_dump($xa);
 			$hdrDone = TRUE;
 			foreach ($xa as $itm)
 			{
@@ -136,7 +145,7 @@ function exportFinishers()
 		{
 			$cv = explode('=',$itm);
 			//var_dump($cv);
-			if (count($cv) >= 2)
+			if (count($cv) >= 2 && !$emptyxa)
 				$rd[$cv[0]] = $cv[1];
 			else
 				$rd[$cv[0]] = '';

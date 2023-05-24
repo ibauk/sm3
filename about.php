@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.3.1",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.3.2",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -85,6 +85,7 @@ $PROGRAM = array("version" => "3.3.1",	"title"	=> "ScoreMaster");
  *  3.2			Sequences ready for BBL22
  *  3.2.1		Rest bonuses, ready for BBR22
  *  3.3			Multi-Legs, fractional mults, points per mile
+ *  3.3.2		Post SAS23
  */
 
 $MIT = <<<'EOT'

@@ -246,12 +246,12 @@ function showBonus($bonusid) {
 	if (getSetting('useBonusQuestions',"false")=="true") {
 		echo('<span class="vlabel" title="'.$TAGS['BonusQuestion'][1].'">');
 		echo('<label for="Question">'.$TAGS['BonusQuestion'][0].'</label> ');
-		echo('<input type="text" class="wider" name="Question" id="Question" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Question']).'">');
+		echo('<input type="text" class="wider" name="Question" id="Question" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',"".$rd['Question']).'">');
 		echo('</span>');
 	
 		echo('<span class="vlabel" title="'.$TAGS['BonusAnswer'][1].'">');
 		echo('<label for="Answer">'.$TAGS['BonusAnswer'][0].'</label> ');
-		echo('<input type="text" class="wider" name="Answer" id="Answer" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Answer']).'">');
+		echo('<input type="text" class="wider" name="Answer" id="Answer" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',"".$rd['Answer']).'">');
 		echo('</span>');
 	}
 	
@@ -580,7 +580,7 @@ function triggerNewRow()
 					$rd['Image'] != '' || $rd['Waffle'] != '' || $rd['Coords'] != '' ||
 					$rd['Question'] != '' || $rd['Answer'] != '';
 		echo('<tr class="hoverlite" data-indb="1"><td><span><input class="BonusID" type="text" readonly  value="'.$rd['BonusID'].'"></span></td>');
-		echo('<td><span><input class="BriefDesc" type="text" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'" oninput="return showsave(this);"></span></td>');
+		echo('<td><span><input class="BriefDesc wider" type="text" value="'.str_replace('"','&quot;',$rd['BriefDesc']).'" oninput="return showsave(this);"></span></td>');
 		echo('<td><span><input type="number" value="'.$rd['Points'].'" oninput="return showsave(this);"></span></td>');
 		for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
 			if (isset($cats[$i]))

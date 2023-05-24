@@ -82,6 +82,11 @@ function applyClaim($claimid,$intransaction) {
 	if (!$rc = $R->fetchArray())
 		return;
 
+
+    if ($rc['Decision'] == $ignoreClaimDecisionCode) {
+        return;
+    }
+
 	if (!$intransaction) {
 		if (!$DB->exec("BEGIN IMMEDIATE TRANSACTION")) {
 			dberror();
@@ -89,9 +94,11 @@ function applyClaim($claimid,$intransaction) {
 		}
 	}
 
-    $resetTeamHappiness = $rc['Decision'] > 0 && ($bonusReclaims == 0 || $rc['Decision'] != $ignoreClaimDecisionCode);
+    $resetTeamHappiness = $rc['Decision'] > 0 && $bonusReclaims == 0;
 
     initScorecardVariables();
+
+
 
 	$sql = "SELECT IfNull(FinishTime,'2020-01-01') As FinishTime,IfNull(OdoRallyFinish,0) As OdoRallyFinish,BonusesVisited";
 	$sql .= ",RejectedClaims";
@@ -109,7 +116,7 @@ function applyClaim($claimid,$intransaction) {
 	$fo = $rd['OdoRallyFinish'];
 	$cm = $rd['CorrectedMiles'];
 	
-    if ($bonusReclaims == 0 || $rc['Decision'] != $ignoreClaimDecisionCode) {
+    if ($bonusReclaims == 0) {
     	$rcd = explode(',',$rd['RejectedClaims']);
         $handled = false;
         for($i = 0; $i < count($rcd); $i++) {
@@ -699,6 +706,7 @@ function initRallyVariables() {
                 continue;
             $reasons[$rcp[0]] = $rcp[1];
         }
+        
         for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
             $axisLabels[$i] = $RP['Cat'.$i.'Label'];
     }
@@ -1084,14 +1092,26 @@ function recalcScorecard($entrant,$intransaction) {
 
         $bonv = new stdClass(); // avoid intellisense warning
         foreach($bonusValues as $bv) {
-            if ($bv->bid == $bon) {
+            if ($bv->bid == $bon && strlen($bv->bid) == strlen($bon)) {
+                error_log("'".$bv->bid."' == '".$bon."'");
                 $bv->scored = true;
                 $bonv = $bv;
                 break;
             }
         }
-        if ($bonv == '') // non-existent bonus!
+        if (count((array)$bonv) == 0) {// non-existent bonus!
+            error_log("Bloody non-existent bonus!");
+            $sx = new SCOREXLINE();
+            $sx->id = $bon;
+            $sx->desc = $TAGS['clg_BadBonus'][1].'<br>'.$KONSTANTS['CLAIM_REJECTED'].' - '.$reasons[$rejectedClaims[$bon]];
+            $sx->pointsDesc = '';
+            $sx->points = 'X';
+            $sx->totalPoints = '';
+            error_log('<table>'.$sx->asHTML().'</table>');
+            $scorex[] = $sx;
+
             continue;
+        }
 
         if ($points == '')
             $points = $bonv->pts;
@@ -1100,7 +1120,7 @@ function recalcScorecard($entrant,$intransaction) {
 
         $bonusPoints += checkApplySequences($bonv,$catcounts,$bonusPoints);
 
-        if ($bon == '' || array_key_exists($bon,$rejectedClaims)) { // is it a rejected claim?
+        if ($bon == '' || array_key_exists($bon,$rejectedClaims) ) { // is it a rejected claim?
 
             error_log("Rejecting [$bon] (".array_key_exists($bon,$rejectedClaims).")");
             // Zap the sequence then
@@ -1110,14 +1130,14 @@ function recalcScorecard($entrant,$intransaction) {
                 $catcounts[$i]->lastcat = -1;
             }
 
-            //echo($TAGS['cl_Rejecting'][0].' '.$bon.' ');
+            echo($TAGS['cl_Rejecting'][0].' '.$bon.' '.$bonv->bid);
             $sx = new SCOREXLINE();
             $sx->id = $bonv->bid;
             $sx->desc = $bonv->desc.'<br>'.$KONSTANTS['CLAIM_REJECTED'].' - '.$reasons[$rejectedClaims[$bon]];
             $sx->pointsDesc = '';
             $sx->points = 'X';
             $sx->totalPoints = '';
-            //echo('<table>'.$sx->asHTML().'</table>');
+            error_log('<table>'.$sx->asHTML().'</table>');
             $scorex[] = $sx;
             continue;
         }

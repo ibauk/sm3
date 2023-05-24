@@ -106,7 +106,7 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 '{
 	"claimsShowPost": "false",
 	"claimsAutopostAll": "true",
-	"claimsReloadEBC": "60",
+	"claimsReloadEBC": "30",
 	"singleuserMode": "false",
 	"autoAdjustBonusWidth": "true",
 	"useBonusQuestions": "false",
@@ -130,6 +130,7 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"bonusReclaims": "0",
 	"bonusReclaimNG": "Bonus claimed earlier, reclaim out of sequence",
 	"ignoreClaimDecisionCode": "9",
+	"missingPhotoDecisionCode": "1",
 	"bonusClaimsLimit": "0",
 	"bonusClaimsExceeded": "Claim limit exceeded",
 	"distanceLimitExceeded": "Distance limit exceeded"
@@ -197,8 +198,10 @@ verbose: false
 
 # Literals used in testmode response emails
 
+TestResponseSubject: EBC test result / Testergebnis
 TestResponseGood: Good bonus claim received / Guter Bonusanspruch erhalten
 TestResponseBad: Bad bonus claim received / Ungültiger Bonusanspruch erhalten
+TestResponseGoodEmail: 🇬🇧 In the rally you MUST use your registered email address.<br>🇩🇪 Während der Rally MÜSSEN Sie Ihre registrierte E-Mail-Adresse verwenden 
 TestResponseBadEmail: 🇬🇧 Ok for testing but in the rally you MUST use your registered email address.<br>🇩🇪 Zum Testen okay, aber bei der Rally MÜSSEN Sie Ihre registrierte E-Mail-Adresse verwenden
 TestResponseAdvice: |
   <p>🇬🇧 Good/bad here means that the email did/did not contain a
@@ -548,8 +551,8 @@ DELETE FROM "themes";
 DELETE FROM "magicwords";
 DELETE FROM "classes";
 
-INSERT INTO "sgroups" (GroupName,GroupType) VALUES('RBStart','C');
-INSERT INTO "sgroups" (GroupName,GroupType) VALUES('RBClaims','C');
+-- INSERT INTO "sgroups" (GroupName,GroupType) VALUES('RBStart','C');
+-- INSERT INTO "sgroups" (GroupName,GroupType) VALUES('RBClaims','C');
 INSERT INTO "classes" (Class,BriefDesc,AutoAssign) VALUES(0,'Default',0);
 INSERT INTO "teams" (TeamID,BriefDesc) VALUES(0,'No team');
 INSERT INTO "cohorts" (Cohort,FixedStart) VALUES(0,0);

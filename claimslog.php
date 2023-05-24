@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -207,6 +207,16 @@ function emitEBCjs() {
     echo('<script>const RELOADSECS = '.$reloadseconds.';var RELOADOK = true;</script>');
 ?>
 <script>
+    function countup(secs) {
+	var sex = 0;
+	var spo = document.querySelector('#countdown');
+	setInterval(function() {
+		sex++;
+		var x = 't=' + secs + ' : ' + sex;
+		spo.textContent = x;
+	},1000);
+}
+
     function fetchRB(rbObj) {
         
         console.log('rb: '+JSON.stringify(rbObj));
@@ -301,10 +311,14 @@ function emitEBCjs() {
         RELOADOK = false;
         let claimid = tr.getAttribute('data-claimid');
         let entrant = tr.getAttribute('data-entrant');
+        
+        let excludeClaim = tr.getAttribute('data-excludeclaim');
+
         let decider = document.getElementById('ebc_decide');
         let log = document.getElementById('ebc_log');
         let img = document.getElementById('imgdiv').firstChild;
         let photos = tr.getAttribute('data-photo').split(',');
+        console.log(photos);
         let is =  photos[0];
         let iss = tr.getAttribute('data-photo');
         img.src = is; // Might be empty
@@ -335,7 +349,14 @@ function emitEBCjs() {
         let bcok = tr.getAttribute('data-bonuscountok') == '1';
         console.log("bcok is "+bcok);
         let tooFar = tr.getAttribute('data-toofar') == '1';
-        if (tooFar) {
+
+        document.getElementById('goodclaim').disabled = false;
+        if (excludeClaim != '') {
+            default_button = 'badclaim'+document.getElementById('ignoreClaimDecision').value;
+            console.log('disabling good claim');
+            document.getElementById('goodclaim').disabled = true;
+            document.getElementById('JudgesNotes').value = excludeClaim;
+        } else if (tooFar) {
             document.getElementById('JudgesNotes').value = document.getElementById('distanceLimitExceeded').value;
             default_button = 'badclaim'+document.getElementById('ignoreClaimDecision').value;
         } else if (!bcok) {
@@ -344,7 +365,14 @@ function emitEBCjs() {
         } else if (tr.getAttribute('data-reclaimok') == '0') {
             document.getElementById('JudgesNotes').value = document.getElementById('bonusReclaimNG').value;
             default_button = 'badclaim'+document.getElementById('bonusReclaims').value;
+        } else if (photos.length > 1) {
+            document.getElementById('JudgesNotes').value = document.getElementById('multiplePhotosLit').value;
+            default_button = 'badclaim'+document.getElementById('ignoreClaimDecision').value;
+        } else if (is == '') {
+            document.getElementById('JudgesNotes').value = document.getElementById('missingPhotoLit').value;
+            default_button = 'badclaim'+document.getElementById('missingPhotoDecision').value;
         }
+
 
         document.getElementById('ebc_Evidence').value = tr.getAttribute('data-evidence');
         document.getElementById('ebc_photo').value = iss;
@@ -443,7 +471,7 @@ function emitEBCjs() {
 
                 }
                 xx += '<input type="checkbox" name="QuestionAnswered" '+chk+' onchange="answerQuestion(this);"> ';
-                xx += '<span id="CorrectAnswer">'+ca+'</span>';
+                xx += '<span id="CorrectAnswer">&#8773; '+ca+'</span>';
                 ebcq.innerHTML = xx;
             }
         }
@@ -511,6 +539,7 @@ function emitEBCjs() {
 
     var datetime = "LastSync: " + new Date().toLocaleString();
     console.log(datetime);
+    countup(RELOADSECS);
     setTimeout(reloadPage,RELOADSECS * 1000);
 
 
@@ -536,6 +565,21 @@ function saveEBClaim($inTransaction) {
 
     $CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
 
+    $processed = ($_REQUEST['decision'] < 0 ? 0 : 1);
+
+    if (!$inTransaction)
+        $DB->exec("BEGIN IMMEDIATE TRANSACTION");
+
+    $sqlx = "UPDATE ebclaims SET Processed=".$processed.", Decision=".$_REQUEST['decision'];
+    $sqlx .= " WHERE Processed=0 ";
+    $sqlx .= " AND rowid=".$_REQUEST['claimid'];
+    $DB->exec($sqlx);
+
+    if ($DB->changes() <> 1) {
+        if (!$inTransaction)
+            $DB->exec('COMMIT TRANSACTION');
+            return;
+    }
     $sqlx = "INSERT INTO claims(LoggedAt,ClaimTime,EntrantID,BonusID,OdoReading,Decision,Photo,Points,RestMinutes,AskPoints,AskMinutes,Leg";
     if (isset($_REQUEST['QuestionAsked']))
         $sqlx .= ",QuestionAsked";
@@ -561,10 +605,10 @@ function saveEBClaim($inTransaction) {
     $sqlx .= ",".$_REQUEST['OdoReading'];
     $sqlx .= ",".$_REQUEST['decision'];
     $sqlx .= ",'".$_REQUEST['photo']."'";
-    $sqlx .= ",".$_REQUEST['Points'];
-    $sqlx .= ",".$_REQUEST['RestMinutes'];
-    $sqlx .= ",".$_REQUEST['AskPoints'];
-    $sqlx .= ",".$_REQUEST['AskMinutes'];
+    $sqlx .= ",".intval($_REQUEST['Points']);
+    $sqlx .= ",".intval($_REQUEST['RestMinutes']);
+    $sqlx .= ",".intval($_REQUEST['AskPoints']);
+    $sqlx .= ",".intval($_REQUEST['AskMinutes']);
     $sqlx .= ",".$CurrentLeg;
     if (isset($_REQUEST['QuestionAsked']))
         $sqlx .= ",".$_REQUEST['QuestionAsked'];
@@ -581,16 +625,13 @@ function saveEBClaim($inTransaction) {
     if (isset($_REQUEST['PercentPenalty']))
         $sqlx .= ",".$_REQUEST['PercentPenalty'];
     $sqlx .= ")";
-    if (!$inTransaction)
-        $DB->exec("BEGIN IMMEDIATE TRANSACTION");
 
     if ($_REQUEST['decision'] >= 0) {
-
+        error_log($sqlx);
         $DB->exec($sqlx);
         $claimid = $DB->lastInsertRowID();
+        error_log("Claimid is ".$claimid);
     }
-    $processed = ($_REQUEST['decision'] < 0 ? 0 : 1);
-    $DB->exec("UPDATE ebclaims SET Processed=".$processed.", Decision=".$_REQUEST['decision']." WHERE rowid=".$_REQUEST['claimid']);
 
     if ($processed) {
         applyClaim($claimid,!$inTransaction);
@@ -626,17 +667,19 @@ function listEBClaims() {
     $bonusReclaimNG = getSetting('bonusReclaimNG','Bonus claimed earlier, reclaim out of sequence');
     $bonusReclaims = getSetting('bonusReclaims','0');
     $ignoreClaimDecision = getSetting('ignoreClaimDecisionCode','9');
+    $missingPhotoDecision = getSetting('missingPhotoDecisionCode','1');
     $bonusClaimsExceeded = getSetting('bonusClaimsExceeded','Claim limit exceeded');
     $distanceLimitExceeded = getSetting('distanceLimitExceeded','Distance limit exceeded');
 
     $currentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg",1);
 
-    $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,xbonus.BonusID,xbonus.BriefDesc";
+    $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,ebclaims.BonusID,xbonus.BriefDesc";
     $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,xphoto.Image,Notes,Flags,TeamID";
     $sql .= ",ebclaims.AttachmentTime As PhotoTS, ebclaims.DateTime As EmailTS,ebclaims.LoggedAt,ebclaims.Subject";
     $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes,xbonus.Image as BImage,Question,Answer";
     $sql .= " FROM ebclaims LEFT JOIN entrants ON ebclaims.EntrantID=entrants.EntrantID";
-    $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,Flags,Points,AskPoints,RestMinutes,AskMinutes,Image,Question,Answer FROM bonuses";
+    $sql .= " LEFT JOIN (SELECT BonusID,BriefDesc,Notes,IfNull(Flags,'') AS Flags,Points,AskPoints,RestMinutes,AskMinutes,";
+    $sql .= "IfNull(Image,'') AS Image,IfNull(Question,'') AS Question,IfNull(Answer,'') AS Answer FROM bonuses";
     $sql .= " ) AS xbonus";
     $sql .= " ON ebclaims.BonusID=xbonus.BonusID  LEFT JOIN ";
     $sql .= " (SELECT EmailID,Group_concat(Image) As Image from ebcphotos GROUP BY EmailID) AS xphoto ON ebclaims.EmailID=xphoto.EmailID WHERE Processed=0 ORDER BY Decision DESC,FinalTime;";
@@ -649,10 +692,12 @@ function listEBClaims() {
     $R->reset();
     startHtml($TAGS['AdmEBClaims'][0],$TAGS['AdmEBClaims'][0]);
 
+    echo('<span id="countdown">&glj;</span>');
     emitEBCjs();
     emitDecisionFrame();
 
     echo('<div class="ebclaimslog" id="ebc_log">');
+
     echo('<h2>'.$TAGS['clg_EbcLogHdr'][0].'</h2>');
     if ($claims > 0) {
         echo('<button autofocus onclick="showFirstClaim()">'.$TAGS['clg_EbcJudge1'][0].'</button>');
@@ -668,14 +713,22 @@ function listEBClaims() {
     echo('<input type="hidden" id="bonusReclaimNG" value="'.$bonusReclaimNG.'">');
     echo('<input type="hidden" id="bonusReclaims" value="'.$bonusReclaims.'">');
     echo('<input type="hidden" id="ignoreClaimDecision" value="'.$ignoreClaimDecision.'">');
+    echo('<input type="hidden" id="missingPhotoDecision" value="'.$missingPhotoDecision.'">');
     echo('<input type="hidden" id="bonusClaimsExceeded" value="'.$bonusClaimsExceeded.'">');
     echo('<input type="hidden" id="distanceLimitExceeded" value="'.$distanceLimitExceeded.'">');
+    echo('<input type="hidden" id="multiplePhotosLit" value="'.$TAGS['clg_ManyPhotos'][1].'">');
+    echo('<input type="hidden" id="missingPhotoLit" value="'.$TAGS['clg_MissingPhoto'][1].'">');
     echo('<table><thead>');
     if ($claims > 0) {
         echo('<tr><th>Entrant</th><th>Bonus</th><th>Odo</th><th>Claimtime</th></tr>');
     }
     echo('</thead><tbody>');
     while ($rs = $R->fetchArray()) {
+        $excludeClaim = "";
+        if ("".$rs['BriefDesc']=="") {
+            $rs['BriefDesc'] = $TAGS['clg_BadBonus'][0];
+            $excludeClaim = $rs['BriefDesc'];
+        }
         error_log($rs['rowid'].' == ['.$rs['Image'].']');
         echo('<tr data-claimid="'.$rs['rowid'].'" ');
         echo('data-entrant="'.$rs['EntrantID'].'" data-photo="'.$rs['Image'].'" ');
@@ -712,10 +765,13 @@ function listEBClaims() {
         echo('onkeydown="testkey(this)" ');
         echo('onclick="showClaimEBC(this)" ');
         if ($useQA) {
-            echo('data-question="'.str_replace('"','&quot;',$rs['Question']).'" ');
-            echo('data-answer="'.str_replace('"','&quot;',$rs['Answer']).'" ');
+            $qx = "".$rs['Question'];
+            $ax = "".$rs['Answer'];
+            echo('data-question="'.str_replace('"','&quot;',$qx).'" ');
+            echo('data-answer="'.str_replace('"','&quot;',$ax).'" ');
             echo('data-qval="'.$valQA.'" ');
         }
+        echo(' data-excludeclaim="'.$excludeClaim.'" ');
         echo('>');
         echo('<td title="'.$rs['EntrantID'].'">'.$rs['RiderName']);
         if ($rs['PillionName'] != '')

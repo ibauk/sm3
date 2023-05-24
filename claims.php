@@ -10,7 +10,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -316,7 +316,7 @@ function clickDefault() {
 
 
 
-	echo('<table><thead class="listhead">');
+	echo('<table class="claimslog"><thead class="listhead">');
 	echo('<tr><th>'.$TAGS['cl_EntrantHdr'][0].'</th><th>'.$TAGS['cl_BonusHdr'][0].'</th><th>'.$TAGS['cl_OdoHdr'][0].'<th>'.$TAGS['cl_ClaimedHdr'][0].'</th>');
 	echo('<th>'.$TAGS['cl_DecisionHdr'][0].'</th>');
 	if ($virtualrally) {
@@ -324,7 +324,7 @@ function clickDefault() {
 		echo('<th title="'.$TAGS['cl_PenaltySpeed'][1].'">'.$TAGS['cl_PenaltySpeed'][0].'</th>');
 		echo('<th title="'.$TAGS['cl_PenaltyMagic'][1].'">'.$TAGS['cl_PenaltyMagic'][0].'</th>');
 	}
-	echo('<th>'.$TAGS['cl_AppliedHdr'][0].'</th><th>'.$TAGS['cl_LoggedHdr'][0].'</th></tr>');
+	echo('<th class="hide">'.$TAGS['cl_AppliedHdr'][0].'</th><th>'.$TAGS['cl_LoggedHdr'][0].'</th></tr>');
 	echo('<tbody>');
 	while ($rd = $R->fetchArray()) {
 		echo('<tr class="link" data-rowid="'.$rd['rowid'].'">');
@@ -336,7 +336,7 @@ function clickDefault() {
 		echo('" onclick="showCurrentClaim(this);"> '.$rd['BonusID'].' </td>');
 		echo('<td onclick="showCurrentClaim(this);"> '.$rd['OdoReading'].' </td>');
 		echo('<td onclick="showCurrentClaim(this);"> '.logtime($rd['ClaimTime']).' </td>');
-		if ($rd['Applied']==0) {
+		if ($rd['Applied']==0 && false) {
 			$status = '<select onchange="updateClaimDecision(this);">';
 			$status .= '<option value="-1"'.($rd['Decision']==$KONSTANTS['UNDECIDED_CLAIM']? ' selected' : '').'>'.$TAGS['BonusClaimUndecided'][0].'</option>';
 			for ($i=0; $i<10; $i++)
@@ -344,13 +344,13 @@ function clickDefault() {
 			$status .= '</select>';
 		} else
 			$status = ($rd['Decision'] != $KONSTANTS['UNDECIDED_CLAIM'] ? $decisions[$rd['Decision']] : $TAGS['BonusClaimUndecided'][0]);
-		echo('<td> '.$status.' </td>');	
+		echo('<td onclick="showCurrentClaim(this);"> '.$status.' </td>');	
 		if ($virtualrally) {
 			echo('<td onclick="showCurrentClaim(this);" title="'.$TAGS['cl_PenaltyFuel'][1].'">'.($rd['FuelPenalty'] != 0 ? '&nbsp;*' : '').'</td>');
 			echo('<td onclick="showCurrentClaim(this);" title="'.$TAGS['cl_PenaltySpeed'][1].'">'.($rd['SpeedPenalty'] != 0 ? '&nbsp;*' : '').'</td>');
 			echo('<td onclick="showCurrentClaim(this);" title="'.$TAGS['cl_PenaltyMagic'][1].'">'.($rd['MagicPenalty'] != 0 ? '&nbsp;*' : '').'</td>');
 		}
-		echo('<td title="'.$TAGS['cl_Applied'][1].'" style="text-align:center;">'.'<input type="checkbox" '.($rd['Decision']==$KONSTANTS['UNDECIDED_CLAIM']? ' disabled ' : '').' onchange="updateClaimApplied(this);" value="1"'.($rd['Applied']!=0? ' checked' :'').'>');
+		echo('<td class="hide" title="'.$TAGS['cl_Applied'][1].'" style="text-align:center;">'.'<input type="checkbox" '.($rd['Decision']==$KONSTANTS['UNDECIDED_CLAIM']? ' disabled ' : '').' onchange="updateClaimApplied(this);" value="1"'.($rd['Applied']!=0? ' checked' :'').'>');
 		echo('<td onclick="showCurrentClaim(this);"> '.logtime($rd['LoggedAt']).'</td>');
 		echo('</tr>');
 	}
@@ -420,17 +420,10 @@ function saveClaim()
 	else
 		saveOldClaim($virtualrally,$virtualstopmins,$XF,$claimtime,$claimid);
 
-	if (false) {
-		applyClaim($claimid,true);
+	/** if sequences used, need to set vars and call applyClaims */
 
-		updateTeamScorecards($_REQUEST['EntrantID']);
-    	rankEntrants(true);
-    	updateAutoClass($_REQUEST['EntrantID']);
-	} else {
-		/** if sequences used, need to set vars and call applyClaims */
+	applyClaimsEntrant($_REQUEST['EntrantID']);
 
-		applyClaimsEntrant($_REQUEST['EntrantID']);
-	}
 
 	$DB->exec("COMMIT TRANSACTION");
 
@@ -770,7 +763,7 @@ echo("</script>\n");
 		echo('> ');
 		echo('<span id="CorrectAnswer">');
 		if ($claimid> 0 && $rd['QuestionAsked'] != 0) {
-			echo(getValueFromDB("SELECT Answer FROM bonuses WHERE BonusID='".$rd['BonusID']."'","Answer",""));
+			echo(getValueFromDB("SELECT IfNull(Answer AS Answer FROM bonuses WHERE BonusID='".$rd['BonusID']."'","Answer",""));
 		}
 		echo('</span>');
 		echo('</span>');
@@ -889,7 +882,9 @@ function fetchBonusName($b,$htmlok)
 		return;
 	}
 	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
-	$sql = "SELECT BriefDesc, Points, RestMinutes, AskPoints, AskMinutes, Notes, Flags, Question, Answer FROM bonuses";
+	$sql = "SELECT BriefDesc, Points, RestMinutes, AskPoints, AskMinutes, ";
+	$sql .= "IfNull(Notes,'') AS Notes, IfNull(Flags,'') AS Flags, ";
+	$sql .= "IfNull(Question,'') AS Question, IfNull(Answer,'') AS Answer FROM bonuses";
 	$sql .= " WHERE BonusID='".strtoupper($b)."' AND (Leg=0 OR Leg=".$CurrentLeg.")";
 	$R = $DB->query($sql);
 	if ($rd = $R->fetchArray()) {
@@ -903,9 +898,9 @@ function fetchBonusName($b,$htmlok)
 //			if (tr.getAttribute('data-team') > '0') {
 //				flags += '2';
 //			}
-			for ($i = 0; $i < strlen($flags); $i++) {
+			for ($i = 0; $i < strlen("".$flags); $i++) {
 				$img = '';
-				 switch(substr($flags,$i,1)) {
+				 switch(substr("".$flags,$i,1)) {
 					 case '2':
 						$img = '<img src="images/alertteam.png" alt="2" title="Team rules" class="icon">';
 						break;
@@ -941,10 +936,10 @@ function fetchBonusName($b,$htmlok)
 			$res .= 'ap='.$rd['AskPoints'].';pv='.$rd['Points'].';am='.$rd['AskMinutes'].';mv='.$rd['RestMinutes'];
 			$res .= ']';
 			$res .= '<span id="qqq">';
-			$res .= str_replace('"','&quot;',$rd['Question']);
+			$res .= str_replace('"','&quot;',"".$rd['Question']);
 			$res .= '</span>';
 			$res .= '<span id="aaa">';
-			$res .= str_replace('"','&quot;',$rd['Answer']);
+			$res .= str_replace('"','&quot;',"".$rd['Answer']);
 			$res .= '</span>';
 			$res .= '</span>';
 		} else {
@@ -975,6 +970,7 @@ function updateClaimApplied()
 	$sql = "UPDATE claims SET Applied=".$_REQUEST['val'];
 	$sql .= " WHERE rowid=".$_REQUEST['claim'];
 	echo($DB->exec($sql) && $DB->changes()==1? 'ok' : 'error' );
+	applyClaim($_REQUEST['claim'],false);
 }
 
 function updateClaimDecision()
@@ -985,10 +981,12 @@ function updateClaimDecision()
 		echo('');
 		return;
 	}
+	error_log('updateClaimDecision');
 	$sql = "UPDATE claims SET Decision=".$_REQUEST['val'];
 	$sql .= " WHERE rowid=".$_REQUEST['claim'];
 	$sql .= " AND Applied=0";
 	echo($DB->exec($sql) && $DB->changes()==1? 'ok' : 'error');
+	applyClaim($_REQUEST['claim'],false);
 }
 
 

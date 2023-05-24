@@ -448,9 +448,14 @@ function hideBonusList() {
             echo('>'.$B.'</option>');
         }
         echo('</select></td>');
-            
-        $bd = $bonuses[$bid][1];
-        echo('<td>'.htmlspecialchars($bd).'</td>');
+        if (isset($bonuses[$bid])) {
+        	$bd = $bonuses[$bid][1];
+			$xc = '';
+		} else {
+			$bd = $bid.' !!!';
+			$xc = ' class="error"';
+		}
+        echo('<td'.$xc.'>'.htmlspecialchars($bd).'</td>');
         echo('<td>');
         echo('<span  title="'.$TAGS['DeleteEntryLit'][0].'">');
         echo('<input type="checkbox" onchange="enableKill(this);"> <button disabled value="-" onclick="hideBonusList();return deleteRow(this);">-</button>');

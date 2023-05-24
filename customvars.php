@@ -327,6 +327,9 @@ $TAGS = array(
 	'clg_EbcJudge1'		=> array('Judge first claim','Judge first claim'),
 	'clg_EbcNoLog'		=> array('Sorry, no claims need judging at the moment &#128543;','Sorry, no claims need judging at the moment &#128543;'),
 	'clg_Header'		=> array('Schedule of claims received','Schedule of claims received'),
+	'clg_BadBonus'		=> array('** NO SUCH BONUS **','** NO SUCH BONUS **'),
+	'clg_ManyPhotos'	=> array('** Multiple photos **','** Multiple photos **'),
+	'clg_MissingPhoto'	=> array('** Missing photo **','** Missing photo **'),
 	'clg_NumberOfClaims'=> array('Number of claims received','Number of bonuses claimed'),
 
 

@@ -5,7 +5,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -23,7 +23,7 @@
 		--button-background			: #006600;
 		--button-text				: white;
 		--button-back-disabled		: #339966;
-		--button-text-disabled		: darkgray;
+		--button-text-disabled		: lightgray;
 		--bright-background			: #ffff00;
 		--bright-text				: red;
 		--form-background			: #ccffcc;
@@ -42,6 +42,8 @@
 		--rejected-text 			: white;
 		--checked-background 		: #31ad16;
 		--checked-text 				: white;
+		--error-background			: red;
+		--error-text 				: white;
 		
 }
 
@@ -91,10 +93,10 @@ input[type='submit'], input[type='button'], button	{
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 input[type='submit']:disabled, input[type='button']:disabled, button:disabled	{
-	background-color: var(--button-back-disabled); 
+	background-color: var(--button-back-disabled) !important; 
     border: none;
     border-radius: 10px;
-    color: var(--button-text-disabled);
+    color: var(--button-text-disabled) !important;
     padding: 7px 7px;
     text-align: center;
     text-decoration: none;
@@ -106,7 +108,7 @@ input[type='submit']:disabled, input[type='button']:disabled, button:disabled	{
     box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
-
+.claimslog  td 			{ padding: 0 0.5em 0.2em 0; }
 label, h4, caption, th, legend, #entrantrows *, a, a:visited	{ color: var(--regular-text); }
 label					{ white-space: nowrap; }
 li						{ color: var(--regular-text); }
@@ -152,7 +154,7 @@ input.tinynumber		{ width: 2em; }
 .link:hover				{ cursor: pointer; background-color: var(--hover-background);}
 
 #dberror		{ background-color: var(--bright-background); color: var(--bright-text); top: 0; position: sticky; padding:.5em; }
-
+.error			{ background-color: var(--error-background); color: var(--error-text); text-align: center; }
 /* Tabbed interface */
 ul#tabs { list-style-type: none; margin: 30px 0 0 0; padding: 0 0 0.3em 0; }
 ul#tabs li { display: inline; }
@@ -278,7 +280,7 @@ h4				{ margin-top: .9em; margin-bottom: 5px; }
 }
 
 #CorrectAnswer 	{ font-style: italic; }
-#AnswerSupplied	{ font-weight: bold; }
+#AnswerSupplied	{ font-weight: bold; background-color: var(--bright-background); }
 
 #FuelWarning,
 #SpeedWarning { padding: .75em; background: var(--bright-background); color: var(--bright-text); }
