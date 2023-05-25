@@ -185,6 +185,7 @@ $TAGS = array(
 	'AskPoints'			=> array('Variable?','Fixed or ask for points value during scoring'),
 	'AskPoints0'		=> array('Fixed','Points value is fixed'),
 	'AskPoints1'		=> array('Variable','Points value entered during scoring'),
+	'AskPoints2'		=> array('Multiplier','Multiply the value of the last bonus scored'),
 	'AvgSpeedLit'		=> array('Speed','Moving average speed over the whole rally'),
 	'AxisCats'			=> array('Categories for set','List of categories belonging to this set'),
 	'AxisLit'			=> array('Set','The set of categories this rule applies to'),

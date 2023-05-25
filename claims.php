@@ -164,7 +164,11 @@ function updateFD(obj)
 function deleteClaim()
 {
 	global $DB,$TAGS,$KONSTANTS;
-		
+
+	if (!$DB->exec("BEGIN IMMEDIATE TRANSACTION")) {
+		dberror();
+		exit;
+	}
 	$sql = "DELETE FROM claims WHERE rowid=".$_REQUEST['claimid'];
 	if (!$DB->exec($sql)) {
 		dberror();
@@ -174,7 +178,9 @@ function deleteClaim()
 		echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
 		exit;
 	}
-	
+	applyClaimsEntrant($_REQUEST['EntrantID']);
+	$DB->exec("COMMIT TRANSACTION");
+
 }
 
 function listclaims()
@@ -784,7 +790,7 @@ echo("</script>\n");
 		echo('</span>');
 	}
 
-	$cl = $claimid != 0 && $rd['AskPoints'] != 0 ? 'vlabel' : 'hide';
+	$cl = $claimid != 0 && $rd['AskPoints'] == 1 ? 'vlabel' : 'hide';
 	echo('<span class="'.$cl.'" id="pointsspan" title="'.$TAGS['BonusPoints'][1].'">');
 	echo('<label for="PointsValue">'.$TAGS['BonusPoints'][0].'</label> ');
 	$pv = ($claimid != 0) ? $rd['Points'] : '';

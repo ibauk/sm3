@@ -116,22 +116,31 @@ function applyClaim($claimid,$intransaction) {
 	$fo = $rd['OdoRallyFinish'];
 	$cm = $rd['CorrectedMiles'];
 	
+    $rejectedBonusesLV = [];
     if ($bonusReclaims == 0) {
     	$rcd = explode(',',$rd['RejectedClaims']);
+        error_log("RejectedClaims == ".$rd['RejectedClaims']);
         $handled = false;
         for($i = 0; $i < count($rcd); $i++) {
             $x = explode('=',$rcd[$i]);
+            array_push($rejectedBonusesLV,$x[0]);
             if ($x[0] === $rc['BonusID']) {
                 $handled = true;
                 if ($rc['Decision'] < 1) { // Was rejected but isn't now
                     unset($rcd[$i]);
-                }
-            }
+                    unset($rejectedBonusesLV[$i]); 
+                } 
+                    
+                
+            } 
         }
         if (!$handled && $rc['Decision'] > 0) {
             array_push($rcd,$rc['BonusID'].'='.$rc['Decision']);
+            array_push($rejectedBonusesLV,$rc['BonusID']);
         }
     }
+
+    error_log("rejectedBonusesLV == ".implode(", ",$rejectedBonusesLV));
 
 	$bv = explode(',',$rd['BonusesVisited']);
     $bonusid = '';
@@ -140,29 +149,63 @@ function applyClaim($claimid,$intransaction) {
     $xp = false;
     $pp = false;
     $appendclaim = true;
+
+    // We need to keep track of the value of the last successful bonus in order to implement
+    // AskPoints=2 multiplier logic. This needs a simple lastPointsValue unless we cater for
+    // reclaims in which case the sequencing is upset.
+    $lastPointsValue = 0;
     
     foreach($bv as $ix => $bonusclaim) {
         parseBonusClaim($bonusclaim,$bonusid,$points,$minutes,$xp,$pp);
-        error_log('bv check rc[bonusid]=="'.$rc['BonusID'].'" bonusid="'.$bonusid.'"');
+
+
+        if (!strpos($bonusclaim,"?") > 0 )
+            $lastPointsValue = $points;
+
+        if (in_array($bonusid,$rejectedBonusesLV) || ($rc['Decision'] > 0 && $rc['BonusID']==$bonusid)) {
+            error_log("lastPointsValue killed because bonus ".$bonusid." was rejected");
+            $lastPointsValue = 0;
+        } 
+
+
+
+        error_log('bv check "'.$bonusclaim.'" rc[bonusid]=="'.$rc['BonusID'].'" bonusid="'.$bonusid.'"; LV='.$lastPointsValue);
+
+        
         if ($rc['BonusID'] == $bonusid) {
-            $bonusclaim = $bonusid.'='.$rc['Points'];
+            $bonusclaim = $bonusid.'=';
+            if ($rc['AskPoints'] == $KONSTANTS['AskPointsMultiplier'])
+                $bonusclaim .= $lastPointsValue * $rc['Points'].'?'.$rc['Points'];
+            else
+                $bonusclaim .= $rc['Points'];
             $bonusclaim .= ($rc['QuestionAnswered']==1 ? 'X' : '');
             $bonusclaim .= ($rc['PercentPenalty']==1 ? 'P' : '');
             $bonusclaim .= ';'.$rc['RestMinutes'];
             $bv[$ix] = $bonusclaim;
             $appendclaim = false;
         }
+
+    
+
     }
+
     if ($appendclaim) {
         error_log('Appending new claim for '.$rc['BonusID']);
-        $newclaim = $rc['BonusID'].'='.$rc['Points'];
+        $newclaim = $rc['BonusID'].'=';
+        if ($rc['AskPoints'] == $KONSTANTS['AskPointsMultiplier'])
+            $newclaim .= $lastPointsValue * $rc['Points'].'?'.$rc['Points'];
+        else
+            $newclaim .= $rc['Points'];
         $newclaim .= ($rc['QuestionAnswered']==1 ? 'X' : '');
         $newclaim .= ($rc['PercentPenalty']==1 ? 'P' : '');
         $newclaim .= ';'.$rc['RestMinutes'];
         array_push($bv,$newclaim);
     }
 
-	// If StartTime has not already been set for this entrant then use the time of the first claim
+
+
+
+    // If StartTime has not already been set for this entrant then use the time of the first claim
 	if ($rd['StartTime']=='')
 		$rd['StartTime'] = $rc['ClaimTime'];
 
@@ -1081,6 +1124,8 @@ function recalcScorecard($entrant,$intransaction) {
     error_log("Bonuses visited = ".$rd['BonusesVisited']);
     $BA = explode(',',$rd['BonusesVisited']); 
         
+    $lastBonusPointsValue = 0;
+    $lastBPVMultiplier = 1;
     foreach($BA as $bonus) {
 
         if ($bonus == '')
@@ -1088,7 +1133,15 @@ function recalcScorecard($entrant,$intransaction) {
 
         $bon = ''; $points = ''; $minutes = ''; $xp = false; $pp = false;
         parseBonusClaim($bonus,$bon,$points,$minutes,$xp,$pp);
-        error_log('PBC:='.$bonus.': '.$bon.', '.$points.', '.$minutes);
+
+        $lastBonusMultiplier = strpos($bonus,"?")>0;
+        if ($lastBonusMultiplier) {
+            $n = strpos($bonus,"?") + 1;
+            $m = strpos($bonus,";",$n);
+            $lastBPVMultiplier = intval(substr($bonus,$n,$m-$n));
+        }
+
+        error_log('PBC:='.$bonus.': '.$bon.', '.$points.', '.$minutes.', '.$lastBonusPointsValue);
 
         $bonv = new stdClass(); // avoid intellisense warning
         foreach($bonusValues as $bv) {
@@ -1130,7 +1183,7 @@ function recalcScorecard($entrant,$intransaction) {
                 $catcounts[$i]->lastcat = -1;
             }
 
-            echo($TAGS['cl_Rejecting'][0].' '.$bon.' '.$bonv->bid);
+            //echo($TAGS['cl_Rejecting'][0].' '.$bon.' '.$bonv->bid);
             $sx = new SCOREXLINE();
             $sx->id = $bonv->bid;
             $sx->desc = $bonv->desc.'<br>'.$KONSTANTS['CLAIM_REJECTED'].' - '.$reasons[$rejectedClaims[$bon]];
@@ -1148,6 +1201,9 @@ function recalcScorecard($entrant,$intransaction) {
         $numBonusesTicked++;
         $restMinutes += $minutes;
         $pointsDesc = "";
+        if ($lastBonusMultiplier) {
+            $pointsDesc .= " (".$lastBPVMultiplier." x ".$lastBonusPointsValue.")";
+        }
         if ($minutes > 0) {
             $pointsDesc = ' ['.formatRestMinutes($minutes).']';
         }
@@ -1215,6 +1271,15 @@ function recalcScorecard($entrant,$intransaction) {
         $sx->totalPoints = $bonusPoints;
 
         $scorex[] = $sx;
+
+        $lastBonusPointsValue = $points;
+        if (array_key_exists($bon,$rejectedClaims)) {
+            $lastBonusPointsValue = 0;
+        }
+
+        if ($lastBonusMultiplier) {
+            $lastBonusPointsValue = 0;
+        }
 
 
 

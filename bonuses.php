@@ -133,7 +133,8 @@ function showBonus($bonusid) {
 	echo('<span title="'.$TAGS['AskPoints'][1].'">');
 	echo('<select name="AskPoints" onchange="enableSaveButton();">');
 	echo('<option value="0"'.($rd['AskPoints']==0 ? ' selected>' : '>').$TAGS['AskPoints0'][0].'</option>');
-	echo('<option value="1"'.($rd['AskPoints']==0 ? '>' : ' selected>').$TAGS['AskPoints1'][0].'</option>');
+	echo('<option value="1"'.($rd['AskPoints']==1 ? ' selected>' : '>').$TAGS['AskPoints1'][0].'</option>');
+	echo('<option value="2"'.($rd['AskPoints']==2 ? ' selected>' : '>').$TAGS['AskPoints2'][0].'</option>');
 	echo('</select>');
 	echo('</span>');
 	echo('</span>');
@@ -575,7 +576,7 @@ function triggerNewRow()
 	{
 		$rex = getValueFromDB("SELECT count(*) As rex FROM entrants WHERE ',' || BonusesVisited || ',' LIKE '%,".$rd['BonusID']."=%'","rex",0);
 		
-		$isspecial = $rd['AskPoints'] == 1 || $rd['AskMinutes'] == 1 || $rd['Compulsory'] != 0 || 
+		$isspecial = $rd['AskPoints'] != 0 || $rd['AskMinutes'] == 1 || $rd['Compulsory'] != 0 || 
 					$rd['Notes'] != '' || $rd['Flags'] != '' || $rd['RestMinutes'] != 0 ||
 					$rd['Image'] != '' || $rd['Waffle'] != '' || $rd['Coords'] != '' ||
 					$rd['Question'] != '' || $rd['Answer'] != '';

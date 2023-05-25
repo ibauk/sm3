@@ -41,6 +41,7 @@ $KONSTANTS['GMTPlusMinus'] = 10;
 require_once('customvars.php');
 	
 // Uninteresting values
+$KONSTANTS['AskPointsMultiplier'] = 2;
 $KONSTANTS['MaxMilesFixedP'] = 0;
 $KONSTANTS['MaxMilesFixedM'] = 1;
 $KONSTANTS['MaxMilesPerMile'] = 2;
