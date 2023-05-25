@@ -288,6 +288,9 @@ function recalcScorecard() {
 
     let BA = document.getElementById('BonusesVisited').value.split(','); 
         
+    let lastBonusPointsValue = 0;
+    let lastBPVMultiplier = 1;
+
     for(let bonus of BA) {
 
         if (bonus === '')
@@ -295,7 +298,15 @@ function recalcScorecard() {
 
         let obj = {bon: '', points: '', minutes: '', xp: false, pp: false};
         parseBonusClaim(bonus,obj);
-        
+        let xx = "";
+        let lastBonusMultiplier = bonus.indexOf("?")>0;
+        if (lastBonusMultiplier) {
+            let n = bonus.indexOf("?") + 1;
+            let m = bonus.substr(n).indexOf(";");
+            lastBPVMultiplier = parseInt(bonus.substr(n,m));
+            xx = "LBM: "+bonus+', n='+n+', m='+m+', substr=[ '+bonus.substr(n,m)+' ]';
+        }
+
         let bonv = '';
         for(let bv of document.getElementsByName('BonusID[]')) {
             if (bv.value === obj.bon) {
@@ -356,6 +367,9 @@ function recalcScorecard() {
         numBonusesTicked++;
         restMinutes += parseInt(obj.minutes);
         let pointsDesc = "";
+        if (lastBonusMultiplier) {
+            pointsDesc += " ("+lastBPVMultiplier+" x "+lastBonusPointsValue+")";
+        }
         
         if (obj.minutes > 0) {
             pointsDesc = pointsDesc+' ['+formatRestMinutes(obj.minutes)+'] ';
@@ -433,7 +447,7 @@ function recalcScorecard() {
         let sx = new SCOREXLINE();
         sx.id = bonv.value;
         sx.desc = bonv.getAttribute('data-desc');
-        sx.pointsDesc = pointsDesc;
+        sx.pointsDesc = pointsDesc; // + xx;
         sx.points = basicBonusPoints;
         sx.totalPoints = bonusPoints;
 
@@ -442,6 +456,14 @@ function recalcScorecard() {
         scorex.push(sx);
 
 
+        lastBonusPointsValue = basicBonusPoints;
+        if (rejectedClaims.hasOwnProperty(obj.bon)) {
+            lastBonusPointsValue = 0;
+        }
+
+        if (lastBonusMultiplier) {
+            lastBonusPointsValue = 0;
+        }
 
 
 
