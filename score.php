@@ -14,7 +14,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -401,7 +401,7 @@ function scoreEntrant($showBlankForm = FALSE,$postRallyForm = TRUE)
 
 	for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
 	{
-		echo('<input type="hidden" name="AxisScores[]" id="Axis'.$i.'Score" value="'.htmlspecialchars($rd['Cat'.$i.'Label']).'" data-bonuses="0" data-points="0" data-mults="0" data-axis="'.$i.'">');
+		echo('<input type="hidden" name="AxisScores[]" id="Axis'.$i.'Score" value="'.htmlspecialchars("".$rd['Cat'.$i.'Label']).'" data-bonuses="0" data-points="0" data-mults="0" data-axis="'.$i.'">');
 		$axisnames[$i] = $rd['Cat'.$i.'Label'];
 	}
 	

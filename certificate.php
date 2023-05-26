@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -237,7 +237,7 @@ function parseCertificateOptions($opts)
 {
 	global $CERTOPTS;
 	
-	$optarray = explode(';',$opts);
+	$optarray = explode(';',"".$opts);
 	foreach ($optarray as $opt)
 	{
 		$kv = explode('=',trim($opt));
@@ -333,6 +333,15 @@ function fetchExtraVariables($EntrantID) {
 	$sql = "SELECT count(DISTINCT BonusID) As Rex FROM claims WHERE EntrantID=".$EntrantID. " AND Decision=0";
 	$res['NumGoodClaims'] = getValueFromDB($sql,"Rex",0);
 	$res['NumRejectedClaims'] = $res['NumBonusClaims'] - $res['NumGoodClaims'];
+	$sql = "SELECT TeamID FROM entrants WHERE EntrantID=".$EntrantID;
+	$TeamNumber = getValueFromDB($sql,"TeamID","0");
+	$res['TeamName'] = "";
+	if ($TeamNumber > 0) {
+		$sql = "SELECT IfNull(BriefDesc,'') AS TeamName FROM entrants LEFT JOIN teams ON entrants.TeamID=teams.TeamID WHERE EntrantID=".$EntrantID;
+		$res['TeamName'] = getValueFromDB($sql,"TeamName","");
+	}
+
+	
 	return $res;
 
 }
