@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -45,7 +45,7 @@ $IMPORTSPEC['type'] = (isset($_REQUEST['type']) ? $_REQUEST['type'] : $TYPE_ENTR
 
 // Declare psuedo fields here then load from database schema
 $IGNORE_COLUMN = 'zzzzzzz';
-$ENTRANT_FIELDS = [$IGNORE_COLUMN=>'ignore','RiderLast'=>'RiderLast','PillionLast'=>'PillionLast','NoKFirst'=>'NoKFirst','NoKLast'=>'NoKLast'];
+$ENTRANT_FIELDS = [$IGNORE_COLUMN=>'ignore','RiderLast'=>'RiderLast','PillionLast'=>'PillionLast','NoKFirst'=>'NoKFirst','NoKLast'=>'NoKLast','TeamName'=>'TeamName'];
 $BONUS_FIELDS = [$IGNORE_COLUMN=>'ignore'];
 $COMBO_FIELDS = [$IGNORE_COLUMN=>'ignore'];
 
@@ -147,7 +147,7 @@ function getMergeCols($sheet,$row,$colspec,$sep = ' ')
 	for ($i = 0; $i < sizeof($cols); $i++)
 	{
 		if ($res <> '') $res .= $sep;
-		//echo("  C=$cols[$i],R=$row  ");
+		echo("  C=$cols[$i],R=$row  ");
 		
 		// PhpSpreadsheet uses columns starting at 1
 		// PHPExcel (deprecated) used columns starting at 0
@@ -173,6 +173,48 @@ function getNameFields($sheet,$row,$namelabels)
 	else
 		;//var_dump($IMPORTSPEC);
 	return $res;
+
+}
+
+// I will derive the TeamID from the TeamName, creating the necessary team records along the way
+function getTeamID($sheet,$row) {
+
+	global $DB, $IMPORTSPEC;
+
+	$res = "0";	// default to no team
+
+	if (isset($IMPORTSPEC['cols']['TeamID'])) {
+		return getMergeCols($sheet,$row,$IMPORTSPEC['cols']["TeamID"]);
+	}
+
+	echo("Testing TeamName   ");
+
+	if (!isset($IMPORTSPEC["cols"]["TeamName"])) {
+		echo(" nope<br>");
+		return 0;
+
+	}
+	$teamName = getMergeCols($sheet,$row,$IMPORTSPEC['cols']['TeamName']);
+	if ($teamName == "") {
+		echo("Got blank teamName<br>");
+		return 0;
+	}
+	// Got a non-blank team name now so ...
+	while ($res == "0") {
+		$sql = "SELECT TeamID FROM teams WHERE BriefDesc LIKE '".$DB->escapeString($teamName)."'";
+		$res = getValueFromDB($sql,"TeamID","0");
+		echo($sql." found ".$res);
+		if ($res > "0") {
+			return $res;
+		}
+		$sql = "INSERT INTO teams (BriefDesc) VALUES('".$DB->escapeString($teamName)."')";
+		$DB->exec($sql);
+		if ($DB->lastErrorCode()<>0) 
+			return dberror();
+		
+		echo($sql. "  run<br>");
+	}
+	
 
 }
 
@@ -286,7 +328,7 @@ function loadSpreadsheet()
 	$specialfields = ['RiderName','RiderLast','RiderFirst',
 						'PillionName','PillionLast','PillionFirst',
 						'NoKName','NoKLast','NoKFirst',
-						'Bike','Make','Model','BikeReg'
+						'Bike','Make','Model','BikeReg','TeamName'
 					];
 	
 	if (!$DB->exec("BEGIN IMMEDIATE TRANSACTION")) {
@@ -344,6 +386,9 @@ function loadSpreadsheet()
 				$fldval['RiderFirst'] = properName(trim($ridernames[1]));
 			}
 
+			$fldval['TeamID'] = getTeamID($sheet,$row);
+			//print_R($IMPORTSPEC['cols']); exit;
+			
 		}
 		
 		if ($IMPORTSPEC['type']==$TYPE_BONUSES) {

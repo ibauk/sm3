@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -1654,7 +1654,10 @@ function editTeams() {
 	xhttp.onreadystatechange = function() {
 		let ok = new RegExp("\W*ok\W*");
 		if (this.readyState == 4 && this.status == 200) {
-			document.getElementById('teammembers').innerHTML = this.responseText;
+			let x = this.responseText;
+			console.log(x);
+			document.getElementById('teammembers').innerHTML = x;
+			console.log('set');
 		}
 	};
 	xhttp.open("GET", "entrants.php?c=getteam&team="+team, true);

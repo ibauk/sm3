@@ -1272,7 +1272,7 @@ function recalcScorecard($entrant,$intransaction) {
 
         $scorex[] = $sx;
 
-        $lastBonusPointsValue = $points;
+        $lastBonusPointsValue = $basicBonusPoints;
         if (array_key_exists($bon,$rejectedClaims)) {
             $lastBonusPointsValue = 0;
         }
