@@ -147,7 +147,7 @@ function getMergeCols($sheet,$row,$colspec,$sep = ' ')
 	for ($i = 0; $i < sizeof($cols); $i++)
 	{
 		if ($res <> '') $res .= $sep;
-		echo("  C=$cols[$i],R=$row  ");
+		//echo("  C=$cols[$i],R=$row  ");
 		
 		// PhpSpreadsheet uses columns starting at 1
 		// PHPExcel (deprecated) used columns starting at 0
@@ -187,10 +187,10 @@ function getTeamID($sheet,$row) {
 		return getMergeCols($sheet,$row,$IMPORTSPEC['cols']["TeamID"]);
 	}
 
-	echo("Testing TeamName   ");
+//	echo("Testing TeamName   ");
 
 	if (!isset($IMPORTSPEC["cols"]["TeamName"])) {
-		echo(" nope<br>");
+		//echo(" nope<br>");
 		return 0;
 
 	}
@@ -212,7 +212,7 @@ function getTeamID($sheet,$row) {
 		if ($DB->lastErrorCode()<>0) 
 			return dberror();
 		
-		echo($sql. "  run<br>");
+//		echo($sql. "  run<br>");
 	}
 	
 
@@ -408,6 +408,8 @@ function loadSpreadsheet()
 				$fldval[$fld] = $defval;
 				if (isset($IMPORTSPEC['setif'][$fld])) {
 					foreach($IMPORTSPEC['setif'][$fld] as $val => $mtch) {
+						//$txt = getMergeCols($sheet,$row,$mtch[0]);
+						//echo("DEBUG: '$txt' == '".$mtch[1]."' using '".$mtch[0]."'".preg_match($mtch[1],$txt)."<br>" );
 						if (preg_match($mtch[1],getMergeCols($sheet,$row,$mtch[0]))) {
 							$fldval[$fld] = $val;
 						}

@@ -137,6 +137,19 @@ $tens = array(
 		return $restens.$resones;
 }
 
+// Crude English-only a/an prefix
+function formattedABike($bike) {
+
+	$res = "a";
+	switch(substr($bike,0,1)) {
+		case 'A':
+		case 'E':
+		case 'I':
+		case 'O':
+			$res = "an";
+	}
+	return $res." ".$bike;
+}
 function formattedPlace($place)
 {
 	global $CERTOPTS;
@@ -213,6 +226,8 @@ function formattedField($fldname,$fldval)
 	//echo('fF{'.$fldname.'=='.$fldval.'}');
 	if (preg_match("/DateRallyRange/",$fldname)) {
 		return formattedDateRange($fldval);
+	} else if (preg_match("/ABike/",$fldname)) {
+		return formattedABike($fldval);
 	} else if (preg_match("/RallyTitleSplit/",$fldname)) {
 		return formattedRallyTitle($fldval,true,true);
 	} else if (preg_match("/RallyTitleShort/",$fldname)) {
@@ -333,6 +348,7 @@ function fetchExtraVariables($EntrantID) {
 	$sql = "SELECT count(DISTINCT BonusID) As Rex FROM claims WHERE EntrantID=".$EntrantID. " AND Decision=0";
 	$res['NumGoodClaims'] = getValueFromDB($sql,"Rex",0);
 	$res['NumRejectedClaims'] = $res['NumBonusClaims'] - $res['NumGoodClaims'];
+	$res['ABike'] = getValueFromDB("SELECT Bike FROM entrants WHERE EntrantID=".$EntrantID,"Bike","");
 	$sql = "SELECT TeamID FROM entrants WHERE EntrantID=".$EntrantID;
 	$TeamNumber = getValueFromDB($sql,"TeamID","0");
 	$res['TeamName'] = "";
@@ -537,7 +553,7 @@ function viewCertificates()
 	global $DB, $TAGS, $KONSTANTS, $CERTOPTS, $ShowPositionZero;
 
 	//echo("Fetching records to print<br>");
-	$sortspec = 'FinishPosition DESC';
+	$sortspec = 'FinishPosition DESC, RiderLast, RiderFirst';
 	if (isset($_REQUEST['seq']))
 		$sortspec = $_REQUEST['seq'];
 	
@@ -569,6 +585,9 @@ function viewCertificates()
 		if (!$ds && repeatFirstCertificate())
 			viewCertificate($rd['EntrantID'],true,true);
 		$ds = true;
+		if ("".$rd['PillionName'] != "") {				// Print two certs for rider/pillion
+			viewCertificate($rd['EntrantID'],$ds,true);
+		}
 	}
 	//echo '<hr>'.$_SERVER['HTTP_USER_AGENT'];
 	if (!$ds)

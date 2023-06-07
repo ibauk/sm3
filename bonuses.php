@@ -188,7 +188,7 @@ function showBonus($bonusid) {
 
 	echo('<span class="vlabel" title="'.$TAGS['BonusPhoto'][1].'">');
 	echo('<label for="Image">'.$TAGS['BonusPhoto'][0].'</label> ');
-	echo('<input type="text" name="Image" id="Image" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',$rd['Image']).'"> ');
+	echo('<input type="text" name="Image" id="Image" oninput="enableSaveButton();" value="'.str_replace('"','&quot;',"".$rd['Image']).'"> ');
 ?>
 <script>
 	function setTriggered(obj) {
@@ -198,7 +198,7 @@ function showBonus($bonusid) {
 
 </script>
 <?php
-	echo('<img style="vertical-align: middle;" src="images/bonuses/'.rawurlencode($rd['Image']).'" alt="**"  data-t="0" loading="lazy"/>');
+	echo('<img style="vertical-align: middle;" src="images/bonuses/'.rawurlencode("".$rd['Image']).'" alt="**"  data-t="0" loading="lazy"/>');
 	echo('</span>');
 	
 	

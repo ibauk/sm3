@@ -837,70 +837,70 @@ $IMPORTSPEC[''cols''][''RiderIBA'']		= 3;
 $IMPORTSPEC[''cols''][''ScoredBy'']		= 2; 	// RiderLast for surname sorting (cheat)
 
 // Import pillion details regardless of has_pillion
-$IMPORTSPEC[''cols''][''PillionLast'']	= 6;
-$IMPORTSPEC[''cols''][''PillionFirst'']	= 5;
-$IMPORTSPEC[''cols''][''PillionIBA'']	= 7;
+$IMPORTSPEC[''cols''][''PillionLast'']	= 7;
+$IMPORTSPEC[''cols''][''PillionFirst'']	= 6;
+$IMPORTSPEC[''cols''][''PillionIBA'']	= 8;
 
-$IMPORTSPEC[''cols''][''Bike''] 		= 9;
-$IMPORTSPEC[''cols''][''BikeReg''] 		= 12;
+$IMPORTSPEC[''cols''][''Bike''] 		= 11;
+$IMPORTSPEC[''cols''][''BikeReg''] 		= 14;
 
 $IMPORTSPEC[''default''][''OdoKms'']    = 0;
 $IMPORTSPEC[''setif''][''OdoKms''][0]	= [13,''/M/''];
 $IMPORTSPEC[''setif''][''OdoKms''][1]	= [13,''/K/''];
 
 
-$IMPORTSPEC[''cols''][''Email'']		= 14;
-$IMPORTSPEC[''cols''][''Phone'']		= 15;
-$IMPORTSPEC[''cols''][''NoKName'']		= 22;
-$IMPORTSPEC[''cols''][''NoKPhone'']		= 23;
-$IMPORTSPEC[''cols''][''NoKRelation'']	= 24;
-$IMPORTSPEC[''cols''][''Country''] 		= 21;
+$IMPORTSPEC[''cols''][''Email'']		= 16;
+$IMPORTSPEC[''cols''][''Phone'']		= 17;
+$IMPORTSPEC[''cols''][''NoKName'']		= 24;
+$IMPORTSPEC[''cols''][''NoKPhone'']		= 25;
+$IMPORTSPEC[''cols''][''NoKRelation'']	= 26;
+$IMPORTSPEC[''cols''][''Country''] 		= 23;
 
 // data collects lines to be stored as ExtraData
-$IMPORTSPEC[''data''][''Postcode'']		= 20;							// Export to rides database
-$IMPORTSPEC[''data''][''Country'']		= 21;							// Export to rides database
-$IMPORTSPEC[''data''][''Postal_Address'']		= ''16:17:18:19:20:21'';// Export to rides database
+$IMPORTSPEC[''data''][''Postcode'']		= 22;							// Export to rides database
+$IMPORTSPEC[''data''][''Country'']		= 23;							// Export to rides database
+$IMPORTSPEC[''data''][''Postal_Address'']		= ''18:19:20:21:22:23'';// Export to rides database
 																		// Duplications deliberate
 $IMPORTSPEC[''data''][''NoviceRider'']	= 4;
 $IMPORTSPEC[''data''][''NovicePillion'']= 8;
 
 // If the content of the indexed column matches the RE, reject (don''t load) the entry
-// $IMPORTSPEC[''reject''][35]	= ''/Withdrawn/'';
+// $IMPORTSPEC[''reject''][37]	= ''/Withdrawn/'';
 
 $IMPORTSPEC[''default''][''BCMethod'']       = 0;
-$IMPORTSPEC[''setif''][''BCMethod''][1]	= [25,''/Electronic/''];
-$IMPORTSPEC[''setif''][''BCMethod''][2]	= [25,''/Paper|Delayed/''];
+$IMPORTSPEC[''setif''][''BCMethod''][1]	= [27,''/Electronic/''];
+$IMPORTSPEC[''setif''][''BCMethod''][2]	= [27,''/Paper|Delayed/''];
 
 $IMPORTSPEC[''default''][''FinishPosition''] = 1; /* Print certs right away */
 
 // Now choose only rows matching the regex below; multiple rows = and
-//$IMPORTSPEC[''select''][21]			= ''/North Anti Clock Wise/'';
+//$IMPORTSPEC[''select''][23]			= ''/North Anti Clock Wise/'';
 
 
 /* Set the field after ''setif'' to the following value if the column matches the regex */
 $IMPORTSPEC[''default''][''EntrantStatus'']	= 8; // Finisher so certificate can be printed straight away
 
 $IMPORTSPEC[''default''][''Class'']		= 0;
-$IMPORTSPEC[''setif''][''Class''][1]	= array(26,''/B \- North Anti\-Clockwise/'');
-$IMPORTSPEC[''setif''][''Class''][2]	= array(26,''/A \- North Clockwise/'');
-$IMPORTSPEC[''setif''][''Class''][3]	= array(26,''/D \- South Anti\-Clockwise/'');
-$IMPORTSPEC[''setif''][''Class''][4]	= array(26,''/C \- South Clockwise/'');
-$IMPORTSPEC[''setif''][''Class''][5]	= array(26,''/BBG 1500/'');
-$IMPORTSPEC[''setif''][''Class''][6]	= array(26,''/E \- 500 Clockwise/'');
-$IMPORTSPEC[''setif''][''Class''][7]	= array(26,''/F \- 500 Anti\-Clockwise/'');
+$IMPORTSPEC[''setif''][''Class''][1]	= array(28,''/B \- North Anti\-Clockwise/'');
+$IMPORTSPEC[''setif''][''Class''][2]	= array(28,''/A \- North Clockwise/'');
+$IMPORTSPEC[''setif''][''Class''][3]	= array(28,''/D \- South Anti\-Clockwise/'');
+$IMPORTSPEC[''setif''][''Class''][4]	= array(28,''/C \- South Clockwise/'');
+$IMPORTSPEC[''setif''][''Class''][5]	= array(28,''/BBG 1500/'');
+$IMPORTSPEC[''setif''][''Class''][6]	= array(28,''/E \- 500 Clockwise/'');
+$IMPORTSPEC[''setif''][''Class''][7]	= array(28,''/F \- 500 Anti\-Clockwise/'');
 
 $IMPORTSPEC[''default''][''CorrectedMiles'']		= 0;
 /* These mileage settings need to be unique */
-$IMPORTSPEC[''setif''][''CorrectedMiles''][1006]	= array(26,''/North/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][1004]	= array(26,''/South/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][1527]	= array(26,''/BBG 1500/'');
-$IMPORTSPEC[''setif''][''CorrectedMiles''][504]	= array(26,''/500/'');
+$IMPORTSPEC[''setif''][''CorrectedMiles''][1006]	= array(28,''/North/'');
+$IMPORTSPEC[''setif''][''CorrectedMiles''][1004]	= array(28,''/South/'');
+$IMPORTSPEC[''setif''][''CorrectedMiles''][1527]	= array(28,''/BBG 1500/'');
+$IMPORTSPEC[''setif''][''CorrectedMiles''][504]	= array(28,''/500/'');
 
 
-$IMPORTSPEC[''data''][''Miles2Squires'']	= 31;
-$IMPORTSPEC[''data''][''FreeCamping'']		= 30;
-$IMPORTSPEC[''data''][''T-shirt'']			= 27;
-$IMPORTSPEC[''data''][''T-shirt2'']			= 28;
+$IMPORTSPEC[''data''][''Miles2Squires'']	= 33;
+$IMPORTSPEC[''data''][''FreeCamping'']		= 32;
+$IMPORTSPEC[''data''][''T-shirt'']			= 29;
+$IMPORTSPEC[''data''][''T-shirt2'']			= 30;
 
 
 

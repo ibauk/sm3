@@ -1402,8 +1402,12 @@ echo('</span> ');
 	echo('<input  onkeypress="digitonly();" onchange="odoAdjust();enableSaveButton();" class="bignumber" type="number" step="any" min="0" name="OdoRallyStart" id="OdoRallyStart" value="'.$rd['OdoRallyStart'].'"> </span>');
 	
 	echo('<span  title="'.$TAGS['OdoRallyFinish'][1].' "><label for="OdoRallyFinish">'.$TAGS['OdoRallyFinish'][0].' </label> ');
-	echo('<input  onkeypress="digitonly();" onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" min="0" name="OdoRallyFinish" id="OdoRallyFinish" value="'.$rd['OdoRallyFinish'].'"> </span>');
+	echo('<input  onkeypress="digitonly();" onchange="odoAdjust();enableSaveButton();" type="number" class="bignumber" step="any" min="0" name="OdoRallyFinish" id="OdoRallyFinish" value="'.$rd['OdoRallyFinish'].'"> </span> ');
 	
+	// Added as convenience for RBLR1000 checkers
+	echo('<span> = '.$TAGS['CorrectedMiles'][0].' </span>');
+	echo(' <input readonly id="CorrectedMiles2" value="'.$rd['CorrectedMiles'].'" onchange="enableSaveButton();" title="'.$TAGS['CorrectedMiles'][1].'"> ');
+
 	
 	echo('</fieldset>');
 

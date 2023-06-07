@@ -735,6 +735,8 @@ function odoAdjust(useTrip)
 			rallydistance = rallydistance * KmsPerMile;
 		
 		document.getElementById('CorrectedMiles').value = rallydistance.toFixed(0);
+		let cm2 = document.getElementById('CorrectedMiles2');
+		if (cm2) cm2.value = rallydistance.toFixed(0);
 	}
 }
 

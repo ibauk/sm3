@@ -2,7 +2,7 @@
  * RBLR CERTIFICATES
  *
  *
- * As at June 2020
+ * As at June 2023
  *
  */
 
@@ -35,7 +35,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,006 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Edinburgh, Wick and Fort William before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode #ABike# a total of 1,006 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Edinburgh, Wick and Fort William before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -71,7 +71,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,006 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Fort William, Wick and Edinburgh before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode #ABike# a total of 1,006 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Fort William, Wick and Edinburgh before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -107,7 +107,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em;/>
 
-<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,004 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Bangor, Brighton and Lowestoft before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode #ABike# a total of 1,004 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Bangor, Brighton and Lowestoft before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -143,7 +143,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,004 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Lowestoft, Brighton and Bangor before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode #ABike# a total of 1,004 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Lowestoft, Brighton and Bangor before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -179,7 +179,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,527 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Folkestone, Swansea and Perth before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode #ABike# a total of 1,527 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Folkestone, Swansea and Perth before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -211,7 +211,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <div class="citation">
 
-<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode a #Bike# a total of 504 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Millom, Berwick and Beverly before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode #ABike# a total of 504 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Millom, Berwick and Beverly before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -245,7 +245,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <div class="citation">
 
-<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode a #Bike# a total of 504 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Beverly, Berwick and Millom before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode #ABike# a total of 504 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Beverly, Berwick and Millom before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -284,7 +284,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,006 gruelling miles starting in Squires cafe, Yorkshire continuing onto Edinburgh, Wick and Fort William before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode #ABike# a total of 1,006 gruelling miles starting in Squires cafe, Yorkshire continuing onto Edinburgh, Wick and Fort William before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -321,7 +321,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,006 gruelling miles starting in Squires cafe, Yorkshire continuing onto Fort William, Wick and Edinburgh before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode #ABike# a total of 1,006 gruelling miles starting in Squires cafe, Yorkshire continuing onto Fort William, Wick and Edinburgh before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -356,7 +356,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,004 gruelling miles starting in Squires cafe, Yorkshire continuing onto Bangor, Brighton and Lowestoft before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode #ABike# a total of 1,004 gruelling miles starting in Squires cafe, Yorkshire continuing onto Bangor, Brighton and Lowestoft before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -391,7 +391,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,004 gruelling miles starting in Squires cafe, Yorkshire continuing onto Bangor, Brighton and Lowestoft before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on #DateRallyRange#, #CrewName# rode #ABike# a total of 1,004 gruelling miles starting in Squires cafe, Yorkshire continuing onto Bangor, Brighton and Lowestoft before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -425,7 +425,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on the #DateRallyRange#, #RiderName# rode a #Bike# a total of 1,527 gruelling miles in less than 36 hours starting in Squires cafe, Yorkshire continuing onto Folkestone, Swansea and Perth before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on the #DateRallyRange#, #RiderName# rode #ABike# a total of 1,527 gruelling miles in less than 36 hours starting in Squires cafe, Yorkshire continuing onto Folkestone, Swansea and Perth before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
@@ -461,7 +461,7 @@ INSERT INTO "certificates" ("EntrantID","css","html","options","image","Class","
 
 <img src="images/smallpoppy.png" alt="" style="float:left;" padding-right:1em; />
 
-<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode a #Bike# a total of 1,004 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Folkestone, Swansea and Bodmin before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
+<p>&nbsp;This is to certify that on the #DateRallyRange#, #CrewName# rode #ABike# a total of 1,004 gruelling miles in less than 24 hours starting in Squires cafe, Yorkshire continuing onto Folkestone, Swansea and Bodmin before ending in Squires cafe, Yorkshire while participating in the RBLR1000 event in support of the Royal British Legion''s Poppy Appeal.</p>
 
 </div>
 
