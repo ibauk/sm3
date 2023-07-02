@@ -1216,7 +1216,22 @@ function applyClaimsEntrant($entrantid) {
 }
 
 
+function zapAllEntrants() {
 
+	global $DB;
+
+	$sql = "SELECT EntrantID FROM entrants";
+	error_log("zapAllEntrants");
+	$R = $DB->query($sql);
+	$e = [];
+	while ($rd = $R->fetchArray()) {
+		array_push($e,$rd['EntrantID']);
+	}
+	foreach($e as $n) {
+		error_log("Zapping ".$n);
+		zapScorecard($n);
+	}
+}
 
 
 
@@ -1313,6 +1328,13 @@ function applyClaims()
 	//print_r($claims); return;
 	
 	$scorecardsTouched = 0;
+
+	if ($claimcount < 1) { // There are no claims so loop below won't function. Instead ...
+
+		zapAllEntrants();
+
+	}
+
 	foreach($claims as $entrant => $eclaims) {
 		
 		error_log("Zapping $entrant");
