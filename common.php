@@ -103,7 +103,7 @@ $KONSTANTS['ComboScoreMethodMults'] = 1;
 
 
 $KONSTANTS['DefaultOdoScaleFactor'] = 1;
-$KONSTANTS['DefaultEntrantStatus'] = $KONSTANTS['EntrantOK'];
+$KONSTANTS['DefaultEntrantStatus'] = $KONSTANTS['EntrantDNS'];
 
 $KONSTANTS['ConfirmedBonusMarker'] = '++';
 $KONSTANTS['ConfirmedBonusTick'] = '<span class="ConfirmedBonusTick" title="'.$TAGS['ConfirmedBonusTick'][1].'">'.$TAGS['ConfirmedBonusTick'][0].'</span>';

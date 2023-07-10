@@ -634,7 +634,7 @@ INSERT INTO `certificates` (EntrantID,css,html,options,image,Class,Title) VALUES
 INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES(' unknown','unknown format',0,'// Following lists use zero-based column numbers
 $IMPORTSPEC[''default''][''BCMethod'']       = 1;
 $IMPORTSPEC[''default''][''CorrectedMiles'']       = 0;
-$IMPORTSPEC[''default''][''EntrantStatus'']	= 1; // Default to OK
+$IMPORTSPEC[''default''][''EntrantStatus'']	= 0; // Default to DNS
 
 ');
 
@@ -644,7 +644,7 @@ INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('Rally
 // cols represent fields in the ScoreMaster.entrants table
 $IMPORTSPEC[''default''][''BCMethod'']       = 1;
 $IMPORTSPEC[''default''][''CorrectedMiles'']       = 0;
-$IMPORTSPEC[''default''][''EntrantStatus'']	= 1; // Default to OK
+$IMPORTSPEC[''default''][''EntrantStatus'']	= 0; // Default to DNS
 
 $IMPORTSPEC[''cols''][''EntrantID'']	= 0;
 $IMPORTSPEC[''cols''][''RiderLast'']	= 9;
@@ -691,7 +691,7 @@ INSERT INTO "importspecs" (specid,specTitle,importType,fieldSpecs) VALUES('Rally
 
 $IMPORTSPEC[''default''][''BCMethod'']       = 1;
 $IMPORTSPEC[''default''][''CorrectedMiles'']       = 0;
-$IMPORTSPEC[''default''][''EntrantStatus'']	= 1; // Default to OK
+$IMPORTSPEC[''default''][''EntrantStatus'']	= 0; // Default to DNS
 
 // If this flag exists and is set true then names and bikes won''t be reformatted
 $IMPORTSPEC[''options''][''sourceisclean''] = true;

@@ -270,10 +270,14 @@ function updateFastOdo() {
 		return;
 	}
     $okFinisher = false;
+    $okStarter = false;
     switch($_REQUEST['f']) {
         case 'OdoRallyFinish':
             $okFinisher = true;
+            break;
         case 'OdoRallyStart':
+            $okStarter = true;
+            break;
         case 'OdoCheckStart':
         case 'OdoCheckFinish':
         case 'OdoCheckTrip':
@@ -288,18 +292,26 @@ function updateFastOdo() {
 	$sql .= " WHERE EntrantID=".$_REQUEST['e'];
 	$updateok = ($DB->exec($sql) && $DB->changes()==1);
     if ($updateok) {
-        if ($okFinisher) {
-            $sql = "UPDATE entrants SET EntrantStatus=".$KONSTANTS['EntrantFinisher'];
-            if (isset($_REQUEST['t']))
-                $sql .= ", FinishTime='".substr($_REQUEST['t'],0,16)."'";
+        if ($okStarter) {
+            $sql = "UPDATE entrants SET EntrantStatus=".$KONSTANTS['EntrantOK'];
             $sql .= " WHERE EntrantID=".$_REQUEST['e'];
-            $sql .= " AND EntrantStatus=".$KONSTANTS['EntrantOK'];
+            $sql .= " AND EntrantStatus=".$KONSTANTS['EntrantDNS'];
             error_log($sql);
             $DB->exec($sql);
+        } else {
+           if ($okFinisher) {
+                $sql = "UPDATE entrants SET EntrantStatus=".$KONSTANTS['EntrantFinisher'];
+                if (isset($_REQUEST['t']))
+                    $sql .= ", FinishTime='".substr($_REQUEST['t'],0,16)."'";
+                $sql .= " WHERE EntrantID=".$_REQUEST['e'];
+                $sql .= " AND EntrantStatus=".$KONSTANTS['EntrantOK'];
+                error_log($sql);
+                $DB->exec($sql);
+            }
+            recalcDistance($_REQUEST['e']);
+            recalcScorecard($_REQUEST['e'],true);
+            rankEntrants(true);
         }
-        recalcDistance($_REQUEST['e']);
-        recalcScorecard($_REQUEST['e'],true);
-        rankEntrants(true);
     }
     $DB->exec("COMMIT");
 	echo($updateok? 'ok' : 'error' );

@@ -161,6 +161,8 @@ function applyClaim($claimid,$intransaction) {
 
         if (!strpos($bonusclaim,"?") > 0 )
             $lastPointsValue = $points;
+        else
+            $lastPointsValue = 0;
 
         if (in_array($bonusid,$rejectedBonusesLV) || ($rc['Decision'] > 0 && $rc['BonusID']==$bonusid)) {
             error_log("lastPointsValue killed because bonus ".$bonusid." was rejected");
@@ -221,7 +223,7 @@ function applyClaim($claimid,$intransaction) {
      * If the flag is false then an erroneously large odo reading will result in erroneously large CorrectedMiles.
      * If the flag is true then recalculating after final readings are manually entered will overwrite those final readings.
      */
-    if (false || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
+    if (true || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
         $rd['OdoRallyFinish'] = $rc['OdoReading'];
         $rd['CorrectedMiles'] = calcCorrectedMiles($rd['OdoKms'],$rd['OdoRallyStart'],$rd['OdoRallyFinish'],$rd['OdoScaleFactor']);
     }
@@ -1162,7 +1164,6 @@ function recalcScorecard($entrant,$intransaction) {
             $sx->totalPoints = '';
             error_log('<table>'.$sx->asHTML().'</table>');
             $scorex[] = $sx;
-
             continue;
         }
 
@@ -1201,8 +1202,18 @@ function recalcScorecard($entrant,$intransaction) {
         $numBonusesTicked++;
         $restMinutes += $minutes;
         $pointsDesc = "";
+
+        if (!$lastBonusMultiplier) {
+           $lastBonusPointsValue = $basicBonusPoints;
+            if (array_key_exists($bon,$rejectedClaims)) {
+                $lastBonusPointsValue = 0;
+            }
+        }
+
+
         if ($lastBonusMultiplier) {
             $pointsDesc .= " (".$lastBPVMultiplier." x ".$lastBonusPointsValue.")";
+            error_log($pointsDesc);
         }
         if ($minutes > 0) {
             $pointsDesc = ' ['.formatRestMinutes($minutes).']';
@@ -1272,10 +1283,6 @@ function recalcScorecard($entrant,$intransaction) {
 
         $scorex[] = $sx;
 
-        $lastBonusPointsValue = $basicBonusPoints;
-        if (array_key_exists($bon,$rejectedClaims)) {
-            $lastBonusPointsValue = 0;
-        }
 
         if ($lastBonusMultiplier) {
             $lastBonusPointsValue = 0;
