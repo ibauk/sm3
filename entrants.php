@@ -715,11 +715,30 @@ function showFinisherList()
 	if (isset($_REQUEST['status']))
 		$status = $_REQUEST['status'];
 	
+	$sortspecs = [
+					'rank'	=>	'EntrantStatus DESC,FinishPosition,TotalPoints DESC,CorrectedMiles ',
+					'name'	=>	'EntrantStatus DESC,RiderName',
+					'miles'	=>	'EntrantStatus DESC,CorrectedMiles DESC,TotalPoints DESC',
+					'points'=>	'EntrantStatus DESC,TotalPoints DESC',
+					'ppm'	=>	'EntrantStatus DESC,PPM DESC',
+					'speed'	=>	'EntrantStatus DESC,AvgSpeed DESC'
+	];
+
+	$myurl = "entrants.php?c=qlist";
+	foreach (["ss","ok","dnf"] as $arg) {
+		if (isset($_REQUEST[$arg])) {
+			$myurl .= "&".$arg."=".$_REQUEST[$arg];
+		}
+	}
+	
 	$sortspec = 'EntrantStatus DESC,FinishPosition,TotalPoints DESC,CorrectedMiles ';
 	if (isset($_REQUEST['hot']))
 		$sortspec = 'EntrantStatus DESC,FinishTime DESC,FinishPosition,TotalPoints DESC,CorrectedMiles ';
 	if (isset($_REQUEST['seq']))
-		$sortspec = $_REQUEST['seq'];
+		if (isset($sortspecs[$_REQUEST['seq']]))
+			$sortspec = $sortspecs[$_REQUEST['seq']];
+		else
+			$sortspec = $_REQUEST['seq'];
 	
 	$sql = "SELECT *,substr(RiderName,1,RiderPos-1) As RiderFirst";
 	$sql .= ",substr(RiderName,RiderPos+1) As RiderLast";
@@ -802,23 +821,29 @@ function formSubmit(e) {
 	{
 		echo('<table class="qdfinishers">');
 		echo('<thead><tr>');
-		echo('<th class="qlc">'.$TAGS['qPlace'][0].'</th>');
-		echo('<th class="qll">'.$TAGS['qName'][0].'</th>');
+		echo('<th class="qlc"><a href="'.$myurl.'&seq=rank">'.$TAGS['qPlace'][0].'</a></th>');
+		echo('<th class="qll"><a href="'.$myurl.'&seq=name">'.$TAGS['qName'][0].'</a></th>');
 		
 		if ($rallyUsesKms)
 			$dist = $TAGS['qKms'][0];
 		else
 			$dist = $TAGS['qMiles'][0];
 		$dist = getSetting('distanceCustomUnit',$dist);
-		echo('<th class="qlr">'.$dist.'</th>');
-		echo('<th class="qlr">'.$TAGS['qPoints'][0].'</th>');
+		echo('<th class="qlr"><a href="'.$myurl.'&seq=miles">'.$dist.'</a></th>');
+		echo('<th class="qlr"><a href="'.$myurl.'&seq=points">'.$TAGS['qPoints'][0].'</a></th>');
 	
 		if (true) {
 			$ppmlit = strtoupper(substr($TAGS['qPoints'][0],0,1).'&#247;'.substr($dist,0,1));
-			echo('<th class="ppm">'.$ppmlit.'</th>');
+			echo('<th class="ppm"><a href="'.$myurl.'&seq=ppm">'.$ppmlit.'</a></th>');
 		}
-		if (isset($_REQUEST['ss']))
-			echo('<th class="qlr">Speed</th>');
+		if (isset($_REQUEST['ss'])) {
+			if ($rallyUsesKms)
+			$dist = $TAGS['qKmh'][0];
+		else
+			$dist = $TAGS['qMph'][0];
+
+			echo('<th class="qlr"><a href="'.$myurl.'&seq=speed">'.$dist.'</a></th>');
+		}
 		echo('</tr></thead><tbody>');
 		$n = 0;
 		

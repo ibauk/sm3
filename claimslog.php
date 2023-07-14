@@ -98,7 +98,7 @@ function emitDecisionFrame() {
     echo('<span id="ebc_entrant_name" style="font-weight:bold;"></span> ');
 
     echo('<label for="ebc_bonus">'.$TAGS['ebc_HdrBonus'][0].'</label> ');
-    echo('<input type="text" readonly id="ebc_bonus" name="BonusID" value=""> ');
+    echo('<input type="text" readonly id="ebc_bonus" name="BonusID" value="" ondblclick="this.readOnly=!this.readOnly;" onchange="fetchBonus(this.value);"> ');
     echo('<span id="ebc_bonus_name" style="font-weight:bold;" ></span> ');
 
     // Need to pass this through but don't care about it here
@@ -526,6 +526,25 @@ function emitEBCjs() {
             showClaimEBC(tr);
         }
     }
+
+    // I fetch the description of a bonus
+    function fetchBonus(bonusCode) {
+
+        console.log("Fetching bonus "+bonusCode);
+        let url = 'bonuses.php?c=getname&bid='+encodeURIComponent(bonusCode);
+        console.log("Using url "+url);
+        fetch(url)
+            .then(res => res.json())
+        	.then(function (res) {
+                let name = '!!!!';
+                let namespan = document.getElementById('ebc_bonus_name');
+ 	    	    console.log(res);
+		        name = res.briefDesc;
+                console.log('omg == '+name);
+                if (namespan) namespan.innerText = name;
+    		});
+    }
+
 
     function reloadPage() {
         if (!RELOADOK) {

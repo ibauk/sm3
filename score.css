@@ -424,9 +424,14 @@ table.qdfinishers td {
 	padding: 0.5em 1em 0 1em;
 }
 
+
 table.qdfinishers th {
 	border: 1px solid black;
 	padding: 0 1em 0 1em;
+}
+
+table.qdfinishers th a {
+	text-decoration: none;
 }
 
 .explain {

@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.3.2",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.3.3",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -86,6 +86,7 @@ $PROGRAM = array("version" => "3.3.2",	"title"	=> "ScoreMaster");
  *  3.2.1		Rest bonuses, ready for BBR22
  *  3.3			Multi-Legs, fractional mults, points per mile
  *  3.3.2		Post SAS23
+ *	3.3.3		Post BBL23
  */
 
 $MIT = <<<'EOT'

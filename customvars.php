@@ -9,7 +9,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2023 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -624,6 +624,8 @@ $TAGS = array(
 	'qName'				=> array('Name',''),
 	
 	'qMiles'			=> array('Miles',''),						// Miles/Kms
+	'qMph'				=> array('MPH','mph'),
+	'qKmh'				=> array('km/h','km/h'),
 	'qKms'				=> array('Kms',''),							// Miles/Kms
 	
 	'qPoints'			=> array('Points',''),

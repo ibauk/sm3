@@ -769,10 +769,25 @@ function callbackUpdateBonus()
 		
 }
 
+function callbackGetName() {
 
+	global $DB, $TAGS;
+
+	$sql = "SELECT BriefDesc FROM bonuses WHERE BonusID='".$_REQUEST['bid']."'";
+	error_log($sql);
+	$bd = getValueFromDB($sql,"BriefDesc","");
+	if ($bd == "") {
+		echo('{"res":"not found","briefDesc":"'.$TAGS['clg_BadBonus'][0].'"}');
+		return;
+	} 
+	echo('{"res":"ok","briefDesc":"'.$bd.'"}');
+}
 
 if (isset($_REQUEST['c']))
 	switch($_REQUEST['c']) {
+		case 'getname':
+			callbackGetName();
+			exit;
 		case 'insertbonus':
 			callbackInsertBonus();
 			exit;
