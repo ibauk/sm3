@@ -626,7 +626,7 @@ $TAGS = array(
 	'qMiles'			=> array('Miles',''),						// Miles/Kms
 	'qMph'				=> array('MPH','mph'),
 	'qKmh'				=> array('km/h','km/h'),
-	'qKms'				=> array('Kms',''),							// Miles/Kms
+	'qKms'				=> array('Km',''),							// Miles/Kms
 	
 	'qPoints'			=> array('Points',''),
 	'QueriedByTeam'		=> array('Team is NOT happy!','Reviewed by rally team'),

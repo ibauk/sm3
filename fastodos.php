@@ -273,7 +273,12 @@ function updateFastOdo() {
     $okStarter = false;
     switch($_REQUEST['f']) {
         case 'OdoRallyFinish':
-            $okFinisher = true;
+            // If this is the last or only leg of the rally, recording the finishing odo makes him 
+            // a Finisher if not otherwise disqualified. If the setting 'autoFinisher' is true, the
+            // entrants will usually already be finishers at this point.
+            $cleg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg",1);
+            $nleg = getValueFromDB("SELECT NumLegs FROM rallyparams","NumLegs",1);
+            $okFinisher = $cleg >= $nleg;
             break;
         case 'OdoRallyStart':
             $okStarter = true;
@@ -287,6 +292,7 @@ function updateFastOdo() {
             echo('');
             return;
     }
+    error_log("okstarter=$okStarter; okfinisher=$okFinisher");
     $DB->exec("BEGIN TRANSACTION");
 	$sql = "UPDATE entrants SET ".$_REQUEST['f']."=".$_REQUEST['v'];
 	$sql .= " WHERE EntrantID=".$_REQUEST['e'];

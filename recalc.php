@@ -430,7 +430,8 @@ function calcEntrantStatus($rd) {
     }
 
     if (getSetting('autoFinisher','false') != 'true')
-        return $rd['EntrantStatus'];
+        if ($rd['EntrantStatus'] != $KONSTANTS['EntrantFinisher'])
+            return $KONSTANTS['EntrantOK']; //$rd['EntrantStatus'];
     
     return $KONSTANTS['EntrantFinisher'];
 
@@ -773,7 +774,7 @@ function initRallyVariables() {
 //    print_r($catlabels);
 //    echo('<br>');
 
-    $R = $DB->query("SELECT * FROM combinations WHERE Leg=0 OR Leg=".$RP['CurrentLeg']." ORDER BY ComboID");
+    $R = $DB->query("SELECT * FROM combinations WHERE Leg=0 OR Leg<=".$RP['CurrentLeg']." ORDER BY ComboID");
     while($rd = $R->fetchArray()) {
         $cmb = new StdClass();
         $cmb->cid   = $rd['ComboID'];
@@ -837,7 +838,7 @@ function initRallyVariables() {
 
     $sql = "SELECT BonusID,BriefDesc,Compulsory,Points,RestMinutes";
     $sql .= $cats;
-    $sql .= " FROM bonuses WHERE Leg=0 OR Leg=".$RP['CurrentLeg'];
+    $sql .= " FROM bonuses WHERE Leg=0 OR Leg<=".$RP['CurrentLeg'];
     $sql .= " ORDER BY BonusID";
 	$R = $DB->query($sql);
     while ($rd = $R->fetchArray()) {

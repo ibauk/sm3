@@ -206,7 +206,7 @@ function listclaims()
 	$applied = isset($_REQUEST['showa']) ? intval($_REQUEST['showa']) : (isset($_SESSION['fa']) ? $_SESSION['fa'] : $KONSTANTS['showNot']);
 
 	$sql = "SELECT Count(*) AS rex FROM claims ";
-	$sqlw = 'Leg='.$CurrentLeg;
+	$sqlw = 'Leg<='.$CurrentLeg;
 	if (isset($_REQUEST['showe']) && $_REQUEST['showe']!='')
 		$sqlw .= ($sqlw != ''? ' AND ' : '')."EntrantID=".$_REQUEST['showe'];
 	if (isset($_REQUEST['showb']) && $_REQUEST['showb']!='')
@@ -891,7 +891,7 @@ function fetchBonusName($b,$htmlok)
 	$sql = "SELECT BriefDesc, Points, RestMinutes, AskPoints, AskMinutes, ";
 	$sql .= "IfNull(Notes,'') AS Notes, IfNull(Flags,'') AS Flags, ";
 	$sql .= "IfNull(Question,'') AS Question, IfNull(Answer,'') AS Answer FROM bonuses";
-	$sql .= " WHERE BonusID='".strtoupper($b)."' AND (Leg=0 OR Leg=".$CurrentLeg.")";
+	$sql .= " WHERE BonusID='".strtoupper($b)."' AND (Leg=0 OR Leg<=".$CurrentLeg.")";
 	$R = $DB->query($sql);
 	if ($rd = $R->fetchArray()) {
 		$res = '';
@@ -1018,7 +1018,7 @@ function fetchEntrantDetail($e)
 
 		$tankrange = getValueFromDB("SELECT tankrange FROM rallyparams","tankrange",0);
 		
-		$sql = "SELECT * FROM claims WHERE EntrantID=".$e." AND Leg=".$CurrentLeg;
+		$sql = "SELECT * FROM claims WHERE EntrantID=".$e." AND Leg<=".$CurrentLeg;
 		$sql .= " ORDER BY ClaimTime DESC,LoggedAt DESC";
 		$R = $DB->query($sql);
 		$lastodo = 0;
@@ -1170,7 +1170,7 @@ function applyClaimsEntrant($entrantid) {
 
 	$CurrentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg","1");
 
-	$sqlW = "Leg=".$CurrentLeg;
+	$sqlW = "Leg<=".$CurrentLeg;
 	//$sqlW .= " AND ClaimTime>='".$cfg['lodatetime']."'";
 	//$sqlW .= " AND ClaimTime<='".$cfg['hidatetime']."'";
 	
@@ -1275,7 +1275,7 @@ function applyClaims()
 	$isVirtual = getValueFromDB("SELECT isvirtual FROM rallyparams","isvirtual",0);
 
 	$sql = "SELECT claims.*,claims.rowid as claimid,xbonus.BriefDesc,xbonus.Type As BonusType FROM claims";
-	$sql .= " JOIN (SELECT BonusID,BriefDesc,'B' As Type FROM bonuses WHERE Leg=0 OR Leg=".$CurrentLeg.")";
+	$sql .= " JOIN (SELECT BonusID,BriefDesc,'B' As Type FROM bonuses WHERE Leg=0 OR Leg<=".$CurrentLeg.")";
 	$sql .= " AS xbonus ON claims.BonusID=xbonus.BonusID WHERE ";
 	
 	// Because of the link to bonuses, only ordinary bonus claims will be processed here.
@@ -1290,7 +1290,7 @@ function applyClaims()
 		$sqlW = "Applied=0";		// Not already applied
 	}
 	
-	$sqlW .= " AND Leg=".$CurrentLeg;
+	$sqlW .= " AND Leg<=".$CurrentLeg;
 	/*
 	$sqlW .= " AND ClaimTime>='".$loclaimtime."'";
 	$sqlW .= " AND ClaimTime<='".$hiclaimtime."'";
