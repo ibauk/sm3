@@ -721,7 +721,8 @@ function showFinisherList()
 					'miles'	=>	'EntrantStatus DESC,CorrectedMiles DESC,TotalPoints DESC',
 					'points'=>	'EntrantStatus DESC,TotalPoints DESC',
 					'ppm'	=>	'EntrantStatus DESC,PPM DESC',
-					'speed'	=>	'EntrantStatus DESC,AvgSpeed DESC'
+					'speed'	=>	'EntrantStatus DESC,AvgSpeed DESC',
+					'c'		=>	'EntrantStatus DESC,Cohort DESC'
 	];
 
 	$myurl = "entrants.php?c=qlist";
@@ -836,6 +837,9 @@ function formSubmit(e) {
 			$ppmlit = strtoupper(substr($TAGS['qPoints'][0],0,1).'&#247;'.substr($dist,0,1));
 			echo('<th class="ppm"><a href="'.$myurl.'&seq=ppm">'.$ppmlit.'</a></th>');
 		}
+		if (true) {
+			echo('<th class="countries"><a href="'.$myurl.'&seq=c">States</a></th>');
+		}
 		if (isset($_REQUEST['ss'])) {
 			if ($rallyUsesKms)
 			$dist = $TAGS['qKmh'][0];
@@ -876,6 +880,9 @@ function formSubmit(e) {
 
 			if (true) {
 				echo('<td class="ppm" title="'.$rd['PPM'].'">'.number_format($rd['PPM'],$decimalsPPM,$dp,$cm).'</td>');
+			}
+			if (true) {
+				echo('<td class="center">'.$rd['Cohort'].'</td>');
 			}
 			if (isset($_REQUEST['ss']))
 				echo('<td class="qlr"> '.fetchSpeedText($rd).'</td>');

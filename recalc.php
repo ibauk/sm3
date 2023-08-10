@@ -1225,6 +1225,7 @@ function recalcScorecard($entrant,$intransaction) {
         // Keep track of cat counts
         $catcounts = updateCatcounts($bonv,$catcounts,$basicBonusPoints);
 
+
         // Look for and apply cat mods to basic points
         foreach($catCompoundRules as $ccr) {
             if ($ccr->rtype != $KONSTANTS['CAT_OrdinaryScoringRule'])
@@ -1370,7 +1371,7 @@ function recalcScorecard($entrant,$intransaction) {
     for ($i = 1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++) 
         $nzAxisCounts[$i] = countNZ($catcounts[$i]->catcounts);
 
-
+    $numCountries = $nzAxisCounts[1];
     // First rules for number of non-zero cats
 
     $lastAxis = -1;
@@ -1671,6 +1672,7 @@ function recalcScorecard($entrant,$intransaction) {
     $sql .= ",CorrectedMiles=".$rd['CorrectedMiles'];
     $sql .= ",RestMinutes=".$rd['RestMinutes'];
     $sql .= ",AvgSpeed='".$rd['AvgSpeed']."'";
+    $sql .= ",Cohort=".$numCountries;
     if ($RP['TeamRanking'] == $KONSTANTS['RankTeamsCloning'] && $rd['TeamID'] > 0) {
         $sql .= " WHERE TeamID=".$rd['TeamID'];
     } else

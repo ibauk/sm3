@@ -155,7 +155,7 @@ function ajaxNewRBClaim() {
     $restBonusGroups = getSetting('restBonusGroups','RestBonuses');
     $restBonusCodes = bonusCodes($restBonusGroups);
     error_log('restBonusCodes=='.implode(',',$restBonusCodes).' from '.$restBonusGroups);
-    if (!in_array($_REQUEST['BonusID'],$restBonusCodes)) {
+    if ($restBonusGroups == "" || !in_array($_REQUEST['BonusID'],$restBonusCodes)) {
         echo('{"result":"notrest"}');
         return;
     }
