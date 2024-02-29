@@ -292,7 +292,7 @@ function rebuildValues() {
 	
 	for (let i = 1; i < trb.cells.length; i++) {
         let cval = trb.cells[i].firstChild.value;
-        if (cval >= hipts) {
+        if (parseInt(cval) >= parseInt(hipts)) {
             res.push(cval);
             hipts = cval;
         } else
@@ -358,6 +358,7 @@ function updateScorePoints() {
 	let spt = document.getElementById('scorepoints');
 	let spn = document.getElementById('scorepointsnum');
 	spt.value = spn.value;
+	enableSaveButton();
 
 }
 function setTriggered(obj) {

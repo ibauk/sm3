@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.3.3",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.3.4",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -87,6 +87,7 @@ $PROGRAM = array("version" => "3.3.3",	"title"	=> "ScoreMaster");
  *  3.3			Multi-Legs, fractional mults, points per mile
  *  3.3.2		Post SAS23
  *	3.3.3		Post BBL23
+ *	3.3.4		Pre Magic-12
  */
 
 $MIT = <<<'EOT'
