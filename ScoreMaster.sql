@@ -173,7 +173,7 @@ selectflags: ["\\Flagged", "\\Seen"]
 
 
 # Acceptable subject line RE. This accepts decorated entrant numbers, various time formats. Must have four fields.
-subject: ''(\w+)\s+([\w\-]+\-?)\s+(\d+)\s+([\d:\.\-\+TZ]+)\s*(.*)''
+subject: ''(\d+)[\s\.,]+([\w\-]+\-?)[\s\.,]+(\d+)[\s\.,]+([\d:\.\-\+TZ]+)[\s\.,]*(.*)''
 
 # Subject line RE to measure strict adherence to standard
 strict: ''^\s*(\d+)\s+([a-zA-Z0-9\-]+)\s+(\d+)\s+(\d\d\d\d)''
@@ -614,12 +614,13 @@ INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (55,'AdmDoR
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (56,'AdmPrintScorex','scorex.php','window.open(''scorex.php'',''ScoreX'');return false;','entrant,score,scorex');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (57,'RptBonusAnal','reports.php?ba','window.open(''reports.php?ba'',''reports'');return false;','bonus');
 INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (58,'RptComboAnal','reports.php?ca','window.open(''reports.php?ca'',''reports'');return false;','combo');
+INSERT INTO "functions" (functionid,menulbl,url,onclick,Tags) VALUES (59,'RptClaimsAnal','claims.php?aclaims',NULL,''reports,claims'');return false;','combo');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('admin','AdmMenuHeader','37,46,55,4,56,25,6,5');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('setup','AdmSetupHeader','16,17,18,19,20,42');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('entrant','AdmEntrantsHeader','11,53,54,41,47,48,52,15');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('bonus','AdmBonusHeader','7,10,9,39,49');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('util','AdmUtilHeader','29,28,27,32,13,33,35,40,45,50');
-INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('advanced','AdmAdvancedHeader','2,21,22,44,34,23,57,58,30');
+INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('advanced','AdmAdvancedHeader','2,21,22,44,34,23,57,58,59,30');
 
 
 

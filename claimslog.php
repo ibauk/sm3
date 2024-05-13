@@ -10,7 +10,7 @@ ini_set('display_errors', 1);
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2023 Bob Stammers
+ * Copyright (c) 2024 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -36,7 +36,7 @@ function entrantClaimsLog($entrant) {
     global $DB,$TAGS,$KONSTANTS;
 	    
     $rname = getValueFromDB("SELECT RiderName FROM entrants WHERE EntrantID=".$entrant,"RiderName","");
-    $sql = "SELECT BonusID,OdoReading,ClaimTime FROM claims WHERE EntrantID=$entrant ORDER BY ClaimTime";
+    $sql = "SELECT BonusID,OdoReading,ClaimTime FROM claims WHERE EntrantID=$entrant ORDER BY ClaimTime,LoggedAt";
     $R = $DB->query($sql);
     $res = '<div class="claimslog">';
     $res .= '<style>* {font-size: calc(14pt + 1vmin);} td {padding-right: 1em;}.spacert { padding-right: 3em; } s{background-color: lightgray;}</style>';
@@ -56,7 +56,7 @@ function entrantClaimsLog($entrant) {
         } else 
             $bonusesclaimed[$rd['BonusID']]++;
     }
-    reset($R);
+    $R->reset();
     while ($rd = $R->fetchArray()) {
         $res .= '<tr>';
         $bonusid = str_replace('-','',$rd['BonusID']);
@@ -402,7 +402,7 @@ function emitEBCjs() {
         document.getElementById('ebc_notes').innerHTML = tr.getAttribute('data-notes');
         let flagsregion = document.getElementById('ebc_flags');
         let flags = tr.getAttribute('data-flags');
-        if (tr.getAttribute('data-team') > '0') {
+        if (tr.getAttribute('data-team') != '0') {
             flags += '2';
         }
         for (var i = 0; i < flags.length; i++) {
@@ -755,7 +755,11 @@ function listEBClaims() {
         if ($rs['BImage'] != '')
             $bphoto = rawurlencode($rs['BImage']);
         echo('data-bphoto="'.$bphoto.'" ');
-        echo('data-team="'.$rs['TeamID'].'" ');
+        if ($rs['TeamID']=='0' && $rs['PillionName'] != '') {
+            echo('data-team="-1"');
+        } else {
+            echo('data-team="'.$rs['TeamID'].'" ');
+        }
         echo('data-bonus="'.$rs['BonusID'].'" data-odo="'.$rs['OdoReading'].'" ');
         echo('data-points="'.$rs['Points'].'" data-askpoints="'.$rs['AskPoints'].'"');
         echo('data-restminutes="'.$rs['RestMinutes'].'" data-askminutes="'.$rs['AskMinutes'].'"');

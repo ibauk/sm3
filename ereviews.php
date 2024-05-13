@@ -327,6 +327,9 @@ function reviewEntrant($entrant) {
 
     echo('<div id="tab_claims" class="tabContent ereviews">');
 
+    echo(' <input title="'.$TAGS['Print1ClaimLog'][1].'" id="PrintCLButton" type="button" value="Print" ');
+    echo(' onclick="window.open('."'claimslog.php?entrant=".$entrant."','cert'".')" >');
+
     $bonusReclaims = getSetting('bonusReclaims',"0");
     $ignoreClaimDecisionCode = getSetting('ignoreClaimDecisionCode',"9");
 

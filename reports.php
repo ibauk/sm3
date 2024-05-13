@@ -43,7 +43,7 @@ function buildComboScores()
 
     global $DB, $combos_scored_array;
 
-    $sql = "SELECT CombosTicked FROM entrants";
+    $sql = "SELECT IfNull(CombosTicked,'') AS CombosTicked FROM entrants";
     $R = $DB->query($sql);
     while ($rd = $R->fetchArray()) {
         $B = explode(",", $rd['CombosTicked']);

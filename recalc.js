@@ -484,7 +484,7 @@ function recalcScorecard() {
             c.parentElement.classList.add('rejected');
             c.parentElement.classList.remove('checked');
                 let sx = new SCOREXLINE();
-            sx.id = c.value;
+            sx.id = '['+c.value+']';
             sx.desc = c.getAttribute('data-desc')+'<br>'+CLAIM_REJECTED+' - '+reasons[rejectedClaims[c.value]];
             sx.pointsDesc = '';
             sx.points = 'X';
@@ -535,7 +535,7 @@ function recalcScorecard() {
         multipliers += parseFloat(mults);
 
         let sx = new SCOREXLINE();
-        sx.id = c.value;
+        sx.id = '['+c.value+']';
         sx.desc = c.getAttribute('data-desc');
         if (numbids < c.getAttribute('data-maxticks')) {
             sx.pointsDesc = " ( "+numbids+" / "+c.getAttribute('data-maxticks')+" ) ";

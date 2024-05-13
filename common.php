@@ -245,7 +245,7 @@ function bonusReclaimOK($entrantid,$bonusid,$claimtime,$leg) {
 	if ($bonusReclaims == "0")
 		return true;
 
-	$sql = "SELECT * FROM claims WHERE EntrantID=".$entrantid." AND Leg=".$leg." AND ClaimTime < '".$claimtime."'  ORDER BY ClaimTime DESC";
+	$sql = "SELECT * FROM claims WHERE EntrantID=".$entrantid." AND Leg=".$leg." AND ClaimTime < '".$claimtime."'  ORDER BY ClaimTime DESC,LoggedAt DESC";
 	error_log('BRC: '.$sql);
 	$R = $DB->query($sql);
 	// Looking for earlier claims for this bonus

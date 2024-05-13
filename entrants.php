@@ -837,7 +837,7 @@ function formSubmit(e) {
 			$ppmlit = strtoupper(substr($TAGS['qPoints'][0],0,1).'&#247;'.substr($dist,0,1));
 			echo('<th class="ppm"><a href="'.$myurl.'&seq=ppm">'.$ppmlit.'</a></th>');
 		}
-		if (true) {
+		if (false) {
 			echo('<th class="countries"><a href="'.$myurl.'&seq=c">States</a></th>');
 		}
 		if (isset($_REQUEST['ss'])) {
@@ -881,7 +881,7 @@ function formSubmit(e) {
 			if (true) {
 				echo('<td class="ppm" title="'.$rd['PPM'].'">'.number_format($rd['PPM'],$decimalsPPM,$dp,$cm).'</td>');
 			}
-			if (true) {
+			if (false) {
 				echo('<td class="center">'.$rd['Cohort'].'</td>');
 			}
 			if (isset($_REQUEST['ss']))

@@ -1502,6 +1502,114 @@ function ajaxReclaimNG() {
 
 }
 
+function analyseBadResubmits() {
+
+	global $DB;
+
+	$sql = "SELECT EntrantID,BonusID,Decision,ClaimTime FROM claims ORDER BY EntrantID,BonusID,ClaimTime,LoggedAt";
+	$rex = 0;
+	$lost = 0;
+	$laste = 0;
+	$lastb = '';
+	$lastd = -1;
+	$lbd = -1;
+	$r = $DB->query($sql);
+	while ($rd = $r->fetchArray()) {
+		if ($laste != $rd['EntrantID'] || $lastb != $rd['BonusID']) {
+			if ($lastd == 0 && $lbd > 0 && $lbd < 9) {
+				$rex++;
+			}
+			$lastd = $rd['Decision'];
+			$lbd = $lastd;
+		} else {
+			$lbd = $rd['Decision'];
+		} 
+		$laste = $rd['EntrantID'];
+		$lastb = $rd['BonusID'];
+	}
+	if ($lastd == 0 && $lbd > 0 && $lbd < 9) {
+		$rex++;
+	}
+
+	return $rex;
+
+}
+function analyseClaims() {
+
+
+	global $TAGS;
+
+	$sql = "SELECT RallyTitle AS tit FROM rallyparams";
+	$tit = getValueFromDB($sql,'tit','');
+	$tit = "Analysis of claims";
+	$sql = "SELECT RejectReasons AS rr FROM rallyparams";
+	$x = getValueFromDB($sql,'rr','');
+	$reasons = explode("\n",$x);
+	$sql = "SELECT COUNT(*) AS rex FROM claims";
+	$tots = [];
+	$subs = [];
+	$tots['TOTAL CLAIMS'] = getValueFromDB($sql,'rex','0');
+	$totx = $tots['TOTAL CLAIMS'];
+	$sql = "SELECT COUNT(*) AS rex FROM (SELECT EntrantID,BonusID,COUNT(*) AS REX FROM claims GROUP BY EntrantID,BonusID)";
+	$tots['Unique claims'] = getValueFromDB($sql,'rex','0');
+	$tots['Resubmissions'] = $totx - $tots['Unique claims'];
+	$sql = "SELECT COUNT(*) AS rex FROM ebclaims";
+	if ($tots['Resubmissions'] > 0) {
+		$tots['Good claims overwritten'] = analyseBadResubmits();
+		$subs['Good claims overwritten'] = 1;
+	}
+	
+	$ebc = getValueFromDB($sql,'rex',0);
+	$man = $totx - $ebc;
+	if ($man > 0) {
+		$tots['Manual claims'] = ($totx - $ebc > 0) ? $totx - $ebc : 0;
+	}
+	$sql = "SELECT count(*) AS rex FROM claims WHERE decision == 9";
+	$tots['Excluded claims'] = getValueFromDB($sql,'rex','0');
+	$sql = "SELECT count(*) AS rex FROM claims WHERE decision > 0 AND decision < 9";
+	$tots['Rejected claims'] = getValueFromDB($sql,'rex','0');
+	foreach($reasons as $r) {
+		if ($r=='' || substr($r,0,1)=='9') break;
+		$sql = "SELECT count(*) AS rex FROM claims WHERE decision==".substr($r,0,1);
+		$n = getValueFromDB($sql,'rex','0');
+		if ($n > 0) {
+			$tots[substr($r,2)] = $n;
+			$subs[substr($r,2)] = 1;
+		}
+	}
+
+	startHtml($TAGS['ttClaims'][0],$TAGS['AdmClaims'][0]);
+
+
+	echo('<style>td {padding-right: 2em; }');
+	echo(' .label {text-align:right;} .count {text-align:right;} .pctg {text-align:right;}');
+	echo(' .subclass { font-size: smaller; font-style: italic; }');
+	echo(' #anal { padding-top: 2em; }');
+	echo('</style>');
+	echo('<div id="anal">');
+	echo('<table>');
+	echo('<caption>'.$tit.'</caption>');
+	foreach ($tots as $lbl=>$cnt) {
+		echo('<tr><td class="label');
+		if (isset($subs[$lbl])) {
+			echo(' subclass');
+		}
+		echo('">'.$lbl.'</td><td class="count">'.$cnt.'</td>');
+		if ($totx > 0) {
+			$pctg = ($cnt * 100) / $totx;
+			echo('<td class="pctg">'.number_format($pctg,1).'%</td>');
+		}
+		echo('</tr>');
+	}
+	echo('</table>');
+	echo('</div>');
+
+}
+
+if (isset($_REQUEST['aclaims'])) {
+	analyseClaims();
+	exit;
+}
 if (isset($_REQUEST['deleteclaim']) && isset($_REQUEST['claimid']) && $_REQUEST['claimid']>0) {
 	deleteClaim();
 	if (isset($_REQUEST['crs']))

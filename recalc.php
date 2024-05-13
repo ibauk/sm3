@@ -72,6 +72,8 @@ function applyClaim($claimid,$intransaction) {
 
 	global $DB, $KONSTANTS;
 
+    $EXCLUDED_CLAIM_DECISION = 9;
+
     error_log('applying claim # '.$claimid);
     
     $bonusReclaims = getSetting('bonusReclaims',"0");
@@ -82,6 +84,13 @@ function applyClaim($claimid,$intransaction) {
 	if (!$rc = $R->fetchArray())
 		return;
 
+    // Is this the last claim for this entrant?
+    // We might be reprocessing a claim out of sequence.
+    $sql = "SELECT count(*) AS rex FROM claims WHERE EntrantID=".$rc['EntrantID'];
+    $sql .= " AND Decision !=".$EXCLUDED_CLAIM_DECISION;
+    $sql .= " AND ClaimTime>'".$rc['ClaimTime']."' ORDER BY ClaimTime,LoggedAt";
+
+    $isLastClaim = getValueFromDB($sql,"rex","0") == 0;
 
     if ($rc['Decision'] == $ignoreClaimDecisionCode) {
         return;
@@ -105,6 +114,7 @@ function applyClaim($claimid,$intransaction) {
 	$sql .= ",IfNull(StartTime,'') As StartTime";
 	$sql .= ",IfNull(OdoRallyStart,0) As OdoRallyStart,IfNull(OdoScaleFactor,1) As OdoScaleFactor";
 	$sql .= ",IfNull(CorrectedMiles,0) As CorrectedMiles,OdoKms";
+    $sql .= ",EntrantStatus";
 	$sql .= " FROM entrants WHERE EntrantID=".$rc['EntrantID'];
 	$R = $DB->query($sql);
 	$rd = $R->fetchArray();
@@ -223,7 +233,13 @@ function applyClaim($claimid,$intransaction) {
      * If the flag is false then an erroneously large odo reading will result in erroneously large CorrectedMiles.
      * If the flag is true then recalculating after final readings are manually entered will overwrite those final readings.
      */
-    if (true || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
+
+    $updateFinalOdo = $isLastClaim && (
+            getSetting('autoFinisher','false') == 'true' ||  
+            $rd['EntrantStatus'] != $KONSTANTS['EntrantFinisher']
+        );
+
+    if ($updateFinalOdo || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
         $rd['OdoRallyFinish'] = $rc['OdoReading'];
         $rd['CorrectedMiles'] = calcCorrectedMiles($rd['OdoKms'],$rd['OdoRallyStart'],$rd['OdoRallyFinish'],$rd['OdoScaleFactor']);
     }
@@ -1305,7 +1321,7 @@ function recalcScorecard($entrant,$intransaction) {
         // Is this combo already marked as rejected, a necessarily manual act?
         if (array_key_exists($c->cid,$rejectedClaims)) {
             $sx = new SCOREXLINE();
-            $sx->id = $c->cid;
+            $sx->id = '['.$c->cid.']';
             $sx->desc = $c->desc.'<br>'.$KONSTANTS['CLAIM_REJECTED'].' - '.$reasons[$rejectedClaims[$c->cid]];
             $sx->pointsDesc = '';
             $sx->points = 'X';
@@ -1342,7 +1358,7 @@ function recalcScorecard($entrant,$intransaction) {
         $multipliers += $mults;
 
         $sx = new SCOREXLINE();
-        $sx->id = $c->cid;
+        $sx->id = '['.$c->cid.']';
         $sx->desc = $c->desc;
         if ($numbids < $c->max) {
             $sx->pointsDesc = " ( $numbids / $c->max ) ";
