@@ -810,7 +810,7 @@ function initRallyVariables() {
         } else {
             $pa = explode(',',$rd['ScorePoints']);
             $i = 0;
-            for ($j = $cmb->min; $j <= $cmb->max; $j++) {
+            for ($j = $cmb->min - 1; $j < $cmb->max; $j++) {
                 if ( isset ( $pa[$i]))
                     $cmb->pts[$j] = $pa[$i++];
                 else
