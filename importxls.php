@@ -454,9 +454,13 @@ function loadSpreadsheet()
 		
 		if ($IMPORTSPEC['type']==$TYPE_ENTRANTS) {
 			$xtraData = '';
+			// The only multi-column entry for data is Postal_Address which is exported to the Rides database
+			// for Finishers. We want to be able to reformat the field correctly during the upload so we're
+			// going to use a non-blank field separator which can later be used to split the fields apart.
+			$paFS = ' | ';
 			if (isset($IMPORTSPEC['data']))
 				foreach($IMPORTSPEC['data'] as $k => $kcol)
-					$xtraData .= $k.'='.getMergeCols($sheet,$row,$IMPORTSPEC['data'][$k])."\n";
+					$xtraData .= $k.'='.getMergeCols($sheet,$row,$IMPORTSPEC['data'][$k],$paFS)."\n";
 			$fldval['ExtraData'] = $xtraData;
 		}
 		
