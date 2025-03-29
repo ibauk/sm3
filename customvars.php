@@ -693,6 +693,7 @@ $TAGS = array(
 	'ReviewThis'		=> array('Review this entrant',''),
 
 	'RptBonusAnal'		=> array('Bonus analysis','Bonus analysis'),
+	'RptClaimsAnal'		=> array('Claims analysis','Claims analysis'),
 	'RptComboAnal'		=> array('Combo analysis','Combo analysis'),
 	'rp_ebcsettings'	=> array('EBC','EBC settings: These fields control the use of EBCFetch which processes compliant bonus claims from an email account. Any changes here require the system to be restarted before becoming effective.'),
 	'rp_settings'		=> array('Settings','Settings: These fields contain rather technical information which fine-tune the behaviour of ScoreMaster. If you know what you\'re doing, have at it otherwise don\'t guess, do consult a grownup.'),
