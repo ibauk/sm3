@@ -414,7 +414,7 @@ function hideBonusList() {
 	echo('<button id="addubonus" value="+" onclick="hideBonusList();return insertRow();">+</button> ');
     echo($TAGS['BonusListLit'][0]);
 	echo(' ');
-	echo('<input type="text" id="Bonuses" style="width:30em;"  name="Bonuses" value="'.$rd['Bonuses'].'" oninput="editBonusList();" title="'.$TAGS['BonusListLit'][1].'">');
+	echo('<input type="text" id="Bonuses" style="width:30em;text-transform:uppercase;"  name="Bonuses" value="'.$rd['Bonuses'].'" oninput="editBonusList();" title="'.$TAGS['BonusListLit'][1].'">');
     echo('</div>');
 
     $bonuses = getBonusList(true);
@@ -613,7 +613,7 @@ function saveSingleCombo() {
 	$sql .= ",".$_REQUEST['ScoreMethod'];
 	$sql .= ",".$_REQUEST['MinimumTicks'];
 	$sql .= ",'".$_REQUEST['ScorePoints']."'";
-	$sql .= ",'".$bonuses."'";
+	$sql .= ",'".strtoupper($bonuses)."'";
 	$sql .= ",".$_REQUEST['Compulsory'];
 	$sql .= ",".$_REQUEST['Leg'];
 	for ($i=1; $i <= $KONSTANTS['NUMBER_OF_COMPOUND_AXES']; $i++)
