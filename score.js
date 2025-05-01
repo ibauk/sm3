@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2022 Bob Stammers
+ * Copyright (c) 2025 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -544,6 +544,8 @@ function getScoreLock(btn)
 
 	return;	// Don't want to actually implement locking
 
+
+	/**
 	let entrantid = document.getElementById('EntrantID').value;
 	let scorer = document.getElementById('ScorerName').value;
 
@@ -561,7 +563,7 @@ function getScoreLock(btn)
 	};
 	xhttp.open("GET", encodeURI("score.php?c=setlock&e="+entrantid+"&s="+scorer), true);
 	xhttp.send();
-
+	**/
 }
 
 function enableSaveButton()

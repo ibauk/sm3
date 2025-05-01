@@ -716,6 +716,18 @@ function saveSingleBonus() {
 	$sql .= " WHERE BonusID='".$DB->escapeString($_REQUEST['BonusID'])."'";
 
 	$DB->exec($sql);
+
+	// Only if update is via the ShowSingleBonus screen
+	// Update existing claims to reflect current points/minutes
+	if (intval($_REQUEST['AskPoints']) == 0) {
+		$sql = "UPDATE claims SET Points=".intval($_REQUEST['Points']);
+		if (intval($_REQUEST['AskMinutes']) == 0) {
+			$sql .= ",RestMinutes=".intval($_REQUEST['RestMinutes']);
+		}
+		$sql .= " WHERE BonusID='".$DB->escapeString($_REQUEST['BonusID'])."'";
+		$sql .= " AND AskPoints=0";
+		$DB->exec($sql);
+	}
 }
 
 

@@ -10,7 +10,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2023 Bob Stammers
+ * Copyright (c) 2025 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -769,7 +769,7 @@ echo("</script>\n");
 		echo('> ');
 		echo('<span id="CorrectAnswer">');
 		if ($claimid> 0 && $rd['QuestionAsked'] != 0) {
-			echo(getValueFromDB("SELECT IfNull(Answer AS Answer FROM bonuses WHERE BonusID='".$rd['BonusID']."'","Answer",""));
+			echo(getValueFromDB("SELECT IfNull(Answer,'') AS Answer FROM bonuses WHERE BonusID='".$rd['BonusID']."'","Answer",""));
 		}
 		echo('</span>');
 		echo('</span>');

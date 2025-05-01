@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2024 Bob Stammers
+ * Copyright (c) 2025 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.3.4",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.3.5a",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -88,6 +88,8 @@ $PROGRAM = array("version" => "3.3.4",	"title"	=> "ScoreMaster");
  *  3.3.2		Post SAS23
  *	3.3.3		Post BBL23
  *	3.3.4		Pre Magic-12
+ *	3.3.5		Pre PRC25
+ *	3.3.5a		Revalue claims when bonus details are changed. Details not list.
  */
 
 $MIT = <<<'EOT'

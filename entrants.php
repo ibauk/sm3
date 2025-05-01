@@ -8,7 +8,7 @@
  * I am written for readability rather than efficiency, please keep me that way.
  *
  *
- * Copyright (c) 2023 Bob Stammers
+ * Copyright (c) 2025 Bob Stammers
  *
  *
  * This file is part of IBAUK-SCOREMASTER.
@@ -534,6 +534,16 @@ function renumberAllEntrants()
 			echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
 			exit;
 		}
+		$DB->exec("UPDATE claims SET EntrantID=$newnumber WHERE EntrantID=$k");
+		if ($DB->lastErrorCode()<>0) {
+			echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
+			exit;
+		}
+		$DB->exec("UPDATE ebclaims SET EntrantID=$newnumber WHERE EntrantID=$k");
+		if ($DB->lastErrorCode()<>0) {
+			echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
+			exit;
+		}
 	}
 	
 	if ($base > 0)
@@ -542,6 +552,16 @@ function renumberAllEntrants()
 		{
 			$newnumber = $base + $v;
 			$DB->exec("UPDATE entrants SET EntrantID=$v WHERE EntrantID=$newnumber");
+			if ($DB->lastErrorCode()<>0) {
+				echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
+				exit;
+			}
+			$DB->exec("UPDATE claims SET EntrantID=$v WHERE EntrantID=$newnumber");
+			if ($DB->lastErrorCode()<>0) {
+				echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
+				exit;
+			}
+			$DB->exec("UPDATE enclaims SET EntrantID=$v WHERE EntrantID=$newnumber");
 			if ($DB->lastErrorCode()<>0) {
 				echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
 				exit;
@@ -570,6 +590,19 @@ function renumberEntrant()
 		dberror();
 		exit;
 	}
+	$sql = "UPDATE claims SET EntrantID=$newnumber WHERE EntrantID=$entrantid";
+	error_log($sql);
+	if (!$DB->exec($sql)) {
+		dberror();
+		exit;
+	}
+	$sql = "UPDATE ebclaims SET EntrantID=$newnumber WHERE EntrantID=$entrantid";
+	error_log($sql);
+	if (!$DB->exec($sql)) {
+		dberror();
+		exit;
+	}
+
 	if ($DB->lastErrorCode()<>0) {
 		echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
 		exit;
@@ -1215,8 +1248,8 @@ function showEntrantRecord($rd,$showPN)
 		}
 
 		echo('<input type="hidden" name="updaterecord" value="'.$rd['EntrantID'].'">');
-		echo('<input title="'.$TAGS['ScoreNow'][1].'" id="ScoreNowButton" type="button" value="'.$TAGS['ScoreNow'][0].'"');
-		echo(' onclick="window.open('."'scorecard.php?c=score&amp;EntrantID=".$rd['EntrantID']."','score'".')" >');
+		//echo('<input title="'.$TAGS['ScoreNow'][1].'" id="ScoreNowButton" type="button" value="'.$TAGS['ScoreNow'][0].'"');
+		//echo(' onclick="window.open('."'scorecard.php?c=score&amp;EntrantID=".$rd['EntrantID']."','score'".')" >');
 	}
 	if ($rd['RiderName'] <> '')
 		$dis = '';
