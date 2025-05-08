@@ -1177,7 +1177,7 @@ function applyClaimsEntrant($entrantid) {
 	$sqlW .= " AND EntrantID = $entrantid";
 
 
-	$sql = "SELECT claims.*,claims.rowid as claimid,xbonus.BriefDesc,xbonus.Type As BonusType FROM claims JOIN (SELECT BonusID,BriefDesc,'B' As Type FROM bonuses) AS xbonus ON claims.BonusID=xbonus.BonusID WHERE ";
+	$sql = "SELECT claims.*,claims.rowid as claimid,xbonus.BriefDesc,xbonus.Type As BonusType FROM claims LEFT JOIN (SELECT BonusID,BriefDesc,'B' As Type FROM bonuses) AS xbonus ON claims.BonusID=xbonus.BonusID WHERE ";
 
 
 	$sql .= $sqlW;

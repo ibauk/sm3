@@ -308,7 +308,7 @@ function refreshValues() {
 
     let mt = document.getElementById('minimumticks');
     let min = mt.value;
-    let max = mt.getAttribute('max');
+    let max = parseInt(mt.getAttribute('max'));
     let sp = document.getElementById('scorepoints');
     let spa = sp.value.split(',');
     let nsp = spa.length - 1;
@@ -326,12 +326,14 @@ function refreshValues() {
     let trh = vtab.getElementsByTagName('thead')[0].firstChild;
     let trb = vtab.getElementsByTagName('tbody')[0].firstChild;
 	let j = 0;
-    for(let i = min ;i <= max; i++) {
+	console.log("mt="+mt.value + ", min="+min +", max="+max +", trh.cells.length="+trh.cells.length)
+     for(let i = min ;i <= max; i++) {
         let k = trh.cells.length;
         if (j + 1 >= k) {
             trh.insertCell(j + 1);
             trb.insertCell(j + 1);
         }
+		console.log("Setting trh.cells[j + 1] to " + i)
         trh.cells[j + 1].innerHTML = i;
         let pts = spa[nsp];
         if (j < nsp)

@@ -72,7 +72,7 @@ function applyClaim($claimid,$intransaction) {
 
 	global $DB, $KONSTANTS;
 
-    $EXCLUDED_CLAIM_DECISION = 9;
+   // $EXCLUDED_CLAIM_DECISION = 9;
 
     error_log('applying claim # '.$claimid);
     
@@ -87,7 +87,7 @@ function applyClaim($claimid,$intransaction) {
     // Is this the last claim for this entrant?
     // We might be reprocessing a claim out of sequence.
     $sql = "SELECT count(*) AS rex FROM claims WHERE EntrantID=".$rc['EntrantID'];
-    $sql .= " AND Decision !=".$EXCLUDED_CLAIM_DECISION;
+    //$sql .= " AND Decision !=".$ignoreClaimDecisionCode;
     $sql .= " AND ClaimTime>'".$rc['ClaimTime']."' ORDER BY ClaimTime,LoggedAt";
 
     $isLastClaim = getValueFromDB($sql,"rex","0") == 0;
