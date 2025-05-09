@@ -586,6 +586,17 @@ function saveEBClaim($inTransaction) {
 
     $processed = ($_REQUEST['decision'] < 0 ? 0 : 1);
 
+    $odoreading = intval($_REQUEST['OdoReading']);
+    $claimtime = $_REQUEST['ClaimTime'];
+    $entrant = intval($_REQUEST['EntrantID']);
+
+    $sqlx = "SELECT OdoReading FROM claims WHERE EntrantID=$entrant AND ClaimTime < '$claimtime' ORDER BY ClaimTime DESC LIMIT 1";
+    $lastodo = intval(getValueFromDB($sqlx,"OdoReading","$odoreading"));
+
+    if (abs($odoreading - $lastodo) > intval(getSetting("maxOdoGap",1000)) ){
+        $odoreading = $lastodo;
+    }
+
     if (!$inTransaction)
         $DB->exec("BEGIN IMMEDIATE TRANSACTION");
 
@@ -621,7 +632,7 @@ function saveEBClaim($inTransaction) {
     $sqlx .= ",'".$_REQUEST['ClaimTime']."'";
     $sqlx .= ",".$_REQUEST['EntrantID'];
     $sqlx .= ",'".$_REQUEST['BonusID']."'";
-    $sqlx .= ",".$_REQUEST['OdoReading'];
+    $sqlx .= ",".$odoreading; // Current or previous depending on gap
     $sqlx .= ",".$_REQUEST['decision'];
     $sqlx .= ",'".$_REQUEST['photo']."'";
     $sqlx .= ",".intval($_REQUEST['Points']);

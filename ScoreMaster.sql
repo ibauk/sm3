@@ -133,7 +133,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"missingPhotoDecisionCode": "1",
 	"bonusClaimsLimit": "0",
 	"bonusClaimsExceeded": "Claim limit exceeded",
-	"distanceLimitExceeded": "Distance limit exceeded"
+	"distanceLimitExceeded": "Distance limit exceeded",
+	"maxOdoGap": "1000"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com
