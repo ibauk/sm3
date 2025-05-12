@@ -561,7 +561,7 @@ function renumberAllEntrants()
 				echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
 				exit;
 			}
-			$DB->exec("UPDATE enclaims SET EntrantID=$v WHERE EntrantID=$newnumber");
+			$DB->exec("UPDATE ebclaims SET EntrantID=$v WHERE EntrantID=$newnumber");
 			if ($DB->lastErrorCode()<>0) {
 				echo("SQL ERROR: ".$DB->lastErrorMsg().'<hr>'.$sql.'<hr>');
 				exit;
