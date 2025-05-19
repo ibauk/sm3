@@ -159,6 +159,7 @@ $TAGS = array(
 	'AdmPrintScoreX'	=> array('Score explanations','Print score explanations for everyone not DNS'),
 	'AdmRallyParams'	=> array('Rally parameters','View/edit current rally parameters'),
 	'AdmRankEntries'	=> array('Rank finishers','Calculate and apply the rank of each finisher'),
+	'AdmReadyCheck'		=> array('Rally readiness','SShow summary of key variables'),
 	'AdmRebuildScorecards'
 						=> array('Rebuild scorecards','Reprocess all bonus claims'),
 	'AdmRPHideAdv'		=> array('Hide advanced','Hide advanced rally parameters'),

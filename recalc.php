@@ -171,7 +171,7 @@ function applyClaim($claimid,$intransaction) {
 
         if (!strpos($bonusclaim,"?") > 0 )
             $lastPointsValue = $points;
-        else
+        else if ($rc['BonusID'] != $bonusid) // The multiplying bonus might be reclaimed
             $lastPointsValue = 0;
 
         if (in_array($bonusid,$rejectedBonusesLV) || ($rc['Decision'] > 0 && $rc['BonusID']==$bonusid)) {
@@ -540,13 +540,13 @@ function calcTimePenalty($STDate,$FTDate) {
 
 	$OneMinute = 1000 * 60;
 
-
+    //echo("stdate={$STDate} ".is_null($STDate)." ftdate={$FTDate} ".is_null($FTDate)." StartTime is {".$RP['StartTime']."}");
     // Start/finish times
     if (is_null($STDate)) {
         $STDate = $RP['StartTime'];
     }
 
-    $mtDNF = DateTime::createFromFormat('Y\-m\-d\TH\:i',$STDate);
+    $mtDNF = DateTime::createFromFormat('Y\-m\-d\TH\:i',substr($STDate,0,16)); // Strip everything after y-m-dTh:m
     try {
         $mtDNF = date_add($mtDNF,new DateInterval("PT".$RP['MaxHours']."H"));
     } catch(Exception $e) {

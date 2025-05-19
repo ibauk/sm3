@@ -1306,7 +1306,7 @@ function applyClaims()
 	if (isset($_REQUEST['exclude']) && $_REQUEST['exclude'] != '')
 		$sqlW .= " AND BonusID NOT IN (".$_REQUEST['exclude'].")";
 	$sql .= $sqlW;
-	$sql .= " ORDER BY ClaimTime";
+	$sql .= " ORDER BY ClaimTime,LoggedAt";
 	
 	// Load all claims records into memory
 	// organised as EntrantID, BonusID

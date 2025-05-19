@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.3.5a",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.3.6",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -90,6 +90,7 @@ $PROGRAM = array("version" => "3.3.5a",	"title"	=> "ScoreMaster");
  *	3.3.4		Pre Magic-12
  *	3.3.5		Pre PRC25
  *	3.3.5a		Revalue claims when bonus details are changed. Details not list.
+ *	3.3.6		Post M12-25
  */
 
 $MIT = <<<'EOT'
@@ -166,6 +167,7 @@ function showAbout()
 		$serverdetail = $serveraddr;
 	echo('<dt title="'.$TAGS['abtHostname'][1].'">'.$TAGS['abtHostname'][0].'</dt><dd>'.php_uname('n').' [ '.$serverdetail.' ]</dd>');
 	echo('<dt title="'.$TAGS['abtDatabase'][1].'">'.$TAGS['abtDatabase'][0].'</dt><dd>'.absolutePath($DBFILENAME).'</dd>');
+	echo('<dt title="Show summary of key rally details">Rally readiness</dt><dd><a href="readyset.php">Show key settings and status of this rally</dd>');
 	
 	echo('<!-- </dl><hr>');
 	echo('<dl class="techie">');
