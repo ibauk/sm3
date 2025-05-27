@@ -623,7 +623,7 @@ INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('setup','AdmSetupHeader',
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('entrant','AdmEntrantsHeader','11,53,54,41,47,48,52,15');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('bonus','AdmBonusHeader','7,10,9,39,49');
 INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('util','AdmUtilHeader','29,28,27,32,13,33,35,40,45,60,50');
-INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('advanced','AdmAdvancedHeader','2,21,22,44,34,23,57,58,59,30');
+INSERT INTO "menus" (menuid,menulbl,menufuncs) VALUES ('advanced','AdmAdvancedHeader','2,21,22,44,23,57,58,59,30');
 
 
 
