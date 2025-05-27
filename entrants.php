@@ -115,6 +115,9 @@ function fetchSpeedText($rd)
  *
  */
 {
+
+	return ""; // No more speed reporting
+
 	global $DB, $TAGS, $KONSTANTS;
 	
 	if ($rd['CorrectedMiles']<1)
@@ -871,7 +874,7 @@ function formSubmit(e) {
 		if (false) {
 			echo('<th class="countries"><a href="'.$myurl.'&seq=c">States</a></th>');
 		}
-		if (isset($_REQUEST['ss'])) {
+		if (isset($_REQUEST['ss']) && false) {
 			if ($rallyUsesKms)
 			$dist = $TAGS['qKmh'][0];
 		else
@@ -915,7 +918,7 @@ function formSubmit(e) {
 			if (false) {
 				echo('<td class="center">'.$rd['Cohort'].'</td>');
 			}
-			if (isset($_REQUEST['ss']))
+			if (isset($_REQUEST['ss']) && false)
 				echo('<td class="qlr"> '.fetchSpeedText($rd).'</td>');
 			
 			echo('</tr>');
@@ -1509,7 +1512,7 @@ echo('</span> ');
 	echo(' <input type="number" name="CorrectedMiles" id="CorrectedMiles" value="'.$rd['CorrectedMiles'].'" onchange="enableSaveButton();" title="'.$TAGS['CorrectedMiles'][1].'"> ');
 	echo('<label for="RestMinutes" class="vlabel">'.$TAGS['RestMinutesLit'][0].' </label>');
 	echo(' <input type="number" name="RestMinutes" id="RestMinutes" value="'.$rd['RestMinutes'].'" onchange="enableSaveButton();" title="'.$TAGS['RestMinutesLit'][1].'"> ');
-	if ($rd['AvgSpeed'] != "" && $rd['CorrectedMiles'] > 0) {
+	if ($rd['AvgSpeed'] != "" && $rd['CorrectedMiles'] > 0 && false) {
 		echo('<label for="AvgSpeed" class="vlabel">'.$TAGS['AvgSpeedLit'][0].' </label>');
 		$mph = ($KONSTANTS['BasicDistanceUnit'] != $KONSTANTS['DistanceIsMiles'] ? 'km/h' : 'mph');
 		echo(' <span title="'.$TAGS['AvgSpeedLit'][1].'">'.$rd['AvgSpeed'].$mph.'</span>');

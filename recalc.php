@@ -224,8 +224,11 @@ function applyClaim($claimid,$intransaction) {
     if ($rc['ClaimTime'] > $rd['FinishTime'])
         $rd['FinishTime'] = $rc['ClaimTime'];
 
+    $minOdoValue = getSetting('minOdoValue',1001);
+
     if ($rd['OdoRallyStart'] == 0)
-        $rd['OdoRallyStart'] = $rc['OdoReading'];
+        if ($rc['OdoReading'] >= $minOdoValue)
+            $rd['OdoRallyStart'] = $rc['OdoReading'];
 
     /**
      * Automatic updating of final odo reading below.
@@ -239,9 +242,11 @@ function applyClaim($claimid,$intransaction) {
             $rd['EntrantStatus'] != $KONSTANTS['EntrantFinisher']
         );
 
-    if ($updateFinalOdo || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
-        $rd['OdoRallyFinish'] = $rc['OdoReading'];
-        $rd['CorrectedMiles'] = calcCorrectedMiles($rd['OdoKms'],$rd['OdoRallyStart'],$rd['OdoRallyFinish'],$rd['OdoScaleFactor']);
+    if ($rc['OdoReading'] >= $minOdoValue) {
+        if ($updateFinalOdo || $rc['OdoReading'] > $rd['OdoRallyFinish']) {
+            $rd['OdoRallyFinish'] = $rc['OdoReading'];
+            $rd['CorrectedMiles'] = calcCorrectedMiles($rd['OdoKms'],$rd['OdoRallyStart'],$rd['OdoRallyFinish'],$rd['OdoScaleFactor']);
+        }
     }
 
 
