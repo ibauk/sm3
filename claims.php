@@ -203,7 +203,7 @@ function listclaims()
 	}
 
 	$decided = isset($_REQUEST['showd']) ? intval($_REQUEST['showd']) : (isset($_SESSION['fd']) ? $_SESSION['fd'] : $KONSTANTS['showAll']);
-	$applied = isset($_REQUEST['showa']) ? intval($_REQUEST['showa']) : (isset($_SESSION['fa']) ? $_SESSION['fa'] : $KONSTANTS['showNot']);
+	$applied = isset($_REQUEST['showa']) ? intval($_REQUEST['showa']) : (isset($_SESSION['fa']) ? $_SESSION['fa'] : $KONSTANTS['showAll']);
 
 	$sql = "SELECT Count(*) AS rex FROM claims ";
 	$sqlw = 'Leg<='.$CurrentLeg;

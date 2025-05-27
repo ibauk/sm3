@@ -134,7 +134,8 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"bonusClaimsLimit": "0",
 	"bonusClaimsExceeded": "Claim limit exceeded",
 	"distanceLimitExceeded": "Distance limit exceeded",
-	"maxOdoGap": "1000"
+	"maxOdoGap": "1000",
+	"minOdoValue": "1001"
 }','imapserver: imap.gmail.com:993
 
 login: ibaukebc@gmail.com
@@ -255,7 +256,7 @@ CREATE TABLE IF NOT EXISTS "ebclaims" (
 	"ExtraField"	TEXT NOT NULL,
 	"StrictOk"	INTEGER NOT NULL,
 	"Processed"	INTEGER NOT NULL DEFAULT 0,
-	"PhotoID"	INTEGER,
+	"PhotoID"	TEXT,
 	"RestMinutes"	INTEGER NOT NULL DEFAULT 0,
 	"AskPoints"		INTEGER NOT NULL DEFAULT 0,
 	"AskMinutes"	INTEGER NOT NULL DEFAULT 0,

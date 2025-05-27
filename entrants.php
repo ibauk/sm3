@@ -446,8 +446,6 @@ function showEntrantBonuses($bonuses,$rejections)
 	$ro = ' onclick="return false;" ';
 	echo('<h4>'.$TAGS['ROUseScore'][1].'</h4>');
 	$REJ = parseStringArray($rejections,',','=');
-	$BA = explode(',',','.$bonuses); // The leading comma means that the first element is index 1 not 0
-	//print_r($BA);
 	$R = $DB->query('SELECT * FROM bonuses ORDER BY BonusID');
 	$BP = array();
 	while ($rd = $R->fetchArray())
@@ -458,9 +456,9 @@ function showEntrantBonuses($bonuses,$rejections)
 	{
 		if ($bk <> '') {
 			$tick = '';
-			$chk = array_search($bk, $BA) ? ' checked="checked" ' : '';  // Depends on first item having index 1 not 0
+			$chk = strpos($bonuses,$bk.'=')!==false ? ' checked="checked" ' : '';
 			if ($chk=='') {
-				$chk = array_search($KONSTANTS['ConfirmedBonusMarker'].$bk,$BA) ? ' checked="checked" ' : '';  // Depends on first item having index 1 not 0
+				$chk = strpos($bonuses,$KONSTANTS['ConfirmedBonusMarker'].$bk.'=') ? ' checked="checked" ' : '';  
 				$tick = $chk==''? '' : $KONSTANTS['ConfirmedBonusTick'];
 			}
 			echo('<span title="'.htmlspecialchars($b).'"');

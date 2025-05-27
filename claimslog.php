@@ -704,7 +704,7 @@ function listEBClaims() {
     $currentLeg = getValueFromDB("SELECT CurrentLeg FROM rallyparams","CurrentLeg",1);
 
     $sql = "SELECT ebclaims.rowid,ebclaims.EntrantID,RiderName,PillionName,ebclaims.BonusID,xbonus.BriefDesc";
-    $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,xphoto.Image,Notes,Flags,TeamID";
+    $sql .= ",OdoReading,ClaimTime,ExtraField,StrictOK,ebclaims.PhotoID,xphoto.Image,Notes,Flags,TeamID";
     $sql .= ",ebclaims.AttachmentTime As PhotoTS, ebclaims.DateTime As EmailTS,ebclaims.LoggedAt,ebclaims.Subject";
     $sql .= ",xbonus.Points,xbonus.AskPoints,xbonus.RestMinutes,xbonus.AskMinutes,xbonus.Image as BImage,Question,Answer";
     $sql .= " FROM ebclaims LEFT JOIN entrants ON ebclaims.EntrantID=entrants.EntrantID";
@@ -761,7 +761,50 @@ function listEBClaims() {
         }
         error_log($rs['rowid'].' == ['.$rs['Image'].']');
         echo('<tr data-claimid="'.$rs['rowid'].'" ');
-        echo('data-entrant="'.$rs['EntrantID'].'" data-photo="'.$rs['Image'].'" ');
+        echo('data-entrant="'.$rs['EntrantID'].'" ');
+
+        /*
+         * Photo handling                                   May 2025
+         *
+         * Each claim will normally have 1 photo attached but
+         * some will have 0 photos and some will have more than 1.
+         * 
+         * EBCFetch now records the number of each photo associated
+         * with each claim in a comma separated list in the PhotoID
+         * field of the ebclaims entry. Earlier versions stored '0'
+         * in that field if there wasn't exactly one photo.
+         * 
+         * This code caters for all possibilities.
+         */ 
+
+
+         /*
+          * $rs['Image'] here contains a comma separated list of images
+          * belonging to a particular email. Where an email was reprocessed
+          * as opposed to being resent by the entrant its attachments will
+          * be duplicated in the system.
+          *
+          * The image names will be full filenames in the 'ebcimg' folder.
+          * They will all end in '.jpg' because the software enforces that.
+          *
+          */
+
+        if ($rs['PhotoID'] == '0' || $rs['PhotoID'] == '' || $rs['Image']=='') {
+            echo('data-photo="'.$rs['Image'].'" ');
+        } else {
+            $ii = explode(',',$rs['Image']);    // $ii now contains full filenames
+            $jj = explode(',',$rs['PhotoID']);  // $jj now contains emailids
+            $dp = '';
+            for ($i=0;$i<sizeof($ii);$i++) {
+                for ($j=0;$j<sizeof($jj);$j++) {
+                    if (strpos($ii[$i],$jj[$j].'.jpg') !== false) { // We want this one
+                        if ($dp != '') $dp .= ',';
+                        $dp .= $ii[$i];
+                    }
+                }
+            }
+            echo('data-photo="'.$dp.'" ');
+        }
         $bphoto = '';
         if ($rs['BImage'] != '')
             $bphoto = rawurlencode($rs['BImage']);
