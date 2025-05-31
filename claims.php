@@ -252,7 +252,7 @@ function listclaims()
 	echo('<input id="refreshc" type="hidden" name="c" value="listclaims">');
 	echo('<input type="hidden" name="nobc" value="1">');
 
-	echo('<span title="'.$TAGS['cl_DDLabel'][1].'" style="font-size:small;">');
+	echo('<span title="'.$TAGS['cl_DDLabel'][1].'" style="font-size:small; border: solid 2px; padding: 5px;">');
 	echo('<label for="decisiondefault">'.$TAGS['cl_DDLabel'][0].'</label>');
 	echo('<select id="decisiondefault" name="dd" onchange="updateDD(this);" style="font-size:small;"> ');
 	echo('<option value="-1" '.(isset($_SESSION['dd']) && $_SESSION['dd']=='-1'?'selected':'').'>'.$TAGS['BonusClaimUndecided'][0].'</option>');
@@ -282,7 +282,9 @@ function clickDefault() {
 }
 </script>
 <?php
-	echo('<input autofocus style="font-size:large;padding:1em;" onclick="return clickDefault();" type="submit" title="'.$TAGS['cl_PostNewClaim'][1].'" value="'.$TAGS['cl_PostNewClaim'][0].'"> ');
+	echo('<input autofocus style="font-size:large;padding:1em; margin:0 1em;" onclick="return clickDefault();" type="submit" title="'.$TAGS['cl_PostNewClaim'][1].'" value="'.$TAGS['cl_PostNewClaim'][0].'"> ');
+
+	echo('<span  style=" border: solid 2px; padding: 5px;">');
 
 	echo('<span>'.$TAGS['cl_FilterLabel'][0].'</span> ');
 	echo('<input type="number" placeholder1="'.$TAGS['cl_FilterEntrant'][0].'" title="'.$TAGS['cl_FilterEntrant'][1].'" id="showe" onchange="chooseRefresh();" name="showe" value="'.(isset($_REQUEST['showe'])? $_REQUEST['showe']:'').'"> ');
@@ -307,9 +309,11 @@ function clickDefault() {
 	echo('<option value="'.$KONSTANTS['showNot'].'" '.($applied==$KONSTANTS['showNot'] ? 'selected' : '').'>'.$TAGS['cl_showNotA'][0].'</option>');
 	echo('</select> ');
 	
-	echo('<span title="'.$TAGS['cl_NumClaims'][1].'">'.$rex.' </span> ');
+	echo('<span style="font-style: bold; padding: 5px;" title="'.$TAGS['cl_NumClaims'][1].'">'.$rex.' </span> ');
+
+	echo('</span>');
 	
-	echo('<input type="submit" id="refreshlist" onclick="chooseRefresh();clickDefault();" title="'.$TAGS['cl_RefreshList'][1].'" value="'.$TAGS['cl_RefreshList'][0].'"> ');
+	echo('<input type="submit" id="refreshlist" style="margin: 0 1em;" onclick="chooseRefresh();clickDefault();" title="'.$TAGS['cl_RefreshList'][1].'" value="'.$TAGS['cl_RefreshList'][0].'"> ');
 	
 
 	if (strtolower(getSetting('claimsShowPost',"true"))=='true') {
