@@ -156,8 +156,7 @@ dontrun: false
 # Executable to convert HEIC image files to JPG
 # The arguments are expected to be:- filename.HEIC filename.JPG
 # Will be called at BOJ with no arguments to validate installation
-# This uses the ImageMagick package which must be installed on the server
-heic2jpg: magick
+heic2jpg: ebcimg
 
 convertheic2jpg: true
 
@@ -168,7 +167,7 @@ convertheic2jpg: true
 sleepseconds: 10
 
 # Don''t fetch emails older (imap.internaldate) than this date
-notbefore: 2021-07-01
+notbefore: 2025-06-01
 
 # Fetch emails without any of these flags
 selectflags: ["\\Flagged", "\\Seen"]

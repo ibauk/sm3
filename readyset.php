@@ -143,16 +143,16 @@ function showReadySet() {
 
     echo('<field><label for="dontRun">Processing emails</label>');
     echo('<select id="dontRun" ');
-    if ($dontRun || $testMode) echo('class="alert"');
+    if ($dontRun || $testMode || !$imapPassword) echo('class="alert"');
     echo('>');
     echo('<option ');
     if ($dontRun || !$imapPassword) echo(' selected');
     echo('>No, EMAILS ARE NOT BEING PROCESSED</option>');
     echo('<option ');
-    if (!$dontRun && !$testMode) echo (' selected');
+    if (!$dontRun && $imapPassword && !$testMode) echo (' selected');
     echo('>Yes, emails are being processed for LIVE SCORING</option>');
     echo('<option ');
-    if (!$dontRun && $testMode) echo (' selected');
+    if (!$dontRun && $imapPassword && $testMode) echo (' selected');
     echo('>Yes, emails are being processed in TEST MODE ONLY</option>');
     echo('</select></field>');
 
