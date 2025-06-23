@@ -86,93 +86,82 @@ function showOdoList() {
     include 'fastodosphp.js';
     echo("</script>\n");
 
-    echo('<div style="width:36em; max-width: 100vw; margin-left:auto; margin-right: auto;">');
-    echo('<div id="sshdr" style="width:100%;text-align:center;height:10vh;"><br>');
-    echo('<form>');
+    echo('<div style="width:20em; max-width: 100vw; margin-left:auto; margin-right: auto;">');
+    echo('<div id="sshdr" style="width:100%;text-align:center;margin-bottom: .5em;">');
+    //echo('<form>');
     $chk = ($isOdoCheck || isset($_REQUEST['ci']) || isset($_REQUEST['co']) ? "checked" : '');
 
     if (!$isOdoCheck  && !isset($_REQUEST['ci'])) {
-        echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_start" value="start"> ');
+        echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_start" value="start" style="display:none;"> ');
         $startlit = $isCheckIn ? $checkout : strtoupper($checkout);
         echo('<label class="start" for="ss_start">'.$startlit.'</label> ');
         echo(' &nbsp;&nbsp;&nbsp; ');
         $chk = ($chk == '' ? 'checked' : '');
     }
     if ($isOdoCheck || !isset($_REQUEST['co'])) {
-        echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_stop" value="stop"> ');
+        echo('<input type="radio" '.$chk.' onchange="swapss(this);" name="startstop" id="ss_stop" value="stop" style="display:none;"> ');
         $startlit = $isCheckIn ? strtoupper($checkin) : $checkin;
         echo('<label class="stop" for="ss_stop">'.$startlit.'</label> ');
     }
 
-    echo(' &nbsp;&nbsp;&nbsp;<span id="timenow" data-time="" data-refresh="1000" data-pause="120000" data-paused="0" onclick="clickTime();">');
+    echo(' <br>&nbsp;&nbsp;&nbsp;<span id="timenow" data-time="" data-refresh="1000" data-pause="120000" data-paused="0" onclick="clickTime();">');
     //echo('12:34.05');
     echo('</span>');
-    echo('</form>');
-    echo('<br></div>');
+    //echo('</form>');
+    echo('</div>');
 
 
-    echo('<div id="picklistdiv" style="min-height:80vh;">');
-    echo('<form action="fastodos.php" method="post">');
-    echo('<table>');
-    echo('<tbody id="ssbuttons">');
+    echo('<div class="odolist">');
+    //echo('<form action="fastodos.php" method="post">');
+
+    //echo('<table>');
+    //echo('<tbody id="ssbuttons">');
+
     $rowspresent = false;
     $startstop = $isOdoCheck ? 'stop' : 'start';
     $autofocus = ' autofocus ';
     $cellid = 1;
     while($rd = $R->fetchArray()) {
-        echo('<tr>');
-        echo('<td class="EntrantID">'.$rd['EntrantID'].'</td>');
-        echo('<td>'.$rd['RiderName'].'</td>');
+        echo('<div class="odorow">');
+        echo('<span class="EntrantID">'.$rd['EntrantID'].'</span>');
+        echo('<span>'.$rd['RiderName'].'</span>');
 
-        echo('<td><input type="number" ');
-        echo('id="cid'.$cellid.'" '); $cellid++;
-        if ($isCheckIn) echo(' disabled ');
-        echo('placeholder="start" name="'.$checkoutname.'" ');
-        echo('min="0" tabindex="0" class="bignumber '.$startstop.'" ');
-        echo('onchange="oc(this);" oninput="oi(this);" value="'.showOdoValue($rd[$checkoutname]).'"');
         if (!$isCheckIn) {
-            echo($autofocus);
-            $autofocus = '';
-        }
-        echo('></td>');
-
-        echo('<td><input type="number" ');
-        echo('id="cid'.$cellid.'" '); $cellid++;
-        if (!$isCheckIn && !$isOdoCheck) echo(' disabled ');
-        echo('placeholder="finish" name="'.$checkinname.'" ');
-        echo('min="0" tabindex="0" class="bignumber stop" ');
-        echo('onchange="oc(this);" oninput="oi(this);" value="'.showOdoValue($rd[$checkinname]).'"');
-        if ($isCheckIn) {
-            echo($autofocus);
-            $autofocus = '';
-        }
-        echo('></td>');
-
-        if ($isOdoCheck) {
-            echo('<td><input type="number" ');
+            echo('<span><input type="number" ');
             echo('id="cid'.$cellid.'" '); $cellid++;
-            echo('placeholder="nn.n" name="OdoCheckTrip" min="0" tabindex="0" class="stop" ');
-            echo('onchange="oc(this);" oninput="oi(this);" value="'.showOdoValue($rd['OdoCheckTrip']).'"></td>');
-        }
-        echo('<td>');
-        echo('<select name="OdoKms" ');
-        echo('id="cid'.$cellid.'" '); $cellid++;
-        echo('onchange="oc(this);">');
-        if ($rd['OdoKms']==$KONSTANTS['OdoCountsKilometres']) {
-            echo('<option value="'.$KONSTANTS['OdoCountsMiles'].'">'.'M'.'</option>');
-            echo('<option value="'.$KONSTANTS['OdoCountsKilometres'].'" selected >'.'K'.'</option>');
+            if ($isCheckIn) echo(' disabled ');
+            echo('placeholder="start" name="'.$checkoutname.'" ');
+            echo('min="0" tabindex="0" class="odoreading '.$startstop);
+            if ($isCheckIn) echo(' hide');
+            echo('" ');
+            echo('onchange="oc(this);" oninput="oi(this);" onblur="ob(this);" value="'.showOdoValue($rd[$checkoutname]).'"');
+            if (!$isCheckIn) {
+                echo($autofocus);
+                $autofocus = '';
+            }
+            echo('></span>');
         } else {
-            echo('<option value="'.$KONSTANTS['OdoCountsMiles'].'" selected >'.'M'.'</option>');
-            echo('<option value="'.$KONSTANTS['OdoCountsKilometres'].'" >'.'K'.'</option>');
+            echo('<span><input type="number" ');
+            echo('id="cid'.$cellid.'" '); $cellid++;
+            if (!$isCheckIn && !$isOdoCheck) echo(' disabled ');
+            echo('placeholder="finish" name="'.$checkinname.'" ');
+            echo('min="0" tabindex="0" class="odoreading stop');
+            if (!$isCheckIn) echo(' hide');
+            echo('" ');
+            echo('onchange="oc(this);" oninput="oi(this);" value="'.showOdoValue($rd[$checkinname]).'"');
+            if ($isCheckIn) {
+                echo($autofocus);
+                $autofocus = '';
+            }
+            echo('></span>');
         }
-        echo('</select>');        
-        echo('</td>');
-        echo('</tr>');
+
+        echo('</div> <!-- odorow -->');
         $rowspresent = true;
     }
-    echo('</tbody>');
-    echo('</table>');
-    echo('</form>');
+    //echo('</tbody>');
+    //echo('</table>');
+    //echo('</form>');
     if (!$rowspresent)
         echo('<span style="font-size:2vw;">&#128530;</span>');
     echo('</div>');

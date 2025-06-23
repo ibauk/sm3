@@ -31,18 +31,27 @@ function clickTime() {
  * 
  */
 function oi(obj) {
+    console.log("oi called");
+    obj.setAttribute('data-saveneeded','1');
     obj.classList.add('oi');
 }
 
+function ob(obj) {
+    console.log("ob called");
+    oc(obj);
+}
 /**
  * oc is called onchange to change state
  * 
  */
 function oc(obj) {
+    console.log("oc called");
+    if (obj.getAttribute('data-saveneeded') != '1') return;
+    obj.setAttribute('data-saveneeded','0');
     obj.classList.remove('oi');
     obj.classList.add('oc');
     let tr = obj.parentNode.parentNode;
-    let ent = tr.cells[0].innerText;
+    let ent = tr.childNodes[0].innerText;
     let timeDisplay = document.querySelector('#timenow');
     let ts = timeDisplay.getAttribute('data-time');
     let url = "fastodos.php?c=setodo&e="+ent+'&f='+obj.name+'&v='+obj.value+'&t='+ts;

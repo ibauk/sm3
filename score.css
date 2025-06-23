@@ -147,6 +147,7 @@ input[name="PillionIBA"] { width:5em !important; }
 input[name="EntrantID"]	{ width: 3em; }
 input[name="OdoCheckMiles"]	{ width:4em; }
 input[type="email"], .email	{ width:25em; }
+input.odoreading		{ width: 5em; }
 input.bignumber			{ width: 6em;}
 input.smallnumber		{ width: 3em; }
 input.tinynumber		{ width: 2em; }
@@ -314,6 +315,15 @@ table#entrants	.FinishPosition,.TotalPoints,.CorrectedMiles,.TeamID	{ text-align
 }
 
 /* Fast odo readings */
+
+.odolist {
+	display: flex;
+	flex-direction: column;
+}
+.odorow {
+	display: grid;
+	grid-template-columns: 2em 1fr 1fr;
+}
 input:not([disabled]).start,
 input:not([disabled]).stop		{ background-color:white; }
 
