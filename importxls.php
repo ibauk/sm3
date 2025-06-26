@@ -325,8 +325,8 @@ function loadSpreadsheet()
 	}
 	
 	// These fields need handling beyond simple copying
-	$specialfields = ['RiderName','RiderLast','RiderFirst',
-						'PillionName','PillionLast','PillionFirst',
+	$specialfields = ['RiderName',
+						'PillionName',
 						'NoKName','NoKLast','NoKFirst',
 						'Bike','Make','Model','BikeReg','TeamName'
 					];

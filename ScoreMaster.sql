@@ -380,6 +380,8 @@ CREATE TABLE IF NOT EXISTS "entrants" (
 	"AcceptedByEntrant" INTEGER NOT NULL DEFAULT 0,
 	"LastReviewed" 	TEXT,
 	"LegData"	TEXT,
+	"RiderLast" TEXT,
+	"PillionLast" TEXT,
 	PRIMARY KEY("EntrantID")
 );
 

@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.3.6",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.4",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -91,6 +91,7 @@ $PROGRAM = array("version" => "3.3.6",	"title"	=> "ScoreMaster");
  *	3.3.5		Pre PRC25
  *	3.3.5a		Revalue claims when bonus details are changed. Details not list.
  *	3.3.6		Post M12-25
+ *	3.4			Post BBL25 Last/First + mobile
  */
 
 $MIT = <<<'EOT'

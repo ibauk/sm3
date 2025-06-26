@@ -119,13 +119,15 @@ function flipshowstatus() {
     
     echo('<input type="hidden" id="is_review" value="'.($showReview ? 1 : 0).'">');
     echo('<input type="hidden" id="is_s" value="'.(isset($_REQUEST['s']) ? 1 : 0).'">');
-
+/**
     if ($showScoring) {
         echo('<p>'.$TAGS['accessScorecards'][1].'</p>');
     }
+     
     echo('<h4 onclick="flipshowstatus();" style="cursor:pointer;" title="'.$TAGS['PL_hdr_flipstatus'][1].'">');
     echo($TAGS['PickAnEntrant'][1]);
     echo('</h4>');
+**/    
 	echo('<div id="pickentrant">');
 
 	echo('<form id="entrantpick" method="get" action="'.$action.'">');
@@ -133,7 +135,7 @@ function flipshowstatus() {
 	echo('<input oninput="choosePickedName();" type="number" autofocus id="EntrantID" name="EntrantID" min="'.$minEntrant.'" max="'.$maxEntrant.'"> '); 
 	echo('<input type="hidden" name="c" value="score">');
     
-
+/**
 	echo('<label for="NameFilter">'.$TAGS['NameFilter'][0].' </label>');
 
     echo('<select id="picklistNames" onchange="setEntrantFromList(this);">');
@@ -142,12 +144,12 @@ function flipshowstatus() {
         echo('<option value="'.$rd['EntrantID'].'" >'.$rd['RiderName'].' [#'.$rd['EntrantID'].']</option>');
     }
     echo('</select>');
-
+**/
 	echo(' <input class="button" type="submit" id="savedata" disabled="disabled" value="'.$button.'" > ');
 	echo('</form>');
     echo('</div>');
 
-    $R = $DB->query('SELECT * FROM entrants ORDER BY EntrantID');
+    $R = $DB->query('SELECT * FROM entrants ORDER BY RiderLast');
 
     $R->reset();
 
@@ -156,7 +158,7 @@ function flipshowstatus() {
     while ($rd = $R->fetchArray()) {
         echo('<tr onclick="setEntrantFromNumber('.$rd['EntrantID'].');">');
         echo('<td class="EntrantID">'.$rd['EntrantID'].'</td>');
-        echo('<td class="RiderName">'.$rd['RiderName']);
+        echo('<td class="RiderName"><strong>'.$rd['RiderLast'].'</strong>, '.$rd['RiderFirst']);
         if ($rd['PillionName'] != '') {
             echo(' &amp; '.$rd['PillionName']);
         }
@@ -195,5 +197,5 @@ function flipshowstatus() {
 
 }
 	
-showPicklist('RiderName');
+showPicklist('RiderLast,RiderFirst');
 ?>

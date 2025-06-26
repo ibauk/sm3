@@ -56,7 +56,7 @@ function showOdoList() {
 
     global $DB, $TAGS, $KONSTANTS, $HOME_URL, $DBVERSION;
 
-    $R = $DB->query('SELECT * FROM entrants ORDER BY EntrantID');
+    $R = $DB->query('SELECT * FROM entrants ORDER BY RiderLast,RiderFirst');
 
 	$lnk = '<a href="'.$HOME_URL.'">';
     $isOdoCheck = isset($_REQUEST['odocheck']);
@@ -124,7 +124,7 @@ function showOdoList() {
     while($rd = $R->fetchArray()) {
         echo('<div class="odorow">');
         echo('<span class="EntrantID">'.$rd['EntrantID'].'</span>');
-        echo('<span>'.$rd['RiderName'].'</span>');
+        echo('<span><strong>'.$rd['RiderLast'].'</strong>, '.$rd['RiderFirst'].'</span>');
 
         if (!$isCheckIn) {
             echo('<span><input type="number" ');

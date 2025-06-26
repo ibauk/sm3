@@ -180,7 +180,7 @@ ul#tabs li a { color: var(--tabs-text); background-color: var(--tabs-background)
 /* Combo maintenance stuff */
 #comboslist	td		{ padding-right: 1em; }
 
-#RallyParamsSet		{ max-width: 45em; margin-left: auto; margin-right: auto; }
+#RallyParamsSet		{ max-width: 98vw; margin-left: auto; margin-right: auto; }
 #singleclaim		{ margin-left: auto; margin-right: auto; padding-top: 1em; max-width: 40em; }
 
 ul#tabs li a:hover { font-weight: bold; color: var(--tabs-text); }
