@@ -289,6 +289,7 @@ function updateFastOdo() {
     if ($updateok) {
         if ($okStarter) {
             $sql = "UPDATE entrants SET EntrantStatus=".$KONSTANTS['EntrantOK'];
+            $sql .= ",ExtraData=ifnull(ExtraData,'') || char(13) || char(10) || 'StartOdo=".$_REQUEST['v']."'";
             $sql .= " WHERE EntrantID=".$_REQUEST['e'];
             $sql .= " AND EntrantStatus=".$KONSTANTS['EntrantDNS'];
             error_log($sql);
@@ -296,6 +297,7 @@ function updateFastOdo() {
         } else {
            if ($okFinisher) {
                 $sql = "UPDATE entrants SET EntrantStatus=".$KONSTANTS['EntrantFinisher'];
+                $sql .= ",ExtraData=ifnull(ExtraData,'') || char(13) || char(10) || 'FinishOdo=".$_REQUEST['v']."'";
                 if (isset($_REQUEST['t']))
                     $sql .= ", FinishTime='".substr($_REQUEST['t'],0,16)."'";
                 $sql .= " WHERE EntrantID=".$_REQUEST['e'];
