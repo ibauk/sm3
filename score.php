@@ -1152,6 +1152,12 @@ if (isset($_REQUEST['showpicklist']))
 	exit;
 }
 
+if (isset($_REQUEST['rank'])) {
+	rankEntrants(false);
+	prgPicklist();
+	exit;
+}
+
 if (isset($_REQUEST['savescore']))
 {
 	if (putScore())

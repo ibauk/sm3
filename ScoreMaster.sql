@@ -134,7 +134,7 @@ INSERT INTO "rallyparams" (RallyTitle,RallySlogan,RejectReasons,EmailParams,sett
 	"bonusClaimsLimit": "0",
 	"bonusClaimsExceeded": "Claim limit exceeded",
 	"distanceLimitExceeded": "Distance limit exceeded",
-	"maxOdoGap": "1000",
+	"maxOdoGap": "2000",
 	"minOdoValue": "1001"
 }','imapserver: imap.gmail.com:993
 
