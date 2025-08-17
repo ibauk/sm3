@@ -46,10 +46,5 @@ function audit_ebclaims() {
     echo("<p>Number skipped: ".$skipped."</p>");
 }
 
-if (isset($_REQUEST['rank'])) {
-	rankEntrants(false);
-	prgPicklist();
-	exit;
-}
 
 audit_ebclaims();
