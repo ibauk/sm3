@@ -359,7 +359,7 @@ function ccTestFail($ccr) {
 
 // This checks the various constraints on 'Finisher' status and applies the appropriate
 // status (Finisher / DNF) according to the rules of the rally.
-function calcEntrantStatus($rd) {
+function calcEntrantStatus($rd,$catcounts) {
 
     global $scorex, $bonusValues, $specialValues, $comboValues, $catCompoundRules, $TAGS,$KONSTANTS, $RP;
 
@@ -449,6 +449,13 @@ function calcEntrantStatus($rd) {
         $scorex[] = $sx;
         return $KONSTANTS['EntrantDNF'];
     }
+
+    $msg = checkCatRatios($catcounts);
+    if (!is_null($msg)) {
+        $sx->desc = $msg;
+        $scorex[] = $sx;
+        return $KONSTANTS['EntrantDNF'];
+    }    
 
     if (getSetting('autoFinisher','false') != 'true')
         if ($rd['EntrantStatus'] != $KONSTANTS['EntrantFinisher'])
@@ -1473,6 +1480,9 @@ function recalcScorecard($entrant,$intransaction) {
         if ($ccr->rtype == $KONSTANTS['CAT_OrdinaryScoringSequence'])
             continue;
 
+        if ($ccr->rtype == $KONSTANTS['CAT_CatRatioRule'])
+            continue;
+
         if ($ccr->method != $KONSTANTS['CAT_NumBonusesPerCatMethod'] || $ccr->target == $KONSTANTS['CAT_ModifyBonusScore'])
             continue;
         if ($ccr->axis <= $lastaxis && $ccr->cat <= $lastcat)
@@ -1527,7 +1537,7 @@ function recalcScorecard($entrant,$intransaction) {
             $sx->desc .= ' ';
         if ($basicPoints <= 0 && $lastmin != '')
             $sx->desc .= '&lt; '.$lastmin;
-        else
+        else if ($ccr->min > 0)
             $sx->desc .= '&#8805; '.$ccr->min;
         //$sx->desc .= $ccr->min;
         $sx->pointsDesc = "";
@@ -1547,6 +1557,7 @@ function recalcScorecard($entrant,$intransaction) {
         $scorex[] = $sx;
         $bonusPoints = $sx->points;
     }
+
 
     $sx = new SCOREXLINE();
     $scorex[] = $sx;
@@ -1644,7 +1655,7 @@ function recalcScorecard($entrant,$intransaction) {
     $sx->desc = $KONSTANTS['RPT_Total'];
     $sx->points = $bonusPoints;
     $scorex[] = $sx;
-    $rd['EntrantStatus'] = calcEntrantStatus($rd);
+    $rd['EntrantStatus'] = calcEntrantStatus($rd,$catcounts);
     //echo(' TP='.$bonusPoints.' '.$rd['EntrantStatus']);
     //echo(' ok<br>');
 
@@ -1702,6 +1713,55 @@ function recalcScorecard($entrant,$intransaction) {
 
     if (!$intransaction)
         $DB->exec("COMMIT");
+}
+
+function checkCatRatios($catcounts) {
+    
+    global $catCompoundRules, $KONSTANTS;
+
+    $lastaxis = -1;
+    $lastcat = -1;
+    $lastmin = '';
+
+    //debugCatcounts(($catcounts));
+
+    foreach($catCompoundRules as $ccr) {
+
+        if ($ccr->rtype != $KONSTANTS['CAT_CatRatioRule'])
+            continue;
+
+        if ($ccr->axis <= $lastaxis && $ccr->cat <= $lastcat)
+            continue;
+
+        $catcount1 = 0;
+        if (isset($catcounts[$ccr->axis]->catcounts[$ccr->cat]))
+            $catcount1 = $catcounts[$ccr->axis]->catcounts[$ccr->cat];
+        $catcount2 = 0;
+        if (isset($catcounts[$ccr->axis]->catcounts[$ccr->pwr]))
+            $catcount2 = $catcounts[$ccr->axis]->catcounts[$ccr->pwr];
+
+        if ($catcount1 * $ccr->min > $catcount2 || 1==0) {
+            $ccr->triggered = true;
+            $sx = "";
+            $x = getValueFromDB("SELECT BriefDesc FROM categories WHERE Axis=".$ccr->axis." AND Cat=".$ccr->cat,"BriefDesc","*");
+            $y = getValueFromDB("SELECT BriefDesc FROM categories WHERE Axis=".$ccr->axis." AND Cat=".$ccr->pwr,"BriefDesc","*");
+            if ($ccr->min > 1) {
+                $sx = "<em>n</em>[".$x."] < ".$ccr->min." x <em>n</em>[".$y."]";
+            } else {
+                $sx = "<em>n</em>[".$x."] <> <em>n</em>[".$y."]";
+            }
+            return $sx;
+        }
+        if ($lastaxis < 0)
+            $lastaxis = $ccr->axis;
+        if ($ccr->axis > $lastaxis)
+            $lastcat = -1;
+        else
+            $lastcat = $ccr->cat;
+        $lastaxis = $ccr->axis;
+    }
+    return null;
+
 }
 
 if (isset($_REQUEST['recalc']))

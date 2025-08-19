@@ -259,6 +259,7 @@ $TAGS = array(
 	'ccRuletype2'		=> array('Trigger=DNF','DNF if this rule triggered'),
 	'ccRuletype3'		=> array('Placeholder','Placeholder rule'),
 	'ccRuletype4'		=> array('Sequence','Sequential bonus award'),
+	'ccRuletype5'		=> array('CatRatio','Cat ratio DNF'),
 	
 	'CertExplainer'		=> array('Certificates are "web" documents comprising well-formed HTML and CSS parts.',
 									'Please carefully specify the certificate layout and content in the texts below.'),

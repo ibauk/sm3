@@ -24,7 +24,7 @@
  */
 
 
-$PROGRAM = array("version" => "3.4",	"title"	=> "ScoreMaster");
+$PROGRAM = array("version" => "3.5",	"title"	=> "ScoreMaster");
 /*
  *	2.0	25May18	Used live at BBR18
  *
@@ -92,6 +92,7 @@ $PROGRAM = array("version" => "3.4",	"title"	=> "ScoreMaster");
  *	3.3.5a		Revalue claims when bonus details are changed. Details not list.
  *	3.3.6		Post M12-25
  *	3.4			Post BBL25 Last/First + mobile
+ *	3.5			Pre RAF25 - Category ratio DNF
  */
 
 $MIT = <<<'EOT'
@@ -197,7 +198,7 @@ function showAbout()
 	$mk = ($KONSTANTS['BasicDistanceUnit'] == $KONSTANTS['DistanceIsMiles'] ? 'miles' : 'kilometres');
 	echo('<dt title="'.$TAGS['abtBasicDistance'][1].'">'.$TAGS['abtBasicDistance'][0].'</dt><dd>'.$mk.'</dd>');
 	echo('<dt title="'.$TAGS['abtAuthor'][1].'">'.$TAGS['abtAuthor'][0].'</dt><dd>Bob Stammers &lt;webmaster@ironbutt.co.uk&gt; (IBA #51220)</dd>');
-	echo('<dt title="'.$TAGS['abtInspired'][1].'">'.$TAGS['abtInspired'][0].'</dt><dd><span class="keep">Chris Kilner #40058</span>, <span class="keep">Steve Eversfield #169</span>, <span class="keep">Lee Edwards #59974</span>, <span class="keep">Robert Koeber #552</span>, <span class="keep">Graeme Dawson #40020</span>, <span class="keep">Peter Ihlo #576</span>, <span class="keep">Steve Westall #40092</span>, <span class="keep">Philip Weston #432</dd>');
+	echo('<dt title="'.$TAGS['abtInspired'][1].'">'.$TAGS['abtInspired'][0].'</dt><dd><span class="keep">Chris Kilner #40058</span>, <span class="keep">Steve Eversfield #169</span>, <span class="keep">Lee Edwards #59974</span>, <span class="keep">Robert Koeber #552</span>, <span class="keep">Graeme Dawson #40020</span>, <span class="keep">Peter Ihlo #576</span>, <span class="keep">Steve Westall #40092</span>, <span class="keep">Philip Weston #432</span>, <span class="keep">Sean Sowley #34150</span></dd>');
 	echo('<dt title="'.$TAGS['abtLicence'][1].'">'.$TAGS['abtLicence'][0].'</dt><dd class="clickme" onclick="document.getElementById(\'mit\').className=\'show\';">MIT</dd>');
 	echo('</dl>');
 	echo('<p id="mit" class="hide">'.$MIT.'</p>');
