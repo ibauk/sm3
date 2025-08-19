@@ -834,7 +834,7 @@ function initRallyVariables() {
 
     $sql = "SELECT rowid AS id,Axis,Cat,NMethod,ModBonus,NMin,PointsMults,NPower,Ruletype";
     $sql .= " FROM catcompound WHERE Leg=0 OR Leg=".$RP['CurrentLeg'];
-    $sql .= " ORDER BY Axis,NMin DESC";
+    $sql .= " ORDER BY Axis,Cat,NMin DESC";
     $R = $DB->query($sql);
 	while ($rd = $R->fetchArray()) {
         $ccr = new StdClass();
