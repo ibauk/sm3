@@ -139,6 +139,7 @@ $KONSTANTS['CAT_OrdinaryScoringSequence'] = 4;
 $KONSTANTS['CAT_CatRatioRule'] = 5;
 $KONSTANTS['CAT_ResultPoints'] = 0;
 $KONSTANTS['CAT_ResultMults'] = 1;
+$KONSTANTS['CAT_ResultCount'] = 2;
 $KONSTANTS['CAT_ModifyAxisScore'] = 0;
 $KONSTANTS['CAT_ModifyBonusScore'] = 1;
 

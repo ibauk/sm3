@@ -1520,6 +1520,9 @@ function recalcScorecard($entrant,$intransaction) {
             $bonusPoints += $basicPoints;
             
             //echo("RC $basicPoints / $bonusPoints <br>");
+        } elseif ($ccr->pm == $KONSTANTS['CAT_ResultCount']) {
+            $basicPoints = '';
+        
         } else { // Multipliers then
             $mults = chooseNZ($ccr->pwr,$catcount);
             $multipliers += $mults;
@@ -1730,8 +1733,8 @@ function checkCatRatios($catcounts) {
         if ($ccr->rtype != $KONSTANTS['CAT_CatRatioRule'])
             continue;
 
-        if ($ccr->axis <= $lastaxis && $ccr->cat <= $lastcat)
-            continue;
+        //if ($ccr->axis <= $lastaxis && $ccr->cat <= $lastcat)
+        //    continue;
 
         $catcount1 = 0;
         if (isset($catcounts[$ccr->axis]->catcounts[$ccr->cat]))
@@ -1740,8 +1743,13 @@ function checkCatRatios($catcounts) {
         if (isset($catcounts[$ccr->axis]->catcounts[$ccr->pwr]))
             $catcount2 = $catcounts[$ccr->axis]->catcounts[$ccr->pwr];
 
-        if ($catcount1 * $ccr->min > $catcount2 || 1==0) {
-            $ccr->triggered = true;
+        if ($ccr->min == 1 ) {
+            $ccr->triggered = $catcount1 !== $catcount2;
+        } else {
+            $ccr->triggered = $catcount1 < $catcount2 * $ccr->min;
+        }
+
+        if ($ccr->triggered) {
             $sx = "";
             $x = getValueFromDB("SELECT BriefDesc FROM categories WHERE Axis=".$ccr->axis." AND Cat=".$ccr->cat,"BriefDesc","*");
             $y = getValueFromDB("SELECT BriefDesc FROM categories WHERE Axis=".$ccr->axis." AND Cat=".$ccr->pwr,"BriefDesc","*");

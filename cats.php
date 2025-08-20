@@ -353,7 +353,7 @@ function showCompoundCalc($ruleid)
 	echo('<span class="vlabel" title"'.$TAGS['PointsMults'][1].'">');
 	echo('<label class="wide" for="PointsMults">'.$TAGS['PointsMults'][0].'</label> ');
 	echo('<select name="PointsMults" id="PointsMults">');
-	for ($i=0;$i<=1;$i++)
+	for ($i=0;$i<=2;$i++)
 	{
 		echo("<option value=\"$i\"");
 		if ($i==$rd['PointsMults'])

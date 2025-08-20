@@ -617,6 +617,7 @@ $TAGS = array(
 	'PointsMults'		=> array('Score value type','Worth points or multipliers'),
 	'PointsMults0'		=> array('PointsMults0','Points'),
 	'PointsMults1'		=> array('PointsMults1','Multipliers'),
+	'PointsMults2'		=> array('PointsMults2','Count'),
 	
 	'PreviewCert'		=> array('Preview','What will this certificate look like'),
 	'Print1Cert'		=> array('Certificate','Show certificate for this entrant'),
