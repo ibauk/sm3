@@ -457,9 +457,10 @@ function calcEntrantStatus($rd,$catcounts) {
         return $KONSTANTS['EntrantDNF'];
     }    
 
-    if (getSetting('autoFinisher','false') != 'true')
-        if ($rd['EntrantStatus'] != $KONSTANTS['EntrantFinisher'])
-            return $KONSTANTS['EntrantOK']; //$rd['EntrantStatus'];
+    if ($rd['FinishOdo'] < 1)
+        if (getSetting('autoFinisher','false') != 'true')
+            if ($rd['EntrantStatus'] != $KONSTANTS['EntrantFinisher'])
+                return $KONSTANTS['EntrantOK']; //$rd['EntrantStatus'];
     
     return $KONSTANTS['EntrantFinisher'];
 
@@ -1115,7 +1116,7 @@ function recalcScorecard($entrant,$intransaction) {
     $catcounts = initScorecardVariables();
 
     // Now fetch the base data
-    $sql = "SELECT * FROM entrants WHERE EntrantID=$entrant";
+    $sql = "SELECT *,ifnull(OdoCheckTrip,0) as FinishOdo FROM entrants WHERE EntrantID=$entrant";
     $R = $DB->query($sql);
     if (!$rd = $R->fetchArray()) {
         echo('FAILED<br>');

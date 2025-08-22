@@ -94,7 +94,7 @@ function sendTransactions() {
         xhttp.onload = function() {
             let ok = new RegExp("\\W*ok\\W*");
             if (xhttp.status == 200) {
-                console.log('{'+this.responseText.substring(0,30)+'}');
+                console.log('{'+this.responseText+'}');
                 if (!ok.test(this.responseText)) {                
                     console.log(UPDATE_FAILED);
                     return;
